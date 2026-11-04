@@ -37,9 +37,8 @@ if logo_b64:
 else:
     logo_html = '<div style="width:64px;height:64px;background-color:#5A5A5A;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:8.5px;font-weight:900;text-align:center;">RIO<br/>BRANCO</div>'
 
-# 2. CSS Global com degradê real cobrindo toda a tela e abas 100% vermelhas
+# 2. CSS Global
 css_code = """<style>
-/* DEGRADÊ VERMELHO + BRANCO NA PÁGINA INTEIRA */
 html, body, [data-testid="stAppViewContainer"], .stApp, section.main {
 background: linear-gradient(160deg, #FADBD8 0%, #FFFFFF 35%, #FDE8E7 70%, #FFFFFF 100%) !important;
 background-attachment: fixed !important;
@@ -50,7 +49,6 @@ color: #5A5A5A !important;
 font-weight: 600;
 }
 
-/* CARDS DO MENU PRINCIPAL */
 .menu-card-container {
 background-color: #FFFFFF;
 border-radius: 12px;
@@ -133,7 +131,6 @@ color: #FFFFFF !important;
 font-weight: 800 !important;
 }
 
-/* CARDS DE MÉTRICAS */
 .metric-card {
 background-color: #FFFFFF;
 border: 1px solid #E2E8F0;
@@ -156,7 +153,6 @@ font-weight: 900;
 margin: 0;
 }
 
-/* CARDS DA LISTA DE ORÇAMENTOS */
 .orc-card {
 background-color: #FFFFFF;
 border-radius: 10px;
@@ -193,7 +189,6 @@ font-weight: 600;
 margin-bottom: 12px;
 }
 
-/* CARDS DA LISTA DE CLIENTES */
 .cli-card {
 background-color: #FFFFFF;
 border-radius: 10px;
@@ -201,9 +196,9 @@ border: 1px solid #E2E8F0;
 border-top: 4px solid #D01B13;
 box-shadow: 0 3px 12px rgba(0,0,0,0.05);
 padding: 16px;
-margin-bottom: 15px;
+margin-bottom: 20px;
 position: relative;
-min-height: 180px;
+min-height: 190px;
 display: flex;
 flex-direction: column;
 justify-content: space-between;
@@ -244,7 +239,6 @@ font-weight: 600;
 margin-top: 4px;
 }
 
-/* INPUTS */
 .stTextInput input, .stNumberInput input {
 background-color: #FFFFFF !important;
 color: #9D201C !important;
@@ -262,7 +256,6 @@ color: #0D253A !important;
 font-weight: 700 !important;
 }
 
-/* BOTÕES INFERIORES */
 .btn-gerar button {
 background-color: #D01B13 !important;
 color: #FFFFFF !important;
@@ -298,7 +291,7 @@ if hasattr(st, "html"):
 else:
     st.markdown(clean_css, unsafe_allow_html=True)
 
-# 3. Cabeçalho IDÊNTICO ao seu código
+# 3. Cabeçalho com título em vermelho escuro #9D201C
 cabecalho_raw = f"""<div style="position:relative;background:rgba(255,255,255,0.45);backdrop-filter:blur(6px);border:1px solid rgba(226,232,240,0.9);border-left:8px solid #D01B13;border-radius:12px;padding:14px 24px;margin-top:-15px;margin-bottom:22px;box-shadow:0 4px 15px rgba(208,27,19,0.08);overflow:hidden;min-height:98px;">
 <div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;width:100%;">
 <div style="flex-shrink:0;">{logo_html}</div>
@@ -317,50 +310,45 @@ if hasattr(st, "html"):
 else:
     st.markdown(clean_cabecalho, unsafe_allow_html=True)
 
-# 4. Controle de Telas e Memória
+# 4. Controle de Telas e Memória (com Sincronização Automática Orçamentos <-> Clientes)
 if "tela_ativa" not in st.session_state:
     st.session_state["tela_ativa"] = "inicio"
 
 if "orcamento_selecionado" not in st.session_state:
     st.session_state["orcamento_selecionado"] = None
 
+if "cliente_selecionado_idx" not in st.session_state:
+    st.session_state["cliente_selecionado_idx"] = 0
+
 if "historico_orcamentos" not in st.session_state:
     st.session_state["historico_orcamentos"] = [
         {"id": "2608251804903", "cliente": "HEMOSAN MT", "data": "25/08/2026", "autor": "Eu", "status": "Em Analise", "projeto": "Guarda-Corpo / Sacada (NBR 14718)", "largura": 3.40, "altura": 1.10, "valor": 3787.85, "local": "Boa Viagem - Recife/PE", "whatsapp": "81991234567"},
         {"id": "2608241802746", "cliente": "IVONE", "data": "24/08/2026", "autor": "Eu", "status": "Em Analise", "projeto": "Box Frontal Padrão (1 Fixo + 1 Móvel)", "largura": 1.20, "altura": 1.90, "valor": 1250.00, "local": "Janga - Paulista/PE", "whatsapp": "81988776655"},
         {"id": "26081417888936", "cliente": "MARCOS EMANUEL JUNIOR DE ALMEIDA NUNES LEITE", "data": "14/08/2026", "autor": "Eu", "status": "Aprovado", "projeto": "Janela 4 Folhas (2 Fixos + 2 Móveis)", "largura": 2.00, "altura": 1.20, "valor": 2180.00, "local": "Casa Forte - Recife/PE", "whatsapp": "81977665544"},
-        {"id": "2608141788888", "cliente": "POSTURE SAUDE E CIENCIA", "data": "14/08/2026", "autor": "Eu", "status": "Em Analise", "projeto": "Porta Pivotante de Abrir (1 Folha)", "largura": 1.00, "altura": 2.10, "valor": 1940.00, "local": "Ilha do Leite - Recife/PE", "whatsapp": "81999881122"},
-        {"id": "2608051771714", "cliente": "CLÍNICA PRÁXIS", "data": "05/08/2026", "autor": "Eu", "status": "Em Analise", "projeto": "Guarda-Corpo / Sacada (NBR 14718)", "largura": 4.10, "altura": 1.10, "valor": 4520.00, "local": "Espinheiro - Recife/PE", "whatsapp": "81998877665"},
-        {"id": "2605151644433", "cliente": "CONDOMINIO EDIFICIO PORTAL DO BOSQUE", "data": "15/05/2026", "autor": "Eu", "status": "Em Analise", "projeto": "Guarda-Corpo / Sacada (NBR 14718)", "largura": 6.80, "altura": 1.10, "valor": 7890.00, "local": "Pina - Recife/PE", "whatsapp": "81987654321"},
     ]
 
 if "clientes_cadastrados" not in st.session_state:
     st.session_state["clientes_cadastrados"] = [
-        {"nome": "HEMOSAN MT", "responsavel": "Eu", "telefone": "81991234567", "email": "", "cadastro": "25/08/2026", "local": "Boa Viagem - Recife/PE"},
-        {"nome": "IVONE", "responsavel": "Eu", "telefone": "81988776655", "email": "", "cadastro": "24/08/2026", "local": "Janga - Paulista/PE"},
-        {"nome": "MARCOS EMANUEL JUNIOR DE ALMEIDA NUNES LEITE", "responsavel": "Eu", "telefone": "81977665544", "email": "", "cadastro": "14/08/2026", "local": "Recife/PE"},
-        {"nome": "SABOR DA TERRA", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "11/05/2026", "local": "Paulista/PE"},
-        {"nome": "MARCOS AURELIO NOGUEIRA", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "11/05/2026", "local": "Olinda/PE"},
-        {"nome": "POSTURE SAUDE E CIENCIA", "responsavel": "Eu", "telefone": "81999881122", "email": "", "cadastro": "04/05/2026", "local": "Recife/PE"},
-        {"nome": "FLAVIA CAMPANO", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "23/04/2026", "local": "Janga/PE"},
-        {"nome": "EUNICE", "responsavel": "Eu", "telefone": "(65) 9 8448-7060", "email": "", "cadastro": "07/04/2026", "local": "Recife/PE"},
-        {"nome": "COND CHAPADA CESARI", "responsavel": "Eu", "telefone": "(66) 9 9622-8589", "email": "", "cadastro": "07/04/2026", "local": "Paulista/PE"},
+        {"nome": "MARIANA ALBUQUERQUE", "responsavel": "Eu", "telefone": "81991234567", "email": "mariana@email.com", "cadastro": "03/11/2026", "local": "Boa Viagem - Recife/PE"},
+        {"nome": "HEMOSAN MT", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "25/08/2026", "local": "Boa Viagem - Recife/PE"},
+        {"nome": "IVONE", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "24/08/2026", "local": "Janga - Paulista/PE"},
+        {"nome": "MARCOS EMANUEL JUNIOR DE ALMEIDA NUNES LEITE", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "14/08/2026", "local": "Recife/PE"},
     ]
 
-# SINCRONIZAÇÃO AUTOMÁTICA DE CLIENTES DOS ORÇAMENTOS (INCLUINDO MARIANA ETC)
-nomes_existentes_cli = {c["nome"].upper() for c in st.session_state["clientes_cadastrados"]}
+# Sincronização automática para garantir que cliente de orçamento esteja na aba clientes
+nomes_cad = {str(c.get("nome", "")).upper() for c in st.session_state["clientes_cadastrados"]}
 for orc in st.session_state["historico_orcamentos"]:
-    c_nome = orc.get("cliente", "").strip().upper()
-    if c_nome and c_nome not in nomes_existentes_cli:
+    nm = str(orc.get("cliente", "")).strip().upper()
+    if nm and nm not in nomes_cad:
         st.session_state["clientes_cadastrados"].append({
-            "nome": c_nome,
+            "nome": nm,
             "responsavel": orc.get("autor", "Eu"),
             "telefone": orc.get("whatsapp", ""),
             "email": "",
             "cadastro": orc.get("data", datetime.now().strftime("%d/%m/%Y")),
             "local": orc.get("local", "Recife/PE")
         })
-        nomes_existentes_cli.add(c_nome)
+        nomes_cad.add(nm)
 
 # 5. Banco de dados técnico e cálculos
 PROJETOS_PADRAO = {
@@ -446,6 +434,7 @@ def processar_calculo(chave_proj, largura, altura, preco_m2, kit, insumos, mao_o
 def gerar_pdf(dados):
     buf = io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=A4, leftMargin=1.5*cm, rightMargin=1.5*cm, topMargin=1.5*cm, bottomMargin=1.5*cm)
+    styles = getSampleStyleSheet()
     
     AZUL_ESCURO = colors.HexColor("#9D201C")
     VERM = colors.HexColor("#D01B13")
@@ -508,10 +497,10 @@ def gerar_pdf(dados):
     return val
 
 # ==============================================================================
-# RENDERIZAÇÃO DAS TELAS
+# 6. RENDERIZAÇÃO DAS TELAS
 # ==============================================================================
 
-# TELA 0: INÍCIO (CARDS EM ESTILO ERP VIDRAÇARIA)
+# TELA 0: INÍCIO
 if st.session_state["tela_ativa"] == "inicio":
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     c_m1, c_m2, c_m3 = st.columns(3, gap="large")
@@ -533,7 +522,7 @@ if st.session_state["tela_ativa"] == "inicio":
         with b_c1:
             st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
             if st.button("➕ ADICIONAR", key="card_btn_add_orc", use_container_width=True):
-                st.session_state["tela_ativa"] = "novo_orcamento"
+                st.session_state["tela_ativa"] = "gerenciar_orcamentos"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
         with b_c2:
@@ -705,7 +694,7 @@ elif st.session_state["tela_ativa"] == "gerenciar_orcamentos":
                             else:
                                 st.toast(f"Valor: {val_c}")
 
-# TELA 2: FORMULÁRIO DE ORÇAMENTO / CÁLCULO DE VÃO
+# TELA 2: FORMULÁRIO DE ORÇAMENTO
 elif st.session_state["tela_ativa"] == "novo_orcamento":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
     if st.button("⬅ VOLTAR PARA ORÇAMENTOS", key="btn_voltar_orc"):
@@ -778,31 +767,45 @@ elif st.session_state["tela_ativa"] == "novo_orcamento":
                 unsafe_allow_html=True,
             )
 
-        st.success(f"Lucro Bruto Estimado: R$ {res['lucro']:.2f} ({res['margem']}%)")
+        st.success(f"Lucro Bruto Estimado: **R$ {res['lucro']:.2f}** (Margem: {res['margem']}%)")
 
-        st.markdown("<h5 style='color:#9D201C; font-weight:800; margin-top:15px;'>Plano de Corte dos Vidros</h5>", unsafe_allow_html=True)
-        st.dataframe(res["pecas"], use_container_width=True)
+    st.markdown('<br/>', unsafe_allow_html=True)
+    b_esp1, b_c1, b_c2, b_esp2 = st.columns([1, 1.3, 1.3, 1])
 
-        dados_pdf = {
-            "cli": nome_c,
-            "loc": loc_c,
-            "proj": res["nome"],
-            "vidro": res["vidro"],
-            "l": larg_v,
-            "a": alt_v,
-            "fat": res["area_fat"],
-            "cv": res["custo_v"],
-            "ck": kit_v,
-            "ci": ins_v,
-            "cmo": mo_v,
-            "total": res["preco_venda"],
-        }
-        
-        pdf_bytes = gerar_pdf(dados_pdf)
-        
+    dados_proposta = {
+        "cli": nome_c, "loc": loc_c, "proj": res["nome"],
+        "vidro": res["vidro"], "l": larg_v, "a": alt_v,
+        "fat": res["area_fat"], "cv": res["custo_v"],
+        "ck": kit_v, "ci": ins_v, "cmo": mo_v, "total": res["preco_venda"]
+    }
+
+    with b_c1:
+        st.markdown('<div class="btn-gerar">', unsafe_allow_html=True)
+        if st.button("💾 Salvar Orçamento", use_container_width=True):
+            novo_id = f"26{datetime.now().strftime('%m%d%H%M%S')}"
+            st.session_state["historico_orcamentos"].insert(0, {
+                "id": novo_id,
+                "cliente": nome_c.upper(),
+                "data": datetime.now().strftime("%d/%m/%Y"),
+                "autor": "Eu",
+                "status": "Em Analise",
+                "projeto": res["nome"],
+                "largura": larg_v,
+                "altura": alt_v,
+                "valor": res["preco_venda"],
+                "local": loc_c,
+                "whatsapp": zap_c,
+            })
+            st.toast("Orçamento registrado com sucesso!")
+            st.session_state["tela_ativa"] = "gerenciar_orcamentos"
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with b_c2:
         st.markdown('<div class="btn-pdf">', unsafe_allow_html=True)
+        pdf_bytes = gerar_pdf(dados_proposta)
         st.download_button(
-            label="📄 BAIXAR ORÇAMENTO EM PDF",
+            "📥 Exportar PDF",
             data=pdf_bytes,
             file_name=f"Orcamento_{nome_c.replace(' ', '_')}.pdf",
             mime="application/pdf",
@@ -810,120 +813,247 @@ elif st.session_state["tela_ativa"] == "novo_orcamento":
         )
         st.markdown('</div>', unsafe_allow_html=True)
 
-# TELA 3: GERENCIAR CLIENTES
+# TELA 3: GERENCIAR CLIENTES (COM DETALHES 👁, EDIÇÃO ✏️, EXCLUSÃO E ORÇAMENTO)
 elif st.session_state["tela_ativa"] == "gerenciar_clientes":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
-    if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_cli"):
+    if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_cli_grid"):
         st.session_state["tela_ativa"] = "inicio"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.subheader("Gestão de Clientes")
+    top_c1, top_c2, top_c3 = st.columns([1.5, 3.2, 1.2])
+    with top_c1:
+        st.markdown('<div class="btn-gerar" style="margin-top: 4px;">', unsafe_allow_html=True)
+        if st.button("➕ Adicionar Cliente", key="btn_add_cliente_top", use_container_width=True):
+            st.session_state["tela_ativa"] = "novo_cliente"
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    termo_cli = st.text_input("Buscar Cliente", placeholder="🔍 Pesquise por nome, local, telefone...", label_visibility="collapsed")
+    with top_c2:
+        busca_cli = st.text_input("Buscar Cliente", placeholder="🔍 Pesquise por nome, telefone, CPF...", label_visibility="collapsed")
 
-    lista_cli_exibir = st.session_state["clientes_cadastrados"]
-    if termo_cli:
-        lista_cli_exibir = [
-            c for c in lista_cli_exibir
-            if termo_cli.lower() in c.get("nome", "").lower() or termo_cli.lower() in c.get("local", "").lower() or termo_cli in c.get("telefone", "")
+    with top_c3:
+        st.selectbox("Filtro", ["Tudo", "Com Telefone", "Sem Telefone"], label_visibility="collapsed")
+
+    total_clientes = len(st.session_state["clientes_cadastrados"])
+    sub_c1, sub_c2 = st.columns([2.0, 1.0])
+    with sub_c1:
+        st.markdown(f"<span style='font-weight: 800; color: #475569; font-size: 0.95rem;'>Clientes: {total_clientes}</span>", unsafe_allow_html=True)
+    with sub_c2:
+        st.markdown(
+            """
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 15px;">
+                <span style="font-size: 0.8rem; color: #64748B; font-weight: 700; align-self: center;">Exibir como:</span>
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #5A5A5A;">🗂 Cards</span>
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #94A3B8;">📋 Lista</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    clientes_filtrados = st.session_state["clientes_cadastrados"]
+    if busca_cli:
+        clientes_filtrados = [
+            c for c in clientes_filtrados
+            if busca_cli.lower() in c.get("nome", "").lower() or busca_cli in c.get("telefone", "")
         ]
 
-    if "cliente_em_edicao" not in st.session_state:
-        st.session_state["cliente_em_edicao"] = None
-    if "cliente_detalhes" not in st.session_state:
-        st.session_state["cliente_detalhes"] = None
+    num_cols = 3
+    for i in range(0, len(clientes_filtrados), num_cols):
+        cols = st.columns(num_cols, gap="medium")
+        for j in range(num_cols):
+            if i + j < len(clientes_filtrados):
+                c_item = clientes_filtrados[i + j]
+                idx_real = st.session_state["clientes_cadastrados"].index(c_item) if c_item in st.session_state["clientes_cadastrados"] else i + j
+                with cols[j]:
+                    nome_str = c_item.get("nome", "Cliente")
+                    inicial = nome_str[0].upper() if nome_str else "C"
+                    tel_str = c_item.get("telefone") or "Não informado"
+                    email_str = c_item.get("email") or "Não informado"
+                    cad_str = c_item.get("cadastro") or "25/08/2026"
+                    resp_str = c_item.get("responsavel") or "Eu"
 
-    # TELA DE EDIÇÃO DO CLIENTE
-    if st.session_state["cliente_em_edicao"] is not None:
-        idx = st.session_state["cliente_em_edicao"]
-        cli = st.session_state["clientes_cadastrados"][idx]
-        st.markdown(f"### Editando Cliente: {cli['nome']}")
-        with st.form("form_edita_cliente"):
-            novo_nome = st.text_input("Nome do Cliente", value=cli["nome"])
-            novo_resp = st.text_input("Responsável", value=cli.get("responsavel", "Eu"))
-            novo_tel = st.text_input("Telefone / WhatsApp", value=cli.get("telefone", ""))
-            novo_email = st.text_input("E-mail", value=cli.get("email", ""))
-            novo_loc = st.text_input("Local / Endereço", value=cli.get("local", ""))
-            
-            col_salvar, col_cancelar = st.columns(2)
-            with col_salvar:
-                if st.form_submit_button("💾 Salvar Alterações", use_container_width=True):
-                    st.session_state["clientes_cadastrados"][idx] = {
-                        "nome": novo_nome.upper(),
-                        "responsavel": novo_resp,
-                        "telefone": novo_tel,
-                        "email": novo_email,
-                        "cadastro": cli.get("cadastro", datetime.now().strftime("%d/%m/%Y")),
-                        "local": novo_loc
-                    }
-                    st.session_state["cliente_em_edicao"] = None
-                    st.success("Cliente atualizado com sucesso!")
-                    st.rerun()
-            with col_cancelar:
-                if st.form_submit_button("❌ Cancelar", use_container_width=True):
-                    st.session_state["cliente_em_edicao"] = None
-                    st.rerun()
-    else:
-        # EXIBIÇÃO DOS CARDS DE CLIENTES
-        num_cols = 3
-        for i in range(0, len(lista_cli_exibir), num_cols):
-            cols = st.columns(num_cols, gap="medium")
-            for j in range(num_cols):
-                if i + j < len(lista_cli_exibir):
-                    cli = lista_cli_exibir[i + j]
-                    orig_idx = st.session_state["clientes_cadastrados"].index(cli)
-                    with cols[j]:
-                        st.markdown(
-                            f"""
-                            <div class="cli-card">
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div class="cli-avatar">{cli['nome'][:1]}</div>
-                                        <span style="font-size:0.75rem; color:#64748B; font-weight:700;">Cad: {cli.get('cadastro', '')}</span>
+                    st.markdown(
+                        f"""
+                        <div class="cli-card">
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                        <div class="cli-avatar">{inicial}</div>
+                                        <div>
+                                            <div class="cli-nome">{nome_str}</div>
+                                            <div class="cli-resp">👤 {resp_str}</div>
+                                        </div>
                                     </div>
-                                    <div class="cli-nome" style="margin-top: 8px;">{cli['nome']}</div>
-                                    <div class="cli-resp">Resp: {cli.get('responsavel', 'Eu')}</div>
-                                    <div class="cli-info-line">📍 {cli.get('local', 'Não informado')}</div>
-                                    <div class="cli-info-line">📞 {cli.get('telefone', 'Não informado')}</div>
-                                    {f"<div class='cli-info-line'>✉️ {cli.get('email')}</div>" if cli.get('email') else ""}
+                                </div>
+                                <div style="margin-top: 14px;">
+                                    <div class="cli-info-line"><span>📞</span> <span>{tel_str}</span></div>
+                                    <div class="cli-info-line"><span>✉</span> <span>{email_str}</span></div>
+                                    <div class="cli-info-line"><span>📅</span> <span>Cadastro {cad_str}</span></div>
                                 </div>
                             </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-                        b_det, b_edit = st.columns(2)
-                        with b_det:
-                            if st.button("👁 Detalhes", key=f"det_cli_{orig_idx}", use_container_width=True):
-                                st.session_state["cliente_detalhes"] = cli['nome']
-                                st.rerun()
-                        with b_edit:
-                            if st.button("✏️ Editar", key=f"edit_cli_{orig_idx}", use_container_width=True):
-                                st.session_state["cliente_em_edicao"] = orig_idx
-                                st.rerun()
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
-        # MODAL / SEÇÃO DE DETALHES DO CLIENTE SELECIONADO
-        if st.session_state["cliente_detalhes"]:
-            cli_nome_det = st.session_state["cliente_detalhes"]
-            st.markdown("---")
-            st.markdown(f"### Detalhes e Orçamentos de: **{cli_nome_det}**")
-            orcamentos_cliente = [o for o in st.session_state["historico_orcamentos"] if o.get("cliente", "").upper() == cli_nome_det.upper()]
-            if orcamentos_cliente:
-                for orc in orcamentos_cliente:
-                    st.info(f"**Orçamento #{orc.get('id')}** — Projeto: {orc.get('projeto')} | Valor: R$ {orc.get('valor', 0):.2f} | Status: {orc.get('status')} | Data: {orc.get('data')}")
-            else:
-                st.warning("Nenhum orçamento vinculado a este cliente no momento.")
-            
-            if st.button("❌ Fechar Detalhes", key="fechar_det_cli"):
-                st.session_state["cliente_detalhes"] = None
-                st.rerun()
+                    # BOTÕES DE AÇÃO: DETALHES (👁), EDITAR (✏️), EXCLUIR E + ORÇAMENTO
+                    b_det, b_ed = st.columns(2)
+                    with b_det:
+                        if st.button("👁 Detalhes", key=f"det_cli_{idx_real}", use_container_width=True):
+                            st.session_state["cliente_selecionado_idx"] = idx_real
+                            st.session_state["tela_ativa"] = "detalhes_cliente"
+                            st.rerun()
+                    with b_ed:
+                        if st.button("✏️ Editar", key=f"edit_cli_{idx_real}", use_container_width=True):
+                            st.session_state["cliente_selecionado_idx"] = idx_real
+                            st.session_state["tela_ativa"] = "editar_cliente"
+                            st.rerun()
 
-# TELAS SECUNDÁRIAS (FINANCEIRO E CORTE/TÊMPERA)
-elif st.session_state["tela_ativa"] in ["financeiro", "tempera"]:
+                    b_exc, b_orc_cli = st.columns(2)
+                    with b_exc:
+                        if st.button("🗑 Excluir", key=f"exc_cli_{idx_real}", use_container_width=True):
+                            st.session_state["clientes_cadastrados"].pop(idx_real)
+                            st.toast(f"Cliente {nome_str} removido!")
+                            st.rerun()
+                    with b_orc_cli:
+                        if st.button("➕ Orçamento", key=f"add_orc_cli_{idx_real}", use_container_width=True):
+                            st.session_state["orcamento_selecionado"] = {
+                                "cliente": nome_str,
+                                "whatsapp": c_item.get("telefone", ""),
+                                "local": c_item.get("local", "Recife/PE"),
+                                "largura": 3.40,
+                                "altura": 1.10
+                            }
+                            st.session_state["tela_ativa"] = "novo_orcamento"
+                            st.rerun()
+
+# TELA 3.1: DETALHES DO CLIENTE (OLHINHO 👁)
+elif st.session_state["tela_ativa"] == "detalhes_cliente":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
-    if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_outros"):
+    if st.button("⬅ VOLTAR PARA CLIENTES", key="btn_voltar_det_cli"):
+        st.session_state["tela_ativa"] = "gerenciar_clientes"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    c_idx = st.session_state.get("cliente_selecionado_idx", 0)
+    if c_idx < len(st.session_state["clientes_cadastrados"]):
+        c_det = st.session_state["clientes_cadastrados"][c_idx]
+        st.markdown(f"<h3 style='color:#9D201C;'>👁 Ficha do Cliente: {c_det.get('nome')}</h3>", unsafe_allow_html=True)
+        
+        st.markdown(
+            f"""
+            <div style="background: #FFFFFF; padding: 20px; border-radius: 12px; border: 1px solid #CBD5E1; box-shadow: 0 3px 10px rgba(0,0,0,0.04);">
+                <p><b>👤 Nome / Empresa:</b> {c_det.get('nome')}</p>
+                <p><b>📞 Telefone / WhatsApp:</b> {c_det.get('telefone') or 'Não informado'}</p>
+                <p><b>✉ E-mail:</b> {c_det.get('email') or 'Não informado'}</p>
+                <p><b>📍 Endereço / Local:</b> {c_det.get('local') or 'Não informado'}</p>
+                <p><b>📅 Data de Cadastro:</b> {c_det.get('cadastro') or '25/08/2026'}</p>
+                <p><b>👨‍💼 Responsável:</b> {c_det.get('responsavel', 'Eu')}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.warning("Cliente não encontrado.")
+
+# TELA 3.2: EDITAR CLIENTE (LÁPIS ✏️)
+elif st.session_state["tela_ativa"] == "editar_cliente":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ VOLTAR PARA CLIENTES", key="btn_voltar_edit_cli"):
+        st.session_state["tela_ativa"] = "gerenciar_clientes"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    c_idx = st.session_state.get("cliente_selecionado_idx", 0)
+    if c_idx < len(st.session_state["clientes_cadastrados"]):
+        c_ed = st.session_state["clientes_cadastrados"][c_idx]
+        st.markdown(f"<h3 style='color:#9D201C;'>✏️ Editar Cliente: {c_ed.get('nome')}</h3>", unsafe_allow_html=True)
+        
+        with st.form("form_editar_cliente_real"):
+            ne = st.text_input("Nome do Cliente", value=c_ed.get("nome", ""))
+            te = st.text_input("Telefone / WhatsApp", value=c_ed.get("telefone", ""))
+            ee = st.text_input("E-mail", value=c_ed.get("email", ""))
+            le = st.text_input("Endereço / Local", value=c_ed.get("local", ""))
+            
+            if st.form_submit_button("Salvar Alterações", type="primary"):
+                if ne:
+                    st.session_state["clientes_cadastrados"][c_idx] = {
+                        "nome": ne.upper(),
+                        "responsavel": c_ed.get("responsavel", "Eu"),
+                        "telefone": te,
+                        "email": ee,
+                        "cadastro": c_ed.get("cadastro", datetime.now().strftime("%d/%m/%Y")),
+                        "local": le
+                    }
+                    st.success("Dados atualizados com sucesso!")
+                    st.session_state["tela_ativa"] = "gerenciar_clientes"
+                    st.rerun()
+                else:
+                    st.warning("O nome não pode estar vazio.")
+
+# TELA 3.3: CADASTRO DE NOVO CLIENTE
+elif st.session_state["tela_ativa"] == "novo_cliente":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ VOLTAR PARA CLIENTES", key="btn_voltar_new_cli"):
+        st.session_state["tela_ativa"] = "gerenciar_clientes"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("<h3 style='color:#9D201C;'>➕ Cadastrar Novo Cliente</h3>", unsafe_allow_html=True)
+    with st.form("cad_cliente_form"):
+        nc = st.text_input("Nome do Cliente / Empresa")
+        tc = st.text_input("Telefone / WhatsApp")
+        ec = st.text_input("E-mail (opcional)")
+        lc = st.text_input("Endereço / Local da Instalação")
+        if st.form_submit_button("Salvar Cadastro", type="primary"):
+            if nc:
+                st.session_state["clientes_cadastrados"].insert(0, {
+                    "nome": nc.upper(),
+                    "responsavel": "Eu",
+                    "telefone": tc,
+                    "email": ec,
+                    "cadastro": datetime.now().strftime("%d/%m/%Y"),
+                    "local": lc or "Recife/PE"
+                })
+                st.success(f"Cliente {nc} cadastrado com sucesso!")
+                st.session_state["tela_ativa"] = "gerenciar_clientes"
+                st.rerun()
+            else:
+                st.warning("Preencha o nome do cliente.")
+
+# TELA 4: FINANCEIRO
+elif st.session_state["tela_ativa"] == "financeiro":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_fin_tela"):
         st.session_state["tela_ativa"] = "inicio"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.info(f"Módulo **{st.session_state['tela_ativa'].upper()}** em desenvolvimento.")
+    st.markdown("<h3 style='color:#9D201C;'>Gestão Financeira da Obra</h3>", unsafe_allow_html=True)
+    cf1, cf2, cf3 = st.columns(3)
+    cf1.metric("Valor Total Previsto", "R$ 3.787,85")
+    cf2.metric("Custo de Materiais e Instalação", "R$ 2.462,10")
+    cf3.metric("Lucro Líquido Estimado", "R$ 1.325,75")
+
+# TELA 5: TÊMPERA
+elif st.session_state["tela_ativa"] == "tempera":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_temp_tela"):
+        st.session_state["tela_ativa"] = "inicio"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("<h3 style='color:#9D201C;'>Ordem de Corte para a Têmpera</h3>", unsafe_allow_html=True)
+    st.info("Medidas técnicas calculadas com descontos de folga e transpasse.")
+    res_temp = processar_calculo("guarda_corpo_torres", 3.40, 1.10, 380.0, 450.0, 120.0, 450.0, 35.0)
+    tab_cortes = []
+    for pc in res_temp["pecas"]:
+        tab_cortes.append({
+            "Peça / Posição": pc["peca"],
+            "Largura de Corte (m)": f"{pc['largura']:.3f}",
+            "Altura de Corte (m)": f"{pc['altura']:.3f}",
+            "Quantidade": pc["qtd"],
+            "Especificação": res_temp["vidro"],
+        })
+    st.table(tab_cortes)
