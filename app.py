@@ -1,23 +1,22 @@
+import base64
+from datetime import datetime
 import io
 import math
 import os
-import base64
 import urllib.parse
-from datetime import datetime
-import streamlit as st
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.platypus import (
     HRFlowable,
-    KeepTogether,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
     Table,
     TableStyle,
 )
+import streamlit as st
 
 # ==============================================================================
 # CONFIGURAÇÃO DE PÁGINA
@@ -29,7 +28,7 @@ st.set_page_config(
 )
 
 # ==============================================================================
-# ESTILO CSS FORÇADO (OVERRIDE TOTAL DO STREAMLIT)
+# ESTILOS CSS REFORÇADOS
 # ==============================================================================
 st.markdown(
     """
@@ -40,40 +39,45 @@ st.markdown(
             background-attachment: fixed !important;
         }
 
-        /* 2. TIPOGRAFIA GERAL */
         p, span, label, .stMarkdown {
             color: #5A5A5A !important;
             font-weight: 600;
         }
-        
-        h1, h2, h3, h4, h5, h6 {
-            color: #9D201C !important;
-            font-weight: 900 !important;
-        }
 
-        /* 3. FAIXA DO CABEÇALHO COM DETALHES DE ESQUADRIAS */
+        /* 2. FAIXA DO CABEÇALHO COM DESENHO DE ESQUADRIAS */
         .header-box {
             background-color: #FFFFFF;
             border: 1px solid #E2E8F0;
             border-left: 8px solid #D01B13;
             border-radius: 12px;
-            padding: 14px 24px;
+            padding: 16px 28px;
             margin-top: -15px;
             margin-bottom: 22px;
             box-shadow: 0 4px 15px rgba(208, 27, 19, 0.08);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-image: 
-                linear-gradient(90deg, rgba(203, 213, 225, 0.45) 1px, transparent 1px),
-                linear-gradient(rgba(203, 213, 225, 0.45) 1px, transparent 1px);
-            background-size: 26px 26px; /* Malha estrutural de esquadria/vidro */
+            position: relative;
+            overflow: hidden;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        /* Linhas arquitetónicas de esquadrias no fundo da faixa */
+        .header-box::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(90deg, rgba(203, 213, 225, 0.55) 1.5px, transparent 1.5px),
+                linear-gradient(rgba(203, 213, 225, 0.55) 1.5px, transparent 1.5px),
+                linear-gradient(135deg, rgba(226, 232, 240, 0.45) 1px, transparent 1px);
+            background-size: 65px 42px, 65px 42px, 130px 84px;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .header-left, .header-center, .header-right {
+            position: relative;
+            z-index: 2;
         }
 
         .header-center {
@@ -85,7 +89,7 @@ st.markdown(
             color: #9D201C !important;
             font-size: 2.3rem !important;
             font-weight: 900 !important;
-            letter-spacing: 2px !important;
+            letter-spacing: 2.5px !important;
             margin: 0 !important;
             text-transform: uppercase !important;
             font-family: sans-serif !important;
@@ -96,13 +100,12 @@ st.markdown(
             font-size: 0.95rem !important;
             font-weight: 600 !important;
             font-style: italic !important;
-            margin-top: 4px !important;
-            margin-bottom: 0 !important;
+            margin: 0 !important;
             text-align: right !important;
         }
 
-        /* 4. ABAS: TODAS COM FUNDO VERMELHO E FONTE BRANCO GELO */
-        .stTabs [data-baseweb="tab-list"] {
+        /* 3. ABAS: TODAS EM PÍLULA VERMELHA COM TEXTO BRANCO */
+        .stTabs [data-baseweb="tab-list"], [data-testid="stTabs"] [role="tablist"] {
             gap: 12px !important;
             background-color: transparent !important;
             padding: 4px 0px !important;
@@ -110,46 +113,43 @@ st.markdown(
             border: none !important;
         }
         
-        .stTabs [data-baseweb="tab-highlight"] {
+        .stTabs [data-baseweb="tab-highlight"], [data-testid="stTabs"] [data-baseweb="tab-highlight"] {
             display: none !important;
         }
 
-        /* Força botões de abas */
-        .stTabs button, .stTabs [data-baseweb="tab"], button[role="tab"] {
+        /* Todas as abas */
+        [data-testid="stTabs"] button[role="tab"], .stTabs button[data-baseweb="tab"] {
             background-color: #D01B13 !important;
-            color: #FFFFFF !important;
-            font-weight: 800 !important;
-            font-size: 0.95rem !important;
-            padding: 10px 24px !important;
-            border-radius: 25px !important; /* Formato pílula da maquete */
+            border-radius: 25px !important;
             border: none !important;
+            padding: 10px 24px !important;
             box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25) !important;
             opacity: 0.92 !important;
-            transition: all 0.2s ease-in-out !important;
         }
 
-        /* Aba com mouse em cima */
-        .stTabs button:hover, .stTabs [data-baseweb="tab"]:hover, button[role="tab"]:hover {
-            background-color: #B50915 !important;
+        /* Texto de todas as abas */
+        [data-testid="stTabs"] button[role="tab"] p, 
+        [data-testid="stTabs"] button[role="tab"] span, 
+        [data-testid="stTabs"] button[role="tab"] div,
+        .stTabs button[data-baseweb="tab"] p {
             color: #FFFFFF !important;
+            font-weight: 800 !important;
+            font-size: 0.92rem !important;
+        }
+
+        [data-testid="stTabs"] button[role="tab"]:hover, .stTabs button[data-baseweb="tab"]:hover {
+            background-color: #B50915 !important;
             opacity: 1.0 !important;
         }
 
-        /* Aba Ativa Selecionada */
-        .stTabs [aria-selected="true"] {
+        /* Aba ativa */
+        [data-testid="stTabs"] button[role="tab"][aria-selected="true"], .stTabs [aria-selected="true"] {
             background-color: #9D201C !important;
-            color: #FFFFFF !important;
             box-shadow: 0 4px 12px rgba(157, 32, 28, 0.45) !important;
             opacity: 1.0 !important;
         }
 
-        /* Garante que o texto dentro da aba não fique azul ou preto */
-        .stTabs [data-baseweb="tab"] *, button[role="tab"] * {
-            color: #FFFFFF !important;
-            font-weight: 800 !important;
-        }
-
-        /* 5. CARDS BRANCOS E MÉTRICAS */
+        /* 4. CARDS E MÉTRICAS */
         .metric-card {
             background-color: #FFFFFF;
             border: 1px solid #E2E8F0;
@@ -172,7 +172,7 @@ st.markdown(
             margin: 0;
         }
 
-        /* INPUTS E SELECTBOX */
+        /* 5. INPUTS */
         .stTextInput input, .stNumberInput input {
             background-color: #FFFFFF !important;
             color: #9D201C !important;
@@ -180,6 +180,7 @@ st.markdown(
             border-radius: 8px !important;
             border: 1px solid #CBD5E1 !important;
         }
+
         div[data-baseweb="select"] > div {
             background-color: #FFFFFF !important;
             border: 1px solid #CBD5E1 !important;
@@ -190,7 +191,7 @@ st.markdown(
             font-weight: 700 !important;
         }
 
-        /* BOTÕES PRINCIPAIS */
+        /* 6. BOTÕES */
         .stButton > button[kind="primary"] {
             background-color: #D01B13 !important;
             color: #FFFFFF !important;
@@ -220,18 +221,33 @@ st.markdown(
 )
 
 # ==============================================================================
-# CARREGAMENTO DA LOGO (ARQUIVO LOCAL OU EMBUTIDO)
+# CARREGAMENTO DINÂMICO DA LOGO (vdr.jpeg, logo.png ou fallback)
 # ==============================================================================
-logo_html = ""
-if os.path.exists("logo.png"):
-    with open("logo.png", "rb") as f:
-        img_b64 = base64.b64encode(f.read()).decode("utf-8")
-    logo_html = f'<img src="data:image/png;base64,{img_b64}" style="width: 58px; height: 58px; border-radius: 50%; object-fit: contain; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">'
-else:
-    logo_html = '<div style="width: 56px; height: 56px; background-color: #5A5A5A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-weight: 900; font-size: 11px; text-align: center; line-height: 1.1; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">RIO<br/>BRANCO</div>'
+def obter_logo_html():
+    caminhos = ["vdr.jpeg", "vdr.jpg", "logo.png", "logo.jpeg"]
+    for caminho in caminhos:
+        if os.path.exists(caminho):
+            with open(caminho, "rb") as f:
+                img_b64 = base64.b64encode(f.read()).decode("utf-8")
+            mime = "image/jpeg" if caminho.endswith((".jpeg", ".jpg")) else "image/png"
+            return f'<img src="data:{mime};base64,{img_b64}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.18);">'
+    
+    # Fallback estruturado caso o ficheiro ainda esteja a sincronizar
+    return '''
+    <div style="width: 58px; height: 58px; background-color: #5A5A5A; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+        <div style="display: flex; gap: 2px; align-items: flex-end; height: 24px; margin-bottom: 2px;">
+            <div style="width: 7px; height: 18px; background-color: #D01B13; border-radius: 1px;"></div>
+            <div style="width: 7px; height: 24px; background-color: #B50915; border-radius: 1px;"></div>
+            <div style="width: 7px; height: 14px; background-color: #9D201C; border-radius: 1px;"></div>
+        </div>
+        <span style="color: #FFFFFF; font-size: 6.5px; font-weight: 900; letter-spacing: 0.5px; line-height: 1;">RIO BRANCO</span>
+    </div>
+    '''
+
+logo_html = obter_logo_html()
 
 # ==============================================================================
-# CABEÇALHO OFICIAL COM LOGO NO CANTO ESQUERDO E ESQUADRIAS
+# CABEÇALHO OFICIAL COM ESQUADRIAS E LOGO
 # ==============================================================================
 st.markdown(
     f"""
@@ -242,7 +258,7 @@ st.markdown(
         <div class="header-center">
             <h1 class="header-title-text">HOPINESS PROJECT</h1>
         </div>
-        <div>
+        <div class="header-right">
             <p class="header-sub-text">by Felipe Correa</p>
         </div>
     </div>
@@ -251,7 +267,7 @@ st.markdown(
 )
 
 # ==============================================================================
-# PROJETOS PADRÃO E REGRAS TÉCNICAS
+# PROJETOS PADRÃO E CÁLCULOS
 # ==============================================================================
 PROJETOS_PADRAO = {
     "guarda_corpo_torres": {
@@ -342,7 +358,7 @@ def processar_calculo(chave_proj, largura, altura, preco_m2, kit, insumos, mao_o
     }
 
 # ==============================================================================
-# MOTOR DO PDF COM PALETA VIDRAÇARIA RIO BRANCO
+# MOTOR DO PDF
 # ==============================================================================
 def gerar_pdf(dados):
     buf = io.BytesIO()
@@ -410,7 +426,7 @@ def gerar_pdf(dados):
     return val
 
 # ==============================================================================
-# NAVEGAÇÃO E ABAS (ESTILO PÍLULA VERMELHA)
+# ABAS DE NAVEGAÇÃO
 # ==============================================================================
 aba_proj, aba_temp, aba_fin, aba_abnt = st.tabs([
     "📐 Projetos Padrão & Orçamento",
@@ -420,7 +436,7 @@ aba_proj, aba_temp, aba_fin, aba_abnt = st.tabs([
 ])
 
 # ------------------------------------------------------------------------------
-# ABA 1: PROJETOS E ORÇAMENTO (EXATAMENTE COMO NA IMAGEM)
+# ABA 1: PROJETOS & ORÇAMENTO
 # ------------------------------------------------------------------------------
 with aba_proj:
     col_esquerda, col_direita = st.columns([1.15, 1.0], gap="large")
@@ -452,7 +468,6 @@ with aba_proj:
         mo_v = c_mo.number_input("Mão de Obra (R$)", value=450.0, step=10.0)
         mg_v = c_mg.slider("Margem de Lucro (%)", min_value=10.0, max_value=70.0, value=35.0)
 
-    # Executa os cálculos em tempo real
     res = processar_calculo(sel_proj, larg_v, alt_v, pm2, kit_v, ins_v, mo_v, mg_v)
 
     with col_direita:
@@ -490,7 +505,6 @@ with aba_proj:
 
         st.success(f" Lucro Bruto Estimado: **R$ {res['lucro']:.2f}** (Margem: {res['margem']}%)")
 
-    # BOTÕES PRINCIPAIS DE AÇÃO (CENTRALIZADOS)
     st.markdown("<br/>", unsafe_allow_html=True)
     b_col1, b_col2, b_col3 = st.columns([1, 1, 1])
 
@@ -512,7 +526,7 @@ with aba_proj:
         )
 
     with b_col2:
-        msg_whats = f"Olá, {nome_c}! Segue o orçamento da Vidraçaria Rio Branco para o seu projeto de {res['nome']} ({larg_v:.2f}m x {alt_v:.2f}m) - Total: R$ {res['preco_venda']:.2f}. Podemos agendar?"
+        msg_whats = f"Olá, {nome_c}! Segue o orçamento da Vidraçaria Rio Branco para o seu projeto de {res['nome']} ({larg_v:.2f}m x {alt_v:.2f}m) - Total: R$ {res['preco_venda']:.2f}."
         url_zap = f"https://api.whatsapp.com/send?phone=55{zap_c.strip()}&text={urllib.parse.quote(msg_whats)}"
         st.link_button(" Enviar via WhatsApp", url_zap, use_container_width=True)
 
@@ -520,12 +534,10 @@ with aba_proj:
         st.button(" Atualizar Orçamento", type="primary", use_container_width=True)
 
 # ------------------------------------------------------------------------------
-# ABA 2: PEDIDO DE TÊMPERA
+# ABA 2: TÊMPERA
 # ------------------------------------------------------------------------------
 with aba_temp:
     st.markdown("<h3 style='color:#9D201C;'>Ordem de Corte para a Têmpera</h3>", unsafe_allow_html=True)
-    st.write("Medidas nominais calculadas com descontos de folga e transpasse:")
-    
     tab_pecas = []
     for pc in res["pecas"]:
         tab_pecas.append({
@@ -548,7 +560,7 @@ with aba_fin:
     c_fin3.metric("Lucro Líquido Previsto", f"R$ {res['lucro']:.2f}")
 
 # ------------------------------------------------------------------------------
-# ABA 4: NORMAS ABNT
+# ABA 4: ABNT
 # ------------------------------------------------------------------------------
 with aba_abnt:
     st.markdown("<h3 style='color:#9D201C;'>Normas Técnicas da Construção Civil</h3>", unsafe_allow_html=True)
