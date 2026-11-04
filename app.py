@@ -485,3 +485,4 @@ def gerar_pdf_documento(tipo_doc, dados):
         Paragraph(
             "Vidraçaria Rio Branco | Soluções em Vidros Planos & Esquadrias",
             style_
+        )
