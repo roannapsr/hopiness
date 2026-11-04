@@ -37,220 +37,212 @@ if logo_b64:
 else:
     logo_html = '<div style="width:64px;height:64px;background-color:#5A5A5A;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:8.5px;font-weight:900;text-align:center;">RIO<br/>BRANCO</div>'
 
-# 2. CSS Global com degradê real cobrindo toda a tela e abas 100% vermelhas
-css_code = """<style>
-/* DEGRADÊ VERMELHO + BRANCO NA PÁGINA INTEIRA */
-html, body, [data-testid="stAppViewContainer"], .stApp, section.main {
-background: linear-gradient(160deg, #FADBD8 0%, #FFFFFF 35%, #FDE8E7 70%, #FFFFFF 100%) !important;
-background-attachment: fixed !important;
-}
+# 2. CSS Global com degradê e estilização dos cards da página inicial
+css_rules = [
+    "<style>",
+    "html, body, [data-testid='stAppViewContainer'], .stApp, section.main {",
+    "background: linear-gradient(160deg, #FADBD8 0%, #FFFFFF 35%, #FDE8E7 70%, #FFFFFF 100%) !important;",
+    "background-attachment: fixed !important;",
+    "}",
+    "p, span, label, .stMarkdown {",
+    "color: #5A5A5A !important;",
+    "font-weight: 600;",
+    "}",
+    "/* CARDS DO MENU PRINCIPAL (ESTILO ERP VIDRAÇARIA) */",
+    ".menu-card-container {",
+    "background-color: #FFFFFF;",
+    "border-radius: 12px;",
+    "border: 1px solid #CBD5E1;",
+    "box-shadow: 0 4px 15px rgba(0,0,0,0.06);",
+    "margin-bottom: 20px;",
+    "overflow: visible;",
+    "position: relative;",
+    "margin-top: 25px;",
+    "}",
+    ".menu-card-header {",
+    "background-color: #D01B13;",
+    "color: #FFFFFF !important;",
+    "padding: 16px 20px;",
+    "border-top-left-radius: 11px;",
+    "border-top-right-radius: 11px;",
+    "display: flex;",
+    "align-items: center;",
+    "justify-content: center;",
+    "position: relative;",
+    "min-height: 54px;",
+    "}",
+    ".menu-card-icon-badge {",
+    "position: absolute;",
+    "top: -24px;",
+    "left: 20px;",
+    "width: 48px;",
+    "height: 48px;",
+    "border-radius: 50%;",
+    "background-color: #9D201C;",
+    "color: #FFFFFF;",
+    "display: flex;",
+    "align-items: center;",
+    "justify-content: center;",
+    "font-size: 1.3rem;",
+    "box-shadow: 0 4px 8px rgba(0,0,0,0.18);",
+    "border: 3px solid #FFFFFF;",
+    "}",
+    ".menu-card-title {",
+    "color: #FFFFFF !important;",
+    "font-size: 1.25rem;",
+    "font-weight: 800;",
+    "margin: 0;",
+    "text-align: center;",
+    "letter-spacing: 0.5px;",
+    "}",
+    ".menu-card-body {",
+    "padding: 18px 16px 14px 16px;",
+    "background-color: #FFFFFF;",
+    "border-bottom-left-radius: 11px;",
+    "border-bottom-right-radius: 11px;",
+    "}",
+    "/* BOTÕES PÍLULA DENTRO DOS CARDS */",
+    ".card-action-btn button {",
+    "border-radius: 20px !important;",
+    "padding: 6px 14px !important;",
+    "font-weight: 800 !important;",
+    "border: 2px solid #D01B13 !important;",
+    "background-color: #FFFFFF !important;",
+    "color: #D01B13 !important;",
+    "box-shadow: 0 2px 5px rgba(208, 27, 19, 0.1) !important;",
+    "width: 100% !important;",
+    "}",
+    ".card-action-btn button * {",
+    "color: #D01B13 !important;",
+    "font-weight: 800 !important;",
+    "font-size: 0.9rem !important;",
+    "}",
+    ".card-action-btn button:hover {",
+    "background-color: #D01B13 !important;",
+    "color: #FFFFFF !important;",
+    "}",
+    ".card-action-btn button:hover * {",
+    "color: #FFFFFF !important;",
+    "}",
+    "/* BOTÃO VOLTAR */",
+    ".btn-voltar button {",
+    "background-color: #5A5A5A !important;",
+    "color: #FFFFFF !important;",
+    "border-radius: 20px !important;",
+    "font-weight: 800 !important;",
+    "border: none !important;",
+    "padding: 8px 22px !important;",
+    "margin-bottom: 15px !important;",
+    "}",
+    ".btn-voltar button * {",
+    "color: #FFFFFF !important;",
+    "font-weight: 800 !important;",
+    "}",
+    "/* CARDS DE MÉTRICAS */",
+    ".metric-card {",
+    "background-color: #FFFFFF;",
+    "border: 1px solid #E2E8F0;",
+    "border-radius: 12px;",
+    "padding: 18px 15px;",
+    "text-align: center;",
+    "box-shadow: 0 3px 10px rgba(0,0,0,0.04);",
+    "margin-bottom: 15px;",
+    "}",
+    ".metric-card-label {",
+    "color: #5A5A5A;",
+    "font-size: 0.92rem;",
+    "font-weight: 700;",
+    "margin-bottom: 6px;",
+    "}",
+    ".metric-card-val {",
+    "color: #9D201C;",
+    "font-size: 1.85rem;",
+    "font-weight: 900;",
+    "margin: 0;",
+    "}",
+    "/* INPUTS */",
+    ".stTextInput input, .stNumberInput input {",
+    "background-color: #FFFFFF !important;",
+    "color: #9D201C !important;",
+    "font-weight: 800 !important;",
+    "border-radius: 8px !important;",
+    "border: 1px solid #CBD5E1 !important;",
+    "}",
+    "div[data-baseweb='select'] > div {",
+    "background-color: #FFFFFF !important;",
+    "border: 1px solid #CBD5E1 !important;",
+    "border-radius: 8px !important;",
+    "}",
+    "div[data-baseweb='select'] * {",
+    "color: #0D253A !important;",
+    "font-weight: 700 !important;",
+    "}",
+    "/* BOTÕES DE AÇÃO INFERIORES */",
+    ".btn-gerar button {",
+    "background-color: #D01B13 !important;",
+    "color: #FFFFFF !important;",
+    "border-radius: 25px !important;",
+    "font-weight: 800 !important;",
+    "padding: 12px 28px !important;",
+    "border: none !important;",
+    "box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;",
+    "width: 100% !important;",
+    "}",
+    ".btn-gerar button * {",
+    "color: #FFFFFF !important;",
+    "font-weight: 800 !important;",
+    "}",
+    ".btn-pdf button {",
+    "background-color: #2D3748 !important;",
+    "color: #FFFFFF !important;",
+    "border-radius: 25px !important;",
+    "font-weight: 800 !important;",
+    "padding: 12px 28px !important;",
+    "border: none !important;",
+    "width: 100% !important;",
+    "}",
+    ".btn-pdf button * {",
+    "color: #FFFFFF !important;",
+    "font-weight: 800 !important;",
+    "}",
+    "</style>",
+]
 
-p, span, label, .stMarkdown {
-color: #5A5A5A !important;
-font-weight: 600;
-}
+st.markdown("\n".join(css_rules), unsafe_allow_html=True)
 
-/* TODAS AS 4 ABAS COM FUNDO VERMELHO E TEXTO BRANCO */
-div[data-testid="stHorizontalBlock"] .tab-nav-btn button {
-background-color: #D01B13 !important;
-border-radius: 25px !important;
-padding: 10px 14px !important;
-border: none !important;
-width: 100% !important;
-box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25) !important;
-}
+# 3. Cabeçalho Oficial
+cabecalho_lines = [
+    '<div style="position:relative;background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border:1px solid rgba(226,232,240,0.9);border-left:8px solid #D01B13;border-radius:12px;padding:16px 24px;margin-top:-15px;margin-bottom:22px;box-shadow:0 4px 15px rgba(208,27,19,0.08);min-height:96px;">',
+    '<div style="display:flex;align-items:center;justify-content:space-between;width:100%;">',
+    f'<div style="flex-shrink:0;">{logo_html}</div>',
+    '<div style="text-align:center;flex-grow:1;">',
+    '<span style="color:#9D201C !important;-webkit-text-fill-color:#9D201C !important;font-size:2.35rem;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;font-family:sans-serif;display:inline-block;">HOPINESS PROJECT</span>',
+    '</div>',
+    '<div style="flex-shrink:0;">',
+    '<span style="color:#5A5A5A;font-size:0.95rem;font-weight:600;font-style:italic;">by Felipe Correa</span>',
+    '</div>',
+    '</div>',
+    '</div>',
+]
 
-div[data-testid="stHorizontalBlock"] .tab-nav-btn button[kind="primary"] {
-background-color: #9D201C !important;
-box-shadow: 0 4px 12px rgba(157, 32, 28, 0.5) !important;
-}
+st.markdown("\n".join(cabecalho_lines), unsafe_allow_html=True)
 
-div[data-testid="stHorizontalBlock"] .tab-nav-btn button *,
-div[data-testid="stHorizontalBlock"] .tab-nav-btn button p,
-div[data-testid="stHorizontalBlock"] .tab-nav-btn button span {
-color: #FFFFFF !important;
-fill: #FFFFFF !important;
--webkit-text-fill-color: #FFFFFF !important;
-font-weight: 800 !important;
-font-size: 0.93rem !important;
-}
+# 4. Estado da Navegação e Dados em Memória
+if "tela_ativa" not in st.session_state:
+    st.session_state["tela_ativa"] = "inicio"
 
-div[data-testid="stHorizontalBlock"] .tab-nav-btn button:hover {
-background-color: #B50915 !important;
-}
+if "historico_orcamentos" not in st.session_state:
+    st.session_state["historico_orcamentos"] = [
+        {"cliente": "Mariana Albuquerque", "projeto": "Guarda-Corpo / Sacada (NBR 14718)", "vao": "3.40m x 1.10m", "valor": "R$ 3.787,85", "data": "03/11/2026"},
+        {"cliente": "Carlos Silva", "projeto": "Box Frontal Padrão (1 Fixo + 1 Móvel)", "vao": "1.20m x 1.90m", "valor": "R$ 1.250,00", "data": "02/11/2026"},
+    ]
 
-/* CARDS DE MÉTRICAS */
-.metric-card {
-background-color: #FFFFFF;
-border: 1px solid #E2E8F0;
-border-radius: 12px;
-padding: 18px 15px;
-text-align: center;
-box-shadow: 0 3px 10px rgba(0,0,0,0.04);
-margin-bottom: 15px;
-}
-.metric-card-label {
-color: #5A5A5A;
-font-size: 0.92rem;
-font-weight: 700;
-margin-bottom: 6px;
-}
-.metric-card-val {
-color: #9D201C;
-font-size: 1.85rem;
-font-weight: 900;
-margin: 0;
-}
-
-/* INPUTS */
-.stTextInput input, .stNumberInput input {
-background-color: #FFFFFF !important;
-color: #9D201C !important;
-font-weight: 800 !important;
-border-radius: 8px !important;
-border: 1px solid #CBD5E1 !important;
-}
-div[data-baseweb="select"] > div {
-background-color: #FFFFFF !important;
-border: 1px solid #CBD5E1 !important;
-border-radius: 8px !important;
-}
-div[data-baseweb="select"] * {
-color: #0D253A !important;
-font-weight: 700 !important;
-}
-
-/* BOTÕES INFERIORES */
-.btn-gerar button {
-background-color: #D01B13 !important;
-color: #FFFFFF !important;
-border-radius: 25px !important;
-font-weight: 800 !important;
-padding: 12px 28px !important;
-border: none !important;
-box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;
-width: 100% !important;
-}
-.btn-gerar button * {
-color: #FFFFFF !important;
-font-weight: 800 !important;
-}
-.btn-pdf button {
-background-color: #2D3748 !important;
-color: #FFFFFF !important;
-border-radius: 25px !important;
-font-weight: 800 !important;
-padding: 12px 28px !important;
-border: none !important;
-width: 100% !important;
-}
-.btn-pdf button * {
-color: #FFFFFF !important;
-font-weight: 800 !important;
-}
-</style>"""
-
-clean_css = "\n".join([l.strip() for l in css_code.splitlines() if l.strip()])
-if hasattr(st, "html"):
-    st.html(clean_css)
-else:
-    st.markdown(clean_css, unsafe_allow_html=True)
-
-# 3. Cabeçalho com o degradê atravessando a faixa, esquadrias nítidas em perspectiva e blur suave
-cabecalho_raw = f"""<div style="position:relative;background:rgba(255,255,255,0.45);backdrop-filter:blur(6px);border:1px solid rgba(226,232,240,0.9);border-left:8px solid #D01B13;border-radius:12px;padding:14px 24px;margin-top:-15px;margin-bottom:22px;box-shadow:0 4px 15px rgba(208,27,19,0.08);overflow:hidden;min-height:98px;">
-<svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1000 100">
-<!-- Fundo com blur e névoa avermelhada atrás do título -->
-<defs>
-<radialGradient id="blurGlow" cx="50%" cy="50%" r="40%">
-<stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
-<stop offset="60%" stop-color="#FDE8E7" stop-opacity="0.8"/>
-<stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-</radialGradient>
-</defs>
-<ellipse cx="500" cy="50" rx="280" ry="48" fill="url(#blurGlow)"/>
-
-<!-- Esquadrias em Perspectiva Arquitetônica (Lado Esquerdo) -->
-<g stroke="#64748B" stroke-width="1.3" opacity="0.75">
-<line x1="0" y1="10" x2="360" y2="40"/>
-<line x1="0" y1="30" x2="360" y2="46"/>
-<line x1="0" y1="50" x2="360" y2="50"/>
-<line x1="0" y1="70" x2="360" y2="54"/>
-<line x1="0" y1="90" x2="360" y2="60"/>
-
-<line x1="30" y1="0" x2="30" y2="100" stroke-width="2.2" stroke="#475569"/>
-<line x1="85" y1="0" x2="85" y2="100" stroke-width="1.8"/>
-<line x1="145" y1="0" x2="145" y2="100" stroke-width="1.5"/>
-<line x1="210" y1="0" x2="210" y2="100" stroke-width="1.3"/>
-<line x1="280" y1="0" x2="280" y2="100" stroke-width="1.1"/>
-<line x1="350" y1="0" x2="350" y2="100" stroke-width="0.9"/>
-
-<!-- Esquadrias em Perspectiva Arquitetônica (Lado Direito) -->
-<line x1="1000" y1="10" x2="640" y2="40"/>
-<line x1="1000" y1="30" x2="640" y2="46"/>
-<line x1="1000" y1="50" x2="640" y2="50"/>
-<line x1="1000" y1="70" x2="640" y2="54"/>
-<line x1="1000" y1="90" x2="640" y2="60"/>
-
-<line x1="970" y1="0" x2="970" y2="100" stroke-width="2.2" stroke="#475569"/>
-<line x1="915" y1="0" x2="915" y2="100" stroke-width="1.8"/>
-<line x1="855" y1="0" x2="855" y2="100" stroke-width="1.5"/>
-<line x1="790" y1="0" x2="790" y2="100" stroke-width="1.3"/>
-<line x1="720" y1="0" x2="720" y2="100" stroke-width="1.1"/>
-<line x1="650" y1="0" x2="650" y2="100" stroke-width="0.9"/>
-</g>
-</svg>
-<div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;width:100%;">
-<div style="flex-shrink:0;">{logo_html}</div>
-<div style="text-align:center;flex-grow:1;">
-<span style="color:#9D201C !important;-webkit-text-fill-color:#9D201C !important;font-size:2.35rem;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;font-family:'Segoe UI',sans-serif;display:inline-block;">HOPINESS PROJECT</span>
-</div>
-<div style="flex-shrink:0;">
-<span style="color:#5A5A5A;font-size:0.95rem;font-weight:600;font-style:italic;">by Felipe Correa</span>
-</div>
-</div>
-</div>"""
-
-clean_cabecalho = "\n".join([l.strip() for l in cabecalho_raw.splitlines() if l.strip()])
-if hasattr(st, "html"):
-    st.html(clean_cabecalho)
-else:
-    st.markdown(clean_cabecalho, unsafe_allow_html=True)
-
-# 4. Navegação por abas em pílulas vermelhas
-if "aba_ativa" not in st.session_state:
-    st.session_state["aba_ativa"] = "projetos"
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.markdown('<div class="tab-nav-btn">', unsafe_allow_html=True)
-    if st.button("📐 Projetos Padrão & Orçamento", type="primary" if st.session_state["aba_ativa"] == "projetos" else "secondary", use_container_width=True):
-        st.session_state["aba_ativa"] = "projetos"
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col2:
-    st.markdown('<div class="tab-nav-btn">', unsafe_allow_html=True)
-    if st.button("🏭 Pedido de Têmpera (Corte)", type="primary" if st.session_state["aba_ativa"] == "tempera" else "secondary", use_container_width=True):
-        st.session_state["aba_ativa"] = "tempera"
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col3:
-    st.markdown('<div class="tab-nav-btn">', unsafe_allow_html=True)
-    if st.button("💵 Financeiro da Obra", type="primary" if st.session_state["aba_ativa"] == "financeiro" else "secondary", use_container_width=True):
-        st.session_state["aba_ativa"] = "financeiro"
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col4:
-    st.markdown('<div class="tab-nav-btn">', unsafe_allow_html=True)
-    if st.button("📋 Catálogo Técnico ABNT", type="primary" if st.session_state["aba_ativa"] == "abnt" else "secondary", use_container_width=True):
-        st.session_state["aba_ativa"] = "abnt"
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
+if "clientes_cadastrados" not in st.session_state:
+    st.session_state["clientes_cadastrados"] = [
+        {"Nome": "Mariana Albuquerque", "WhatsApp": "(81) 99123-4567", "Local": "Boa Viagem - Recife/PE"},
+        {"Nome": "Carlos Eduardo Silva", "WhatsApp": "(81) 98877-6655", "Local": "Janga - Paulista/PE"},
+        {"Nome": "Juliana Tavares", "WhatsApp": "(81) 97766-5544", "Local": "Casa Forte - Recife/PE"},
+    ]
 
 # 5. Banco de dados técnico e cálculos
 PROJETOS_PADRAO = {
@@ -398,8 +390,110 @@ def gerar_pdf(dados):
     buf.close()
     return val
 
-# 6. Conteúdo de cada tela
-if st.session_state["aba_ativa"] == "projetos":
+# ==============================================================================
+# CONTROLE DE TELAS
+# ==============================================================================
+
+# TELA INICIAL (MENU DE CARDS CONFORME A SUA IMAGEM DE REFERÊNCIA)
+if st.session_state["tela_ativa"] == "inicio":
+    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+    c_m1, c_m2, c_m3 = st.columns(3, gap="large")
+
+    # CARD 1: ORÇAMENTOS
+    with c_m1:
+        st.markdown(
+            """
+            <div class="menu-card-container">
+                <div class="menu-card-header">
+                    <div class="menu-card-icon-badge">💬$</div>
+                    <div class="menu-card-title">Orçamentos</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        b_c1, b_c2 = st.columns(2)
+        with b_c1:
+            st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
+            if st.button("➕ Adicionar", key="card_btn_add_orc", use_container_width=True):
+                st.session_state["tela_ativa"] = "novo_orcamento"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        with b_c2:
+            st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
+            if st.button("📋 Listar", key="card_btn_list_orc", use_container_width=True):
+                st.session_state["tela_ativa"] = "listar_orcamentos"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    # CARD 2: CLIENTES
+    with c_m2:
+        st.markdown(
+            """
+            <div class="menu-card-container">
+                <div class="menu-card-header" style="background-color: #9D201C;">
+                    <div class="menu-card-icon-badge" style="background-color: #D01B13;">👤</div>
+                    <div class="menu-card-title">Clientes</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        b_cl1, b_cl2 = st.columns(2)
+        with b_cl1:
+            st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
+            if st.button("➕ Adicionar", key="card_btn_add_cli", use_container_width=True):
+                st.session_state["tela_ativa"] = "novo_cliente"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        with b_cl2:
+            st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
+            if st.button("📋 Listar", key="card_btn_list_cli", use_container_width=True):
+                st.session_state["tela_ativa"] = "listar_clientes"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    # CARD 3: FINANCEIRO
+    with c_m3:
+        st.markdown(
+            """
+            <div class="menu-card-container">
+                <div class="menu-card-header">
+                    <div class="menu-card-icon-badge">📑$</div>
+                    <div class="menu-card-title">Financeiro</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        b_f1, b_f2, b_f3 = st.columns(3)
+        with b_f1:
+            st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
+            if st.button("➕ Caixa", key="card_btn_add_fin", use_container_width=True):
+                st.session_state["tela_ativa"] = "financeiro"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        with b_f2:
+            st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
+            if st.button("🏭 Corte", key="card_btn_temp", use_container_width=True):
+                st.session_state["tela_ativa"] = "tempera"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        with b_f3:
+            st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
+            if st.button("📋 Lista", key="card_btn_list_fin", use_container_width=True):
+                st.session_state["tela_ativa"] = "financeiro"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+# TELA 1.1: FORMULÁRIO DE ORÇAMENTO
+elif st.session_state["tela_ativa"] == "novo_orcamento":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ Voltar ao Início", key="btn_voltar_orc"):
+        st.session_state["tela_ativa"] = "inicio"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
     col_esq, col_dir = st.columns([1.1, 1.0], gap="large")
 
     with col_esq:
@@ -435,32 +529,31 @@ if st.session_state["aba_ativa"] == "projetos":
         m_c1, m_c2 = st.columns(2)
         with m_c1:
             st.markdown(
-                f'''<div class="metric-card">
+                f"""<div class="metric-card">
 <div class="metric-card-label">Área Real (Líquida):</div>
 <div class="metric-card-val">{res['area_liq']:.2f} m²</div>
 </div>
 <div class="metric-card">
 <div class="metric-card-label">Custo Direto Total:</div>
 <div class="metric-card-val">R$ {res['custo_total']:.2f}</div>
-</div>''',
+</div>""",
                 unsafe_allow_html=True,
             )
         with m_c2:
             st.markdown(
-                f'''<div class="metric-card">
+                f"""<div class="metric-card">
 <div class="metric-card-label">Área Faturada (+Folga):</div>
 <div class="metric-card-val">{res['area_fat']:.2f} m²</div>
 </div>
 <div class="metric-card">
 <div class="metric-card-label">Preço de Venda Sugerido:</div>
 <div class="metric-card-val">R$ {res['preco_venda']:.2f}</div>
-</div>''',
+</div>""",
                 unsafe_allow_html=True,
             )
 
         st.success(f"Lucro Bruto Estimado: **R$ {res['lucro']:.2f}** (Margem: {res['margem']}%)")
 
-    # Botões inferiores redondos
     st.markdown('<br/>', unsafe_allow_html=True)
     b_esp1, b_c1, b_c2, b_esp2 = st.columns([1, 1.3, 1.3, 1])
 
@@ -473,8 +566,15 @@ if st.session_state["aba_ativa"] == "projetos":
 
     with b_c1:
         st.markdown('<div class="btn-gerar">', unsafe_allow_html=True)
-        if st.button("📄 Gerar Orçamento", use_container_width=True):
-            st.toast("Orçamento recalculado com sucesso!")
+        if st.button("💾 Salvar Orçamento", use_container_width=True):
+            st.session_state["historico_orcamentos"].append({
+                "cliente": nome_c,
+                "projeto": res["nome"],
+                "vao": f"{larg_v:.2f}m x {alt_v:.2f}m",
+                "valor": f"R$ {res['preco_venda']:.2f}",
+                "data": datetime.now().strftime("%d/%m/%Y"),
+            })
+            st.toast("Orçamento registrado no histórico!")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with b_c2:
@@ -489,7 +589,72 @@ if st.session_state["aba_ativa"] == "projetos":
         )
         st.markdown('</div>', unsafe_allow_html=True)
 
-elif st.session_state["aba_ativa"] == "tempera":
+# TELA 1.2: HISTÓRICO DE ORÇAMENTOS
+elif st.session_state["tela_ativa"] == "listar_orcamentos":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ Voltar ao Início", key="btn_voltar_list_orc"):
+        st.session_state["tela_ativa"] = "inicio"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("<h3 style='color:#9D201C;'>📋 Orçamentos Registrados</h3>", unsafe_allow_html=True)
+    st.table(st.session_state["historico_orcamentos"])
+
+# TELA 2.1: NOVO CLIENTE
+elif st.session_state["tela_ativa"] == "novo_cliente":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ Voltar ao Início", key="btn_voltar_new_cli"):
+        st.session_state["tela_ativa"] = "inicio"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("<h3 style='color:#9D201C;'>➕ Cadastro de Cliente</h3>", unsafe_allow_html=True)
+    with st.form("cad_cliente_form"):
+        nc = st.text_input("Nome do Cliente")
+        tc = st.text_input("Telefone / WhatsApp")
+        lc = st.text_input("Endereço / Bairro")
+        if st.form_submit_button("Salvar Cadastro", type="primary"):
+            if nc:
+                st.session_state["clientes_cadastrados"].append({
+                    "Nome": nc, "WhatsApp": tc, "Local": lc
+                })
+                st.success(f"Cliente {nc} cadastrado com sucesso!")
+            else:
+                st.warning("Preencha o nome do cliente.")
+
+# TELA 2.2: LISTA DE CLIENTES
+elif st.session_state["tela_ativa"] == "listar_clientes":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ Voltar ao Início", key="btn_voltar_lista_cli"):
+        st.session_state["tela_ativa"] = "inicio"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("<h3 style='color:#9D201C;'>👥 Clientes Cadastrados</h3>", unsafe_allow_html=True)
+    st.table(st.session_state["clientes_cadastrados"])
+
+# TELA 3: FINANCEIRO
+elif st.session_state["tela_ativa"] == "financeiro":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ Voltar ao Início", key="btn_voltar_fin_tela"):
+        st.session_state["tela_ativa"] = "inicio"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("<h3 style='color:#9D201C;'>Gestão Financeira da Obra</h3>", unsafe_allow_html=True)
+    cf1, cf2, cf3 = st.columns(3)
+    cf1.metric("Valor Total Previsto", "R$ 3.787,85")
+    cf2.metric("Custo de Materiais e Instalação", "R$ 2.462,10")
+    cf3.metric("Lucro Líquido Estimado", "R$ 1.325,75")
+
+# TELA 4: TÊMPERA
+elif st.session_state["tela_ativa"] == "tempera":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ Voltar ao Início", key="btn_voltar_temp_tela"):
+        st.session_state["tela_ativa"] = "inicio"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
     st.markdown("<h3 style='color:#9D201C;'>Ordem de Corte para a Têmpera</h3>", unsafe_allow_html=True)
     st.info("Medidas técnicas calculadas com descontos de folga e transpasse.")
     res_temp = processar_calculo("guarda_corpo_torres", 3.40, 1.10, 380.0, 450.0, 120.0, 450.0, 35.0)
@@ -503,20 +668,3 @@ elif st.session_state["aba_ativa"] == "tempera":
             "Especificação": res_temp["vidro"],
         })
     st.table(tab_cortes)
-
-elif st.session_state["aba_ativa"] == "financeiro":
-    st.markdown("<h3 style='color:#9D201C;'>Gestão Financeira da Obra</h3>", unsafe_allow_html=True)
-    cf1, cf2, cf3 = st.columns(3)
-    cf1.metric("Valor Total Previsto", "R$ 3.787,85")
-    cf2.metric("Custo de Materiais e Instalação", "R$ 2.462,10")
-    cf3.metric("Lucro Líquido Estimado", "R$ 1.325,75")
-
-elif st.session_state["aba_ativa"] == "abnt":
-    st.markdown("<h3 style='color:#9D201C;'>Normas Técnicas da Construção Civil</h3>", unsafe_allow_html=True)
-    st.markdown(
-        """
-        - **ABNT NBR 14207 (Boxes de Banheiro):** Exige vidro de segurança (temperado 8mm ou laminado).
-        - **ABNT NBR 14718 (Guarda-Corpos e Sacadas):** Obrigatório vidro laminado ou laminado-temperado. Proibido vidro temperado comum sem laminação.
-        - **ABNT NBR 7199 (Vidros na Construção Civil):** Vidros abaixo de 1,10m do piso acabado devem ser vidros de segurança.
-        """
-    )
