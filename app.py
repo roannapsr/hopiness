@@ -37,197 +37,199 @@ if logo_b64:
 else:
     logo_html = '<div style="width:64px;height:64px;background-color:#5A5A5A;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:8.5px;font-weight:900;text-align:center;">RIO<br/>BRANCO</div>'
 
-# 2. CSS Global com degradê e estilização dos cards da página inicial
-css_rules = [
-    "<style>",
-    "html, body, [data-testid='stAppViewContainer'], .stApp, section.main {",
-    "background: linear-gradient(160deg, #FADBD8 0%, #FFFFFF 35%, #FDE8E7 70%, #FFFFFF 100%) !important;",
-    "background-attachment: fixed !important;",
-    "}",
-    "p, span, label, .stMarkdown {",
-    "color: #5A5A5A !important;",
-    "font-weight: 600;",
-    "}",
-    "/* CARDS DO MENU PRINCIPAL (ESTILO ERP VIDRAÇARIA) */",
-    ".menu-card-container {",
-    "background-color: #FFFFFF;",
-    "border-radius: 12px;",
-    "border: 1px solid #CBD5E1;",
-    "box-shadow: 0 4px 15px rgba(0,0,0,0.06);",
-    "margin-bottom: 20px;",
-    "overflow: visible;",
-    "position: relative;",
-    "margin-top: 25px;",
-    "}",
-    ".menu-card-header {",
-    "background-color: #D01B13;",
-    "color: #FFFFFF !important;",
-    "padding: 16px 20px;",
-    "border-top-left-radius: 11px;",
-    "border-top-right-radius: 11px;",
-    "display: flex;",
-    "align-items: center;",
-    "justify-content: center;",
-    "position: relative;",
-    "min-height: 54px;",
-    "}",
-    ".menu-card-icon-badge {",
-    "position: absolute;",
-    "top: -24px;",
-    "left: 20px;",
-    "width: 48px;",
-    "height: 48px;",
-    "border-radius: 50%;",
-    "background-color: #9D201C;",
-    "color: #FFFFFF;",
-    "display: flex;",
-    "align-items: center;",
-    "justify-content: center;",
-    "font-size: 1.3rem;",
-    "box-shadow: 0 4px 8px rgba(0,0,0,0.18);",
-    "border: 3px solid #FFFFFF;",
-    "}",
-    ".menu-card-title {",
-    "color: #FFFFFF !important;",
-    "font-size: 1.25rem;",
-    "font-weight: 800;",
-    "margin: 0;",
-    "text-align: center;",
-    "letter-spacing: 0.5px;",
-    "}",
-    ".menu-card-body {",
-    "padding: 18px 16px 14px 16px;",
-    "background-color: #FFFFFF;",
-    "border-bottom-left-radius: 11px;",
-    "border-bottom-right-radius: 11px;",
-    "}",
-    "/* BOTÕES PÍLULA DENTRO DOS CARDS */",
-    ".card-action-btn button {",
-    "border-radius: 20px !important;",
-    "padding: 6px 14px !important;",
-    "font-weight: 800 !important;",
-    "border: 2px solid #D01B13 !important;",
-    "background-color: #FFFFFF !important;",
-    "color: #D01B13 !important;",
-    "box-shadow: 0 2px 5px rgba(208, 27, 19, 0.1) !important;",
-    "width: 100% !important;",
-    "}",
-    ".card-action-btn button * {",
-    "color: #D01B13 !important;",
-    "font-weight: 800 !important;",
-    "font-size: 0.9rem !important;",
-    "}",
-    ".card-action-btn button:hover {",
-    "background-color: #D01B13 !important;",
-    "color: #FFFFFF !important;",
-    "}",
-    ".card-action-btn button:hover * {",
-    "color: #FFFFFF !important;",
-    "}",
-    "/* BOTÃO VOLTAR */",
-    ".btn-voltar button {",
-    "background-color: #5A5A5A !important;",
-    "color: #FFFFFF !important;",
-    "border-radius: 20px !important;",
-    "font-weight: 800 !important;",
-    "border: none !important;",
-    "padding: 8px 22px !important;",
-    "margin-bottom: 15px !important;",
-    "}",
-    ".btn-voltar button * {",
-    "color: #FFFFFF !important;",
-    "font-weight: 800 !important;",
-    "}",
-    "/* CARDS DE MÉTRICAS */",
-    ".metric-card {",
-    "background-color: #FFFFFF;",
-    "border: 1px solid #E2E8F0;",
-    "border-radius: 12px;",
-    "padding: 18px 15px;",
-    "text-align: center;",
-    "box-shadow: 0 3px 10px rgba(0,0,0,0.04);",
-    "margin-bottom: 15px;",
-    "}",
-    ".metric-card-label {",
-    "color: #5A5A5A;",
-    "font-size: 0.92rem;",
-    "font-weight: 700;",
-    "margin-bottom: 6px;",
-    "}",
-    ".metric-card-val {",
-    "color: #9D201C;",
-    "font-size: 1.85rem;",
-    "font-weight: 900;",
-    "margin: 0;",
-    "}",
-    "/* INPUTS */",
-    ".stTextInput input, .stNumberInput input {",
-    "background-color: #FFFFFF !important;",
-    "color: #9D201C !important;",
-    "font-weight: 800 !important;",
-    "border-radius: 8px !important;",
-    "border: 1px solid #CBD5E1 !important;",
-    "}",
-    "div[data-baseweb='select'] > div {",
-    "background-color: #FFFFFF !important;",
-    "border: 1px solid #CBD5E1 !important;",
-    "border-radius: 8px !important;",
-    "}",
-    "div[data-baseweb='select'] * {",
-    "color: #0D253A !important;",
-    "font-weight: 700 !important;",
-    "}",
-    "/* BOTÕES DE AÇÃO INFERIORES */",
-    ".btn-gerar button {",
-    "background-color: #D01B13 !important;",
-    "color: #FFFFFF !important;",
-    "border-radius: 25px !important;",
-    "font-weight: 800 !important;",
-    "padding: 12px 28px !important;",
-    "border: none !important;",
-    "box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;",
-    "width: 100% !important;",
-    "}",
-    ".btn-gerar button * {",
-    "color: #FFFFFF !important;",
-    "font-weight: 800 !important;",
-    "}",
-    ".btn-pdf button {",
-    "background-color: #2D3748 !important;",
-    "color: #FFFFFF !important;",
-    "border-radius: 25px !important;",
-    "font-weight: 800 !important;",
-    "padding: 12px 28px !important;",
-    "border: none !important;",
-    "width: 100% !important;",
-    "}",
-    ".btn-pdf button * {",
-    "color: #FFFFFF !important;",
-    "font-weight: 800 !important;",
-    "}",
-    "</style>",
-]
+# 2. CSS Global com degradê real cobrindo toda a tela e abas 100% vermelhas
+css_code = """<style>
+/* DEGRADÊ VERMELHO + BRANCO NA PÁGINA INTEIRA */
+html, body, [data-testid="stAppViewContainer"], .stApp, section.main {
+background: linear-gradient(160deg, #FADBD8 0%, #FFFFFF 35%, #FDE8E7 70%, #FFFFFF 100%) !important;
+background-attachment: fixed !important;
+}
 
-st.markdown("\n".join(css_rules), unsafe_allow_html=True)
+p, span, label, .stMarkdown {
+color: #5A5A5A !important;
+font-weight: 600;
+}
 
-# 3. Cabeçalho Oficial
-cabecalho_lines = [
-    '<div style="position:relative;background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border:1px solid rgba(226,232,240,0.9);border-left:8px solid #D01B13;border-radius:12px;padding:16px 24px;margin-top:-15px;margin-bottom:22px;box-shadow:0 4px 15px rgba(208,27,19,0.08);min-height:96px;">',
-    '<div style="display:flex;align-items:center;justify-content:space-between;width:100%;">',
-    f'<div style="flex-shrink:0;">{logo_html}</div>',
-    '<div style="text-align:center;flex-grow:1;">',
-    '<span style="color:#9D201C !important;-webkit-text-fill-color:#9D201C !important;font-size:2.35rem;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;font-family:sans-serif;display:inline-block;">HOPINESS PROJECT</span>',
-    '</div>',
-    '<div style="flex-shrink:0;">',
-    '<span style="color:#5A5A5A;font-size:0.95rem;font-weight:600;font-style:italic;">by Felipe Correa</span>',
-    '</div>',
-    '</div>',
-    '</div>',
-]
+/* CARDS DO MENU PRINCIPAL */
+.menu-card-container {
+background-color: #FFFFFF;
+border-radius: 12px;
+border: 1px solid #CBD5E1;
+box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+margin-bottom: 20px;
+overflow: visible;
+position: relative;
+margin-top: 25px;
+}
+.menu-card-header {
+background-color: #D01B13;
+color: #FFFFFF !important;
+padding: 16px 20px;
+border-top-left-radius: 11px;
+border-top-right-radius: 11px;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+min-height: 54px;
+}
+.menu-card-icon-badge {
+position: absolute;
+top: -24px;
+left: 20px;
+width: 48px;
+height: 48px;
+border-radius: 50%;
+background-color: #9D201C;
+color: #FFFFFF;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.3rem;
+box-shadow: 0 4px 8px rgba(0,0,0,0.18);
+border: 3px solid #FFFFFF;
+}
+.menu-card-title {
+color: #FFFFFF !important;
+font-size: 1.25rem;
+font-weight: 800;
+margin: 0;
+text-align: center;
+letter-spacing: 0.5px;
+}
+.card-action-btn button {
+border-radius: 20px !important;
+padding: 6px 14px !important;
+font-weight: 800 !important;
+border: 2px solid #D01B13 !important;
+background-color: #FFFFFF !important;
+color: #D01B13 !important;
+box-shadow: 0 2px 5px rgba(208, 27, 19, 0.1) !important;
+width: 100% !important;
+}
+.card-action-btn button * {
+color: #D01B13 !important;
+font-weight: 800 !important;
+font-size: 0.9rem !important;
+}
+.card-action-btn button:hover {
+background-color: #D01B13 !important;
+color: #FFFFFF !important;
+}
+.card-action-btn button:hover * {
+color: #FFFFFF !important;
+}
+.btn-voltar button {
+background-color: #5A5A5A !important;
+color: #FFFFFF !important;
+border-radius: 20px !important;
+font-weight: 800 !important;
+border: none !important;
+padding: 8px 22px !important;
+margin-bottom: 15px !important;
+}
+.btn-voltar button * {
+color: #FFFFFF !important;
+font-weight: 800 !important;
+}
 
-st.markdown("\n".join(cabecalho_lines), unsafe_allow_html=True)
+/* CARDS DE MÉTRICAS */
+.metric-card {
+background-color: #FFFFFF;
+border: 1px solid #E2E8F0;
+border-radius: 12px;
+padding: 18px 15px;
+text-align: center;
+box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+margin-bottom: 15px;
+}
+.metric-card-label {
+color: #5A5A5A;
+font-size: 0.92rem;
+font-weight: 700;
+margin-bottom: 6px;
+}
+.metric-card-val {
+color: #9D201C;
+font-size: 1.85rem;
+font-weight: 900;
+margin: 0;
+}
 
-# 4. Estado da Navegação e Dados em Memória
+/* INPUTS */
+.stTextInput input, .stNumberInput input {
+background-color: #FFFFFF !important;
+color: #9D201C !important;
+font-weight: 800 !important;
+border-radius: 8px !important;
+border: 1px solid #CBD5E1 !important;
+}
+div[data-baseweb="select"] > div {
+background-color: #FFFFFF !important;
+border: 1px solid #CBD5E1 !important;
+border-radius: 8px !important;
+}
+div[data-baseweb="select"] * {
+color: #0D253A !important;
+font-weight: 700 !important;
+}
+
+/* BOTÕES INFERIORES */
+.btn-gerar button {
+background-color: #D01B13 !important;
+color: #FFFFFF !important;
+border-radius: 25px !important;
+font-weight: 800 !important;
+padding: 12px 28px !important;
+border: none !important;
+box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;
+width: 100% !important;
+}
+.btn-gerar button * {
+color: #FFFFFF !important;
+font-weight: 800 !important;
+}
+.btn-pdf button {
+background-color: #2D3748 !important;
+color: #FFFFFF !important;
+border-radius: 25px !important;
+font-weight: 800 !important;
+padding: 12px 28px !important;
+border: none !important;
+width: 100% !important;
+}
+.btn-pdf button * {
+color: #FFFFFF !important;
+font-weight: 800 !important;
+}
+</style>"""
+
+clean_css = "\n".join([l.strip() for l in css_code.splitlines() if l.strip()])
+if hasattr(st, "html"):
+    st.html(clean_css)
+else:
+    st.markdown(clean_css, unsafe_allow_html=True)
+
+# 3. Cabeçalho IDÊNTICO ao seu código (com título #9D201C vermelho escuro)
+cabecalho_raw = f"""<div style="position:relative;background:rgba(255,255,255,0.45);backdrop-filter:blur(6px);border:1px solid rgba(226,232,240,0.9);border-left:8px solid #D01B13;border-radius:12px;padding:14px 24px;margin-top:-15px;margin-bottom:22px;box-shadow:0 4px 15px rgba(208,27,19,0.08);overflow:hidden;min-height:98px;">
+<div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;width:100%;">
+<div style="flex-shrink:0;">{logo_html}</div>
+<div style="text-align:center;flex-grow:1;">
+<span style="color:#9D201C !important;-webkit-text-fill-color:#9D201C !important;font-size:2.35rem;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;font-family:'Segoe UI',sans-serif;display:inline-block;">HOPINESS PROJECT</span>
+</div>
+<div style="flex-shrink:0;">
+<span style="color:#5A5A5A;font-size:0.95rem;font-weight:600;font-style:italic;">by Felipe Correa</span>
+</div>
+</div>
+</div>"""
+
+clean_cabecalho = "\n".join([l.strip() for l in cabecalho_raw.splitlines() if l.strip()])
+if hasattr(st, "html"):
+    st.html(clean_cabecalho)
+else:
+    st.markdown(clean_cabecalho, unsafe_allow_html=True)
+
+# 4. Controle de Telas e Memória
 if "tela_ativa" not in st.session_state:
     st.session_state["tela_ativa"] = "inicio"
 
@@ -244,7 +246,7 @@ if "clientes_cadastrados" not in st.session_state:
         {"Nome": "Juliana Tavares", "WhatsApp": "(81) 97766-5544", "Local": "Casa Forte - Recife/PE"},
     ]
 
-# 5. Banco de dados técnico e cálculos
+# 5. Banco de dados técnico e cálculos (Mantidos 100% originais)
 PROJETOS_PADRAO = {
     "guarda_corpo_torres": {
         "nome": "Guarda-Corpo / Sacada (NBR 14718)",
@@ -391,10 +393,10 @@ def gerar_pdf(dados):
     return val
 
 # ==============================================================================
-# CONTROLE DE TELAS
+# 6. RENDERIZAÇÃO DAS TELAS
 # ==============================================================================
 
-# TELA INICIAL (MENU DE CARDS CONFORME A SUA IMAGEM DE REFERÊNCIA)
+# TELA INICIAL (MENU DE CARDS CONFORME A IMAGEM ANEXADA)
 if st.session_state["tela_ativa"] == "inicio":
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     c_m1, c_m2, c_m3 = st.columns(3, gap="large")
