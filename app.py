@@ -37,42 +37,49 @@ if logo_b64:
 else:
     logo_html = '<div style="width:64px;height:64px;background-color:#5A5A5A;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:8.5px;font-weight:900;text-align:center;">RIO<br/>BRANCO</div>'
 
-# 2. CSS Global com degradê e botões das abas vermelhos
+# 2. CSS Global com degradê real cobrindo toda a tela e abas 100% vermelhas
 css_code = """<style>
-html, body, [data-testid="stAppViewContainer"], .stApp {
-background: linear-gradient(180deg, #FDE8E7 0%, #FFFFFF 30%, #F8F9FA 100%) !important;
+/* DEGRADÊ VERMELHO + BRANCO NA PÁGINA INTEIRA */
+html, body, [data-testid="stAppViewContainer"], .stApp, section.main {
+background: linear-gradient(160deg, #FADBD8 0%, #FFFFFF 35%, #FDE8E7 70%, #FFFFFF 100%) !important;
 background-attachment: fixed !important;
 }
+
 p, span, label, .stMarkdown {
 color: #5A5A5A !important;
 font-weight: 600;
 }
-div[data-testid="stHorizontalBlock"] .tab-btn-wrapper button {
+
+/* TODAS AS 4 ABAS COM FUNDO VERMELHO E TEXTO BRANCO */
+div[data-testid="stHorizontalBlock"] .tab-nav-btn button {
+background-color: #D01B13 !important;
 border-radius: 25px !important;
 padding: 10px 14px !important;
 border: none !important;
 width: 100% !important;
-}
-div[data-testid="stHorizontalBlock"] .tab-btn-wrapper button[kind="secondary"] {
-background-color: #D01B13 !important;
 box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25) !important;
 }
-div[data-testid="stHorizontalBlock"] .tab-btn-wrapper button[kind="primary"] {
+
+div[data-testid="stHorizontalBlock"] .tab-nav-btn button[kind="primary"] {
 background-color: #9D201C !important;
-box-shadow: 0 4px 12px rgba(157, 32, 28, 0.45) !important;
+box-shadow: 0 4px 12px rgba(157, 32, 28, 0.5) !important;
 }
-div[data-testid="stHorizontalBlock"] .tab-btn-wrapper button *,
-div[data-testid="stHorizontalBlock"] .tab-btn-wrapper button p,
-div[data-testid="stHorizontalBlock"] .tab-btn-wrapper button span {
+
+div[data-testid="stHorizontalBlock"] .tab-nav-btn button *,
+div[data-testid="stHorizontalBlock"] .tab-nav-btn button p,
+div[data-testid="stHorizontalBlock"] .tab-nav-btn button span {
 color: #FFFFFF !important;
 fill: #FFFFFF !important;
 -webkit-text-fill-color: #FFFFFF !important;
 font-weight: 800 !important;
 font-size: 0.93rem !important;
 }
-div[data-testid="stHorizontalBlock"] .tab-btn-wrapper button:hover {
+
+div[data-testid="stHorizontalBlock"] .tab-nav-btn button:hover {
 background-color: #B50915 !important;
 }
+
+/* CARDS DE MÉTRICAS */
 .metric-card {
 background-color: #FFFFFF;
 border: 1px solid #E2E8F0;
@@ -94,6 +101,8 @@ font-size: 1.85rem;
 font-weight: 900;
 margin: 0;
 }
+
+/* INPUTS */
 .stTextInput input, .stNumberInput input {
 background-color: #FFFFFF !important;
 color: #9D201C !important;
@@ -110,6 +119,8 @@ div[data-baseweb="select"] * {
 color: #0D253A !important;
 font-weight: 700 !important;
 }
+
+/* BOTÕES INFERIORES */
 .btn-gerar button {
 background-color: #D01B13 !important;
 color: #FFFFFF !important;
@@ -145,49 +156,53 @@ if hasattr(st, "html"):
 else:
     st.markdown(clean_css, unsafe_allow_html=True)
 
-# 3. Cabeçalho com esquadrias e título vermelho escuro
-cabecalho_raw = f"""<div style="position:relative;background:rgba(255,255,255,0.75);backdrop-filter:blur(8px);border:1px solid rgba(203,213,225,0.8);border-left:8px solid #D01B13;border-radius:12px;padding:14px 24px;margin-top:-15px;margin-bottom:22px;box-shadow:0 4px 15px rgba(208,27,19,0.08);overflow:hidden;min-height:98px;">
+# 3. Cabeçalho com o degradê atravessando a faixa, esquadrias nítidas em perspectiva e blur suave
+cabecalho_raw = f"""<div style="position:relative;background:rgba(255,255,255,0.45);backdrop-filter:blur(6px);border:1px solid rgba(226,232,240,0.9);border-left:8px solid #D01B13;border-radius:12px;padding:14px 24px;margin-top:-15px;margin-bottom:22px;box-shadow:0 4px 15px rgba(208,27,19,0.08);overflow:hidden;min-height:98px;">
 <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1000 100">
+<!-- Fundo com blur e névoa avermelhada atrás do título -->
 <defs>
-<radialGradient id="blurCenter" cx="50%" cy="50%" r="48%">
-<stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.05"/>
-<stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.3"/>
-<stop offset="80%" stop-color="#FFFFFF" stop-opacity="0.95"/>
-<stop offset="100%" stop-color="#FFFFFF" stop-opacity="1"/>
+<radialGradient id="blurGlow" cx="50%" cy="50%" r="40%">
+<stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+<stop offset="60%" stop-color="#FDE8E7" stop-opacity="0.8"/>
+<stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
 </radialGradient>
-<mask id="fadeMask">
-<rect width="1000" height="100" fill="url(#blurCenter)"/>
-</mask>
 </defs>
-<g mask="url(#fadeMask)" stroke="#94A3B8" stroke-width="1.2" opacity="0.65">
-<line x1="0" y1="12" x2="450" y2="44"/>
-<line x1="0" y1="30" x2="450" y2="47"/>
-<line x1="0" y1="50" x2="450" y2="50"/>
-<line x1="0" y1="70" x2="450" y2="53"/>
-<line x1="0" y1="88" x2="450" y2="56"/>
-<line x1="45" y1="0" x2="45" y2="100" stroke-width="2"/>
-<line x1="100" y1="0" x2="100" y2="100" stroke-width="1.8"/>
-<line x1="165" y1="0" x2="165" y2="100" stroke-width="1.5"/>
-<line x1="235" y1="0" x2="235" y2="100" stroke-width="1.3"/>
-<line x1="310" y1="0" x2="310" y2="100" stroke-width="1.1"/>
-<line x1="380" y1="0" x2="380" y2="100" stroke-width="0.9"/>
-<line x1="1000" y1="12" x2="550" y2="44"/>
-<line x1="1000" y1="30" x2="550" y2="47"/>
-<line x1="1000" y1="50" x2="550" y2="50"/>
-<line x1="1000" y1="70" x2="550" y2="53"/>
-<line x1="1000" y1="88" x2="550" y2="56"/>
-<line x1="955" y1="0" x2="955" y2="100" stroke-width="2"/>
-<line x1="900" y1="0" x2="900" y2="100" stroke-width="1.8"/>
-<line x1="835" y1="0" x2="835" y2="100" stroke-width="1.5"/>
-<line x1="765" y1="0" x2="765" y2="100" stroke-width="1.3"/>
-<line x1="690" y1="0" x2="690" y2="100" stroke-width="1.1"/>
-<line x1="620" y1="0" x2="620" y2="100" stroke-width="0.9"/>
+<ellipse cx="500" cy="50" rx="280" ry="48" fill="url(#blurGlow)"/>
+
+<!-- Esquadrias em Perspectiva Arquitetônica (Lado Esquerdo) -->
+<g stroke="#64748B" stroke-width="1.3" opacity="0.75">
+<line x1="0" y1="10" x2="360" y2="40"/>
+<line x1="0" y1="30" x2="360" y2="46"/>
+<line x1="0" y1="50" x2="360" y2="50"/>
+<line x1="0" y1="70" x2="360" y2="54"/>
+<line x1="0" y1="90" x2="360" y2="60"/>
+
+<line x1="30" y1="0" x2="30" y2="100" stroke-width="2.2" stroke="#475569"/>
+<line x1="85" y1="0" x2="85" y2="100" stroke-width="1.8"/>
+<line x1="145" y1="0" x2="145" y2="100" stroke-width="1.5"/>
+<line x1="210" y1="0" x2="210" y2="100" stroke-width="1.3"/>
+<line x1="280" y1="0" x2="280" y2="100" stroke-width="1.1"/>
+<line x1="350" y1="0" x2="350" y2="100" stroke-width="0.9"/>
+
+<!-- Esquadrias em Perspectiva Arquitetônica (Lado Direito) -->
+<line x1="1000" y1="10" x2="640" y2="40"/>
+<line x1="1000" y1="30" x2="640" y2="46"/>
+<line x1="1000" y1="50" x2="640" y2="50"/>
+<line x1="1000" y1="70" x2="640" y2="54"/>
+<line x1="1000" y1="90" x2="640" y2="60"/>
+
+<line x1="970" y1="0" x2="970" y2="100" stroke-width="2.2" stroke="#475569"/>
+<line x1="915" y1="0" x2="915" y2="100" stroke-width="1.8"/>
+<line x1="855" y1="0" x2="855" y2="100" stroke-width="1.5"/>
+<line x1="790" y1="0" x2="790" y2="100" stroke-width="1.3"/>
+<line x1="720" y1="0" x2="720" y2="100" stroke-width="1.1"/>
+<line x1="650" y1="0" x2="650" y2="100" stroke-width="0.9"/>
 </g>
 </svg>
 <div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;width:100%;">
 <div style="flex-shrink:0;">{logo_html}</div>
 <div style="text-align:center;flex-grow:1;">
-<span style="color:#9D201C !important;-webkit-text-fill-color:#9D201C !important;font-size:2.35rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:'Segoe UI',sans-serif;display:inline-block;">HOPINESS PROJECT</span>
+<span style="color:#9D201C !important;-webkit-text-fill-color:#9D201C !important;font-size:2.35rem;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;font-family:'Segoe UI',sans-serif;display:inline-block;">HOPINESS PROJECT</span>
 </div>
 <div style="flex-shrink:0;">
 <span style="color:#5A5A5A;font-size:0.95rem;font-weight:600;font-style:italic;">by Felipe Correa</span>
@@ -208,28 +223,28 @@ if "aba_ativa" not in st.session_state:
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown('<div class="tab-btn-wrapper">', unsafe_allow_html=True)
+    st.markdown('<div class="tab-nav-btn">', unsafe_allow_html=True)
     if st.button("📐 Projetos Padrão & Orçamento", type="primary" if st.session_state["aba_ativa"] == "projetos" else "secondary", use_container_width=True):
         st.session_state["aba_ativa"] = "projetos"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 with col2:
-    st.markdown('<div class="tab-btn-wrapper">', unsafe_allow_html=True)
+    st.markdown('<div class="tab-nav-btn">', unsafe_allow_html=True)
     if st.button("🏭 Pedido de Têmpera (Corte)", type="primary" if st.session_state["aba_ativa"] == "tempera" else "secondary", use_container_width=True):
         st.session_state["aba_ativa"] = "tempera"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 with col3:
-    st.markdown('<div class="tab-btn-wrapper">', unsafe_allow_html=True)
+    st.markdown('<div class="tab-nav-btn">', unsafe_allow_html=True)
     if st.button("💵 Financeiro da Obra", type="primary" if st.session_state["aba_ativa"] == "financeiro" else "secondary", use_container_width=True):
         st.session_state["aba_ativa"] = "financeiro"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 with col4:
-    st.markdown('<div class="tab-btn-wrapper">', unsafe_allow_html=True)
+    st.markdown('<div class="tab-nav-btn">', unsafe_allow_html=True)
     if st.button("📋 Catálogo Técnico ABNT", type="primary" if st.session_state["aba_ativa"] == "abnt" else "secondary", use_container_width=True):
         st.session_state["aba_ativa"] = "abnt"
         st.rerun()
