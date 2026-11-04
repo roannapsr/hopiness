@@ -58,7 +58,7 @@ st.markdown(
             position: relative;
             background-image: linear-gradient(90deg, rgba(226,232,240,0.4) 1px, transparent 1px),
                               linear-gradient(rgba(226,232,240,0.4) 1px, transparent 1px);
-            background-size: 24px 24px; /* Malha subtil de esquadria/vidro */
+            background-size: 24px 24px;
         }
 
         .header-title {
@@ -91,10 +91,9 @@ st.markdown(
             margin-bottom: 20px;
         }
         .stTabs [data-baseweb="tab-highlight"] {
-            display: none !important; /* Remove linha inferior residual */
+            display: none !important;
         }
         
-        /* Aba Inativa */
         .stTabs [data-baseweb="tab"] {
             background-color: #D01B13 !important;
             color: #EAEAEA !important;
@@ -112,7 +111,6 @@ st.markdown(
             background-color: #B50915 !important;
         }
 
-        /* Aba Ativa (Destaque em Vermelho Escuro com Relevo) */
         .stTabs [aria-selected="true"] {
             background-color: #9D201C !important;
             color: #FFFFFF !important;
@@ -226,6 +224,71 @@ st.markdown(
 )
 
 # ==============================================================================
+# FUNÇÕES DE CÁLCULO DE PEÇAS (ISOLADAS PARA EVITAR ERROS DE SINTAXE)
+# ==============================================================================
+def calc_box_2f(l, a):
+    return [
+        {
+            "peca": "Vidro Fixo",
+            "largura_corte": round((l / 2) + 0.02, 3),
+            "altura_corte": round(a - 0.05, 3),
+            "qtd": 1,
+        },
+        {
+            "peca": "Vidro Móvel (Porta)",
+            "largura_corte": round((l / 2) + 0.05, 3),
+            "altura_corte": round(a - 0.05, 3),
+            "qtd": 1,
+        },
+    ]
+
+def calc_janela_4f(l, a):
+    return [
+        {
+            "peca": "Vidros Fixos Laterais",
+            "largura_corte": round((l / 4) + 0.02, 3),
+            "altura_corte": round(a - 0.04, 3),
+            "qtd": 2,
+        },
+        {
+            "peca": "Vidros Móveis Centrais",
+            "largura_corte": round((l / 4) + 0.05, 3),
+            "altura_corte": round(a - 0.04, 3),
+            "qtd": 2,
+        },
+    ]
+
+def calc_guarda_corpo(l, a):
+    return [
+        {
+            "peca": "Painéis de Guarda-Corpo",
+            "largura_corte": round((l / 3) - 0.02, 3),
+            "altura_corte": round(a, 3),
+            "qtd": 3,
+        }
+    ]
+
+def calc_porta_piv(l, a):
+    return [
+        {
+            "peca": "Folha Pivotante",
+            "largura_corte": round(l - 0.015, 3),
+            "altura_corte": round(a - 0.02, 3),
+            "qtd": 1,
+        }
+    ]
+
+def calc_espelho(l, a):
+    return [
+        {
+            "peca": "Painel de Espelho Lapidado/Bisotado",
+            "largura_corte": round(l, 3),
+            "altura_corte": round(a, 3),
+            "qtd": 1,
+        }
+    ]
+
+# ==============================================================================
 # BANCO DE PROJETOS PADRÃO (TIPOLOGIAS TÉCNICAS DO SETOR)
 # ==============================================================================
 PROJETOS_PADRAO = {
@@ -237,56 +300,188 @@ PROJETOS_PADRAO = {
         "kit_padrao": "Kit Box Alumínio Tradicional (Trilho, Guia e Puxador)",
         "custo_kit_base": 180.0,
         "custo_insumos_base": 45.0,
-        "calcular_pecas": lambda l, a: [
-            {
-                "peca": "Vidro Fixo",
-                "largura_corte": round((l / 2) + 0.02, 3),
-                "altura_corte": round(a - 0.05, 3),
-                "qtd": 1,
-            },
-            {
-                "peca": "Vidro Móvel (Porta)",
-                "largura_corte": round((l / 2) + 0.05, 3),
-                "altura_corte": round(a - 0.05, 3),
-                "qtd": 1,
-            },
-        ],
+        "funcao_calculo": calc_box_2f,
     },
     "janela_4f": {
         "nome": "Janela 4 Folhas (2 Fixos + 2 Móveis)",
         "categoria": "Janelas & Portas",
         "vidro_padrao": "Temperado 8mm Incolor",
         "norma": "ABNT NBR 7199",
-        "kit_padrao": (
-            "Kit Janela 4 Folhas (Perfis Superior, Inferior, Laterais e Fechos)"
-        ),
+        "kit_padrao": "Kit Janela 4 Folhas (Perfis Superior, Inferior, Laterais e Fechos)",
         "custo_kit_base": 280.0,
         "custo_insumos_base": 60.0,
-        "calcular_pecas": lambda l, a: [
-            {
-                "peca": "Vidros Fixos Laterais",
-                "largura_corte": round((l / 4) + 0.02, 3),
-                "altura_corte": round(a - 0.04, 3),
-                "qtd": 2,
-            },
-            {
-                "peca": "Vidros Móveis Centrais",
-                "largura_corte": round((l / 4) + 0.05, 3),
-                "altura_corte": round(a - 0.04, 3),
-                "qtd": 2,
-            },
-        ],
+        "funcao_calculo": calc_janela_4f,
     },
     "guarda_corpo_torres": {
         "nome": "Guarda-Corpo com Torres em Inox",
         "categoria": "Segurança & Sacadas",
         "vidro_padrao": "Laminado 10mm (5+5) ou Laminado-Temperado",
         "norma": "ABNT NBR 14718 (Proibido Temperado Monolítico)",
-        "kit_padrao": (
-            "Torres de Fixação Aço Inox 316 + Parafusos Parabolt e Borrachas"
-        ),
+        "kit_padrao": "Torres de Fixação Aço Inox 316 + Parafusos Parabolt e Borrachas",
         "custo_kit_base": 450.0,
         "custo_insumos_base": 120.0,
-        "calcular_pecas": lambda l, a: [{
-            "peca": "Painéis de Guarda-Corpo",
-            "largura_corte": round((l / 3)
+        "funcao_calculo": calc_guarda_corpo,
+    },
+    "porta_pivotante": {
+        "nome": "Porta Pivotante de Abrir 1 Folha",
+        "categoria": "Janelas & Portas",
+        "vidro_padrao": "Temperado 10mm Incolor",
+        "norma": "ABNT NBR 7199",
+        "kit_padrao": "Kit Ferragens Inox/Latão (Dobradiça Superior, Inferior, Fechadura e Puxador Tubo)",
+        "custo_kit_base": 340.0,
+        "custo_insumos_base": 50.0,
+        "funcao_calculo": calc_porta_piv,
+    },
+    "espelho_bisotado": {
+        "nome": "Espelho Prata Bisotado com Fixação Química",
+        "categoria": "Espelhos & Decoração",
+        "vidro_padrao": "Espelho Prata 4mm com Proteção Contra Oxidação",
+        "norma": "ABNT NBR 15198",
+        "kit_padrao": "Silicone Neutro Fixa-Espelho + Fita Dupla Face Estrutural",
+        "custo_kit_base": 65.0,
+        "custo_insumos_base": 30.0,
+        "funcao_calculo": calc_espelho,
+    },
+}
+
+def arredondar_m2_industrial(medida_m):
+    return math.ceil(medida_m / 0.05) * 0.05
+
+def calcular_projeto_completo(
+    projeto_key,
+    largura_vao,
+    altura_vao,
+    preco_m2_vidro,
+    custo_kit,
+    custo_insumos,
+    custo_mo,
+    margem_lucro,
+):
+    proj = PROJETOS_PADRAO[projeto_key]
+    pecas_corte = proj["funcao_calculo"](largura_vao, altura_vao)
+
+    area_liquida_total = 0.0
+    area_faturada_total = 0.0
+
+    for p in pecas_corte:
+        w = p["largura_corte"]
+        h = p["altura_corte"]
+        qtd = p["qtd"]
+        area_liquida_total += (w * h) * qtd
+
+        w_fat = arredondar_m2_industrial(w)
+        h_fat = arredondar_m2_industrial(h)
+        area_faturada_total += (w_fat * h_fat) * qtd
+
+    custo_vidro = area_faturada_total * preco_m2_vidro
+    custo_direto_total = custo_vidro + custo_kit + custo_insumos + custo_mo
+
+    margem_decimal = margem_lucro / 100.0 if margem_lucro < 100 else 0.99
+    preco_venda_final = custo_direto_total / (1.0 - margem_decimal)
+    lucro_bruto = preco_venda_final - custo_direto_total
+
+    return {
+        "projeto_nome": proj["nome"],
+        "norma": proj["norma"],
+        "vidro_padrao": proj["vidro_padrao"],
+        "pecas_corte": pecas_corte,
+        "area_liquida_total": area_liquida_total,
+        "area_faturada_total": area_faturada_total,
+        "custo_vidro": custo_vidro,
+        "custo_kit": custo_kit,
+        "custo_insumos": custo_insumos,
+        "custo_mo": custo_mo,
+        "custo_direto_total": custo_direto_total,
+        "preco_venda_final": preco_venda_final,
+        "lucro_bruto": lucro_bruto,
+        "margem_lucro": margem_lucro,
+    }
+
+# ==============================================================================
+# GERADOR DE PDF PROFISSIONAL COM A NOVA PALETA
+# ==============================================================================
+def gerar_pdf_documento(tipo_doc, dados):
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=1.5 * cm,
+        rightMargin=1.5 * cm,
+        topMargin=1.5 * cm,
+        bottomMargin=1.5 * cm,
+    )
+
+    VERMELHO_VIVO = colors.HexColor("#D01B13")
+    VERMELHO_ESCURO = colors.HexColor("#9D201C")
+    CINZA_CHUMBO = colors.HexColor("#5A5A5A")
+    CINZA_FUNDO = colors.HexColor("#F8FAFC")
+    CINZA_BORDA = colors.HexColor("#E2E8F0")
+    BRANCO = colors.white
+
+    styles = getSampleStyleSheet()
+
+    style_title = ParagraphStyle(
+        "Title",
+        parent=styles["Normal"],
+        fontName="Helvetica-Bold",
+        fontSize=18,
+        leading=22,
+        textColor=VERMELHO_ESCURO,
+        alignment=1,
+    )
+    style_sub = ParagraphStyle(
+        "Sub",
+        parent=styles["Normal"],
+        fontName="Helvetica",
+        fontSize=9,
+        leading=12,
+        textColor=CINZA_CHUMBO,
+        alignment=1,
+    )
+    style_doc_type = ParagraphStyle(
+        "DocType",
+        parent=styles["Normal"],
+        fontName="Helvetica-Bold",
+        fontSize=12,
+        leading=15,
+        textColor=VERMELHO_VIVO,
+        alignment=1,
+    )
+    style_card = ParagraphStyle(
+        "Card",
+        parent=styles["Normal"],
+        fontName="Helvetica",
+        fontSize=8.5,
+        leading=12,
+        textColor=CINZA_CHUMBO,
+    )
+    style_th = ParagraphStyle(
+        "TH",
+        parent=styles["Normal"],
+        fontName="Helvetica-Bold",
+        fontSize=8.5,
+        leading=11,
+        textColor=BRANCO,
+    )
+    style_td = ParagraphStyle(
+        "TD",
+        parent=styles["Normal"],
+        fontName="Helvetica",
+        fontSize=8.5,
+        leading=11,
+        textColor=CINZA_CHUMBO,
+    )
+    style_td_r = ParagraphStyle(
+        "TDR",
+        parent=style_td,
+        alignment=2,
+        fontName="Helvetica-Bold",
+        textColor=VERMELHO_ESCURO,
+    )
+
+    story = []
+    story.append(Paragraph("<b>HOPINESS PROJECT</b>", style_title))
+    story.append(
+        Paragraph(
+            "Vidraçaria Rio Branco | Soluções em Vidros Planos & Esquadrias",
+            style_
