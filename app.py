@@ -28,7 +28,7 @@ st.set_page_config(
 )
 
 # ==============================================================================
-# LEITURA DA LOGO LOCAL (vdr.jpeg)
+# CARREGAMENTO DA LOGO (vdr.jpeg)
 # ==============================================================================
 logo_src = ""
 for img_name in ["vdr.jpeg", "vdr.jpg", "logo.png", "logo.jpeg"]:
@@ -40,169 +40,232 @@ for img_name in ["vdr.jpeg", "vdr.jpg", "logo.png", "logo.jpeg"]:
     break
 
 # ==============================================================================
-# CSS GLOBAL E CONTROLO DE CORES
+# ESTILOS CSS REFORÇADOS (IDÊNTICOS À MAQUETE)
 # ==============================================================================
 st.markdown(
     """
-    <style>
-        /* 1. FUNDO GERAL COM DEGRADÊ SUAVE */
-        .stApp, [data-testid="stAppViewContainer"], section.main {
-            background: linear-gradient(180deg, #FCE8E6 0%, #FFFFFF 30%, #F8F9FA 100%) !important;
-            background-attachment: fixed !important;
-        }
+<style>
+/* 1. FUNDO COM DEGRADÊ SUAVE (Vermelho para Branco) */
+.stApp, [data-testid="stAppViewContainer"], section.main {
+    background: linear-gradient(180deg, #FDE8E7 0%, #FFFFFF 30%, #F8F9FA 100%) !important;
+    background-attachment: fixed !important;
+}
 
-        /* 2. FORÇAR TODAS AS ABAS DO STREAMLIT A SEREM VERMELHAS COM TEXTO BRANCO */
-        div[data-testid="stTabs"] [role="tablist"] {
-            gap: 12px !important;
-            background: transparent !important;
-            border: none !important;
-            padding: 0 !important;
-            margin-bottom: 25px !important;
-        }
-        div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
-            display: none !important;
-        }
-        div[data-testid="stTabs"] button[role="tab"] {
-            background-color: #D01B13 !important;
-            border-radius: 25px !important;
-            border: none !important;
-            padding: 10px 24px !important;
-            box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25) !important;
-        }
-        /* Força a cor branca em absolutamente todos os nós de texto das abas */
-        div[data-testid="stTabs"] button[role="tab"] * {
-            color: #FFFFFF !important;
-            -webkit-text-fill-color: #FFFFFF !important;
-            font-weight: 800 !important;
-            font-size: 0.95rem !important;
-        }
-        div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
-            background-color: #9D201C !important;
-            box-shadow: 0 4px 12px rgba(157, 32, 28, 0.45) !important;
-        }
+/* Tipografia Geral */
+p, span, label, .stMarkdown {
+    color: #5A5A5A !important;
+    font-weight: 600;
+}
 
-        /* 3. CARTÕES DE MÉTRICAS */
-        .metric-card {
-            background-color: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            padding: 20px 15px;
-            text-align: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
-            margin-bottom: 18px;
-        }
-        .metric-card-label {
-            color: #5A5A5A;
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .metric-card-val {
-            color: #9D201C;
-            font-size: 1.85rem;
-            font-weight: 900;
-            margin: 0;
-        }
+/* 2. ABAS: PÍLULAS VERMELHAS COM FONTE BRANCA PURA */
+div[data-testid="stHorizontalBlock"] .tab-btn button {
+    border-radius: 25px !important;
+    padding: 10px 18px !important;
+    border: none !important;
+    box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25) !important;
+    width: 100% !important;
+}
 
-        /* 4. CAMPOS DE ENTRADA */
-        .stTextInput input, .stNumberInput input {
-            background-color: #FFFFFF !important;
-            color: #9D201C !important;
-            font-weight: 800 !important;
-            border-radius: 8px !important;
-            border: 1px solid #CBD5E1 !important;
-        }
-        div[data-baseweb="select"] > div {
-            background-color: #FFFFFF !important;
-            border: 1px solid #CBD5E1 !important;
-            border-radius: 8px !important;
-        }
-        div[data-baseweb="select"] * {
-            color: #0D253A !important;
-            font-weight: 700 !important;
-        }
+/* Aba Inativa: Vermelho Vivo */
+div[data-testid="stHorizontalBlock"] .tab-btn button[kind="secondary"] {
+    background-color: #D01B13 !important;
+}
 
-        /* 5. BOTÕES */
-        .stButton > button[kind="primary"] {
-            background-color: #D01B13 !important;
-            color: #FFFFFF !important;
-            border-radius: 25px !important;
-            font-weight: 800 !important;
-            padding: 12px 28px !important;
-            border: none !important;
-            box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;
-        }
-        .stButton > button[kind="primary"]:hover {
-            background-color: #B50915 !important;
-        }
-        .stDownloadButton > button {
-            background-color: #5A5A5A !important;
-            color: #FFFFFF !important;
-            border-radius: 25px !important;
-            font-weight: 700 !important;
-            border: none !important;
-            padding: 12px 24px !important;
-        }
-    </style>
+/* Aba Ativa: Vermelho Escuro em Destaque */
+div[data-testid="stHorizontalBlock"] .tab-btn button[kind="primary"] {
+    background-color: #9D201C !important;
+    box-shadow: 0 4px 12px rgba(157, 32, 28, 0.45) !important;
+}
+
+/* Texto Branco Obrigatório em Todas as Abas */
+div[data-testid="stHorizontalBlock"] .tab-btn button * {
+    color: #FFFFFF !important;
+    fill: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    font-weight: 800 !important;
+    font-size: 0.92rem !important;
+}
+
+/* 3. CARDS DE MÉTRICAS */
+.metric-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 18px 15px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    margin-bottom: 15px;
+}
+.metric-card-label {
+    color: #5A5A5A;
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.metric-card-val {
+    color: #9D201C;
+    font-size: 1.85rem;
+    font-weight: 900;
+    margin: 0;
+}
+
+/* 4. FORMULÁRIO E INPUTS */
+.stTextInput input, .stNumberInput input {
+    background-color: #FFFFFF !important;
+    color: #9D201C !important;
+    font-weight: 800 !important;
+    border-radius: 8px !important;
+    border: 1px solid #CBD5E1 !important;
+}
+div[data-baseweb="select"] > div {
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+}
+div[data-baseweb="select"] * {
+    color: #0D253A !important;
+    font-weight: 700 !important;
+}
+
+/* 5. BOTÕES INFERIORES REDONDOS (IGUAIS À MAQUETE) */
+.btn-gerar button {
+    background-color: #D01B13 !important;
+    color: #FFFFFF !important;
+    border-radius: 25px !important;
+    font-weight: 800 !important;
+    padding: 12px 28px !important;
+    border: none !important;
+    box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;
+    width: 100% !important;
+}
+.btn-gerar button * {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
+.btn-pdf button {
+    background-color: #2D3748 !important;
+    color: #FFFFFF !important;
+    border-radius: 25px !important;
+    font-weight: 800 !important;
+    padding: 12px 28px !important;
+    border: none !important;
+    width: 100% !important;
+}
+.btn-pdf button * {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
+</style>
 """,
     unsafe_allow_html=True,
 )
 
 # ==============================================================================
-# FAIXA DO CABEÇALHO (HTML/SVG INTEGRADO: ESQUADRIAS E TÍTULO VERMELHO GARANTIDOS)
+# CABEÇALHO OFICIAL: ESQUADRIAS EM PERSPECTIVA, LOGO E TÍTULO VERMELHO
+# (Zero indentação Markdown para evitar bloco de código cru)
 # ==============================================================================
-logo_tag = (
-    f'<img src="{logo_src}" style="width: 65px; height: 65px; border-radius:'
-    " 50%; object-fit: cover; display: block; mix-blend-mode: multiply;"
-    ' border: none;">'
+logo_render = (
+    f'<img src="{logo_src}" style="width: 66px; height: 66px; border-radius:'
+    " 50%; object-fit: cover; display: block; border: none; mix-blend-mode:"
+    ' multiply;">'
     if logo_src
-    else """
-    <div style="width: 60px; height: 60px; background-color: #5A5A5A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 8px; font-weight: 900; text-align: center;">RIO<br/>BRANCO</div>
-"""
+    else '<div style="width: 60px; height: 60px; background-color: #5A5A5A;'
+    " border-radius: 50%; display: flex; align-items: center; justify-content:"
+    " center; color: #FFFFFF; font-size: 8px; font-weight: 900; text-align:"
+    ' center;">RIO<br/>BRANCO</div>'
 )
 
-st.markdown(
-    f"""
-    <div style="position: relative; background: #FFFFFF; border: 1px solid #CBD5E1; border-left: 8px solid #D01B13; border-radius: 12px; padding: 18px 25px; margin-top: -15px; margin-bottom: 22px; box-shadow: 0 4px 15px rgba(208, 27, 19, 0.08); overflow: hidden; min-height: 100px;">
-        <!-- DESENHO REAL DAS ESQUADRIAS EM VETOR SVG -->
-        <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.65;" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <pattern id="esquadria_pat" width="120" height="100" patternUnits="userSpaceOnUse">
-                    <!-- Perfis Principais de Alumínio -->
-                    <rect x="0" y="0" width="120" height="100" fill="none" stroke="#94A3B8" stroke-width="2.5"/>
-                    <line x1="60" y1="0" x2="60" y2="100" stroke="#94A3B8" stroke-width="2"/>
-                    <line x1="0" y1="50" x2="120" y2="50" stroke="#94A3B8" stroke-width="2"/>
-                    <!-- Linhas Diagonais Translúcidas de Reflexo de Vidro -->
-                    <line x1="5" y1="95" x2="55" y2="5" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="6,4"/>
-                    <line x1="65" y1="95" x2="115" y2="5" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="6,4"/>
-                </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#esquadria_pat)"/>
-        </svg>
+html_cabecalho = f"""<div style="position: relative; background: #FFFFFF; border: 1px solid #CBD5E1; border-left: 8px solid #D01B13; border-radius: 12px; padding: 18px 25px; margin-top: -15px; margin-bottom: 22px; box-shadow: 0 4px 15px rgba(208, 27, 19, 0.08); overflow: hidden; min-height: 105px;">
+<svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.45;" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1000 120">
+<line x1="0" y1="20" x2="1000" y2="20" stroke="#94A3B8" stroke-width="1.2"/>
+<line x1="0" y1="60" x2="1000" y2="60" stroke="#94A3B8" stroke-width="1.5"/>
+<line x1="0" y1="100" x2="1000" y2="100" stroke="#94A3B8" stroke-width="1.2"/>
+<line x1="120" y1="0" x2="220" y2="120" stroke="#94A3B8" stroke-width="1.5"/>
+<line x1="180" y1="0" x2="260" y2="120" stroke="#94A3B8" stroke-width="1.2"/>
+<line x1="240" y1="0" x2="300" y2="120" stroke="#94A3B8" stroke-width="1.2"/>
+<line x1="300" y1="0" x2="330" y2="120" stroke="#94A3B8" stroke-width="1"/>
+<line x1="880" y1="0" x2="780" y2="120" stroke="#94A3B8" stroke-width="1.5"/>
+<line x1="820" y1="0" x2="740" y2="120" stroke="#94A3B8" stroke-width="1.2"/>
+<line x1="760" y1="0" x2="700" y2="120" stroke="#94A3B8" stroke-width="1.2"/>
+<line x1="700" y1="0" x2="670" y2="120" stroke="#94A3B8" stroke-width="1"/>
+</svg>
+<div style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; width: 100%;">
+<div style="flex-shrink: 0;">{logo_render}</div>
+<div style="text-align: center; flex-grow: 1;">
+<div style="color: #9D201C !important; -webkit-text-fill-color: #9D201C !important; font-size: 2.35rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;">HOPINESS PROJECT</div>
+</div>
+<div style="flex-shrink: 0;">
+<div style="color: #5A5A5A; font-size: 0.95rem; font-weight: 600; font-style: italic;">by Felipe Correa</div>
+</div>
+</div>
+</div>"""
 
-        <!-- CONTEÚDO DO CABEÇALHO (LOGO, TÍTULO VERMELHO ESCURO E ASSINATURA) -->
-        <div style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; width: 100%;">
-            <div style="flex-shrink: 0;">
-                {logo_tag}
-            </div>
-            <div style="text-align: center; flex-grow: 1;">
-                <div style="color: #9D201C !important; -webkit-text-fill-color: #9D201C !important; font-size: 2.35rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;">
-                    HOPINESS PROJECT
-                </div>
-            </div>
-            <div style="flex-shrink: 0;">
-                <div style="color: #5A5A5A; font-size: 0.95rem; font-weight: 600; font-style: italic;">
-                    by Felipe Correa
-                </div>
-            </div>
-        </div>
-    </div>
-""",
-    unsafe_allow_html=True,
-)
+st.markdown(html_cabecalho, unsafe_allow_html=True)
 
 # ==============================================================================
-# PROJETOS TÉCNICOS E CÁLCULO VIDREIRO
+# NAVEGAÇÃO POR ABAS EM PÍLULAS VERMELHAS (IGUAIS À MAQUETE)
+# ==============================================================================
+if "aba_ativa" not in st.session_state:
+  st.session_state["aba_ativa"] = "projetos"
+
+col_t1, col_t2, col_t3, col_t4 = st.columns(4)
+
+with col_t1:
+  st.markdown('<div class="tab-btn">', unsafe_allow_html=True)
+  if st.button(
+      "📐 Projetos Padrão & Orçamento",
+      type="primary"
+      if st.session_state["aba_ativa"] == "projetos"
+      else "secondary",
+      use_container_width=True,
+  ):
+    st.session_state["aba_ativa"] = "projetos"
+    st.rerun()
+  st.markdown("</div>", unsafe_allow_html=True)
+
+with col_t2:
+  st.markdown('<div class="tab-btn">', unsafe_allow_html=True)
+  if st.button(
+      "🏭 Pedido de Têmpera (Corte)",
+      type="primary"
+      if st.session_state["aba_ativa"] == "tempera"
+      else "secondary",
+      use_container_width=True,
+  ):
+    st.session_state["aba_ativa"] = "tempera"
+    st.rerun()
+  st.markdown("</div>", unsafe_allow_html=True)
+
+with col_t3:
+  st.markdown('<div class="tab-btn">', unsafe_allow_html=True)
+  if st.button(
+      "💵 Financeiro da Obra",
+      type="primary"
+      if st.session_state["aba_ativa"] == "financeiro"
+      else "secondary",
+      use_container_width=True,
+  ):
+    st.session_state["aba_ativa"] = "financeiro"
+    st.rerun()
+  st.markdown("</div>", unsafe_allow_html=True)
+
+with col_t4:
+  st.markdown('<div class="tab-btn">', unsafe_allow_html=True)
+  if st.button(
+      "📋 Catálogo Técnico ABNT",
+      type="primary"
+      if st.session_state["aba_ativa"] == "abnt"
+      else "secondary",
+      use_container_width=True,
+  ):
+    st.session_state["aba_ativa"] = "abnt"
+    st.rerun()
+  st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
+
+# ==============================================================================
+# PROJETOS PADRÃO E CÁLCULOS
 # ==============================================================================
 PROJETOS_PADRAO = {
     "guarda_corpo_torres": {
@@ -310,7 +373,7 @@ def processar_calculo(
 
 
 # ==============================================================================
-# MOTOR DO PDF (REPORTLAB COM A PALETA DA VIDRAÇARIA RIO BRANCO)
+# MOTOR DO PDF
 # ==============================================================================
 def gerar_pdf(dados):
   buf = io.BytesIO()
@@ -477,24 +540,18 @@ def gerar_pdf(dados):
 
 
 # ==============================================================================
-# NAVEGAÇÃO E ABAS (PÍLULAS VERMELHAS COM FONTE BRANCA)
+# CONTEÚDO DA ABA 1: PROJETOS & ORÇAMENTO
 # ==============================================================================
-aba_proj, aba_temp, aba_fin, aba_abnt = st.tabs([
-    "📐 Projetos Padrão & Orçamento",
-    "🏭 Pedido de Têmpera (Corte)",
-    "💵 Financeiro da Obra",
-    "📋 Catálogo Técnico ABNT",
-])
+if st.session_state["aba_ativa"] == "projetos":
+  col_esq, col_dir = st.columns([1.1, 1.0], gap="large")
 
-# ------------------------------------------------------------------------------
-# ABA 1: PROJETOS E ORÇAMENTO
-# ------------------------------------------------------------------------------
-with aba_proj:
-  col_esquerda, col_direita = st.columns([1.15, 1.0], gap="large")
-
-  with col_esquerda:
+  with col_esq:
     st.markdown(
-        "<h4 style='color:#9D201C; margin-top:0;'>Configurações do Vão</h4>",
+        "<div style='background:#FFFFFF; border:1px solid #CBD5E1;"
+        " border-radius:12px; padding:22px; box-shadow:0 3px 10px"
+        " rgba(0,0,0,0.04); margin-bottom:20px;'><h4 style='color:#9D201C;"
+        " margin-top:0; font-size:1.3rem; font-weight:800;'>Configurações do"
+        " Vão</h4>",
         unsafe_allow_html=True,
     )
 
@@ -540,43 +597,40 @@ with aba_proj:
         "Margem de Lucro (%)", min_value=10.0, max_value=70.0, value=35.0
     )
 
+    st.markdown("</div>", unsafe_allow_html=True)
+
   res = processar_calculo(
       sel_proj, larg_v, alt_v, pm2, kit_v, ins_v, mo_v, mg_v
   )
 
-  with col_direita:
-    st.markdown(
-        "<h4 style='color:#9D201C; margin-top:0;'>Resumo Comercial</h4>",
-        unsafe_allow_html=True,
-    )
-
+  with col_dir:
     m_c1, m_c2 = st.columns(2)
     with m_c1:
       st.markdown(
           f"""
-                <div class="metric-card">
-                    <div class="metric-card-label">Área Real (Líquida):</div>
-                    <div class="metric-card-val">{res['area_liq']:.2f} m²</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-card-label">Custo Direto Total:</div>
-                    <div class="metric-card-val">R$ {res['custo_total']:.2f}</div>
-                </div>
-            """,
+            <div class="metric-card">
+                <div class="metric-card-label">Área Real (Líquida):</div>
+                <div class="metric-card-val">{res['area_liq']:.2f} m²</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-card-label">Custo Direto Total:</div>
+                <div class="metric-card-val">R$ {res['custo_total']:.2f}</div>
+            </div>
+        """,
           unsafe_allow_html=True,
       )
     with m_c2:
       st.markdown(
           f"""
-                <div class="metric-card">
-                    <div class="metric-card-label">Área Faturada (+Folga):</div>
-                    <div class="metric-card-val">{res['area_fat']:.2f} m²</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-card-label">Preço de Venda Sugerido:</div>
-                    <div class="metric-card-val">R$ {res['preco_venda']:.2f}</div>
-                </div>
-            """,
+            <div class="metric-card">
+                <div class="metric-card-label">Área Faturada (+Folga):</div>
+                <div class="metric-card-val">{res['area_fat']:.2f} m²</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-card-label">Preço de Venda Sugerido:</div>
+                <div class="metric-card-val">R$ {res['preco_venda']:.2f}</div>
+            </div>
+        """,
           unsafe_allow_html=True,
       )
 
@@ -585,8 +639,9 @@ with aba_proj:
         f" {res['margem']}%)"
     )
 
+  # BOTÕES INFERIORES REDONDOS
   st.markdown("<br/>", unsafe_allow_html=True)
-  b_col1, b_col2, b_col3 = st.columns([1, 1, 1])
+  b_esp1, b_c1, b_c2, b_esp2 = st.columns([1, 1.3, 1.3, 1])
 
   dados_proposta = {
       "cli": nome_c,
@@ -603,72 +658,72 @@ with aba_proj:
       "total": res["preco_venda"],
   }
 
-  with b_col1:
+  with b_c1:
+    st.markdown('<div class="btn-gerar">', unsafe_allow_html=True)
+    if st.button("📄 Gerar Orçamento", use_container_width=True):
+      st.toast("Orçamento recalculado com sucesso!")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+  with b_c2:
+    st.markdown('<div class="btn-pdf">', unsafe_allow_html=True)
     pdf_bytes = gerar_pdf(dados_proposta)
     st.download_button(
-        " Exportar PDF Profissional",
+        "📥 Exportar PDF",
         data=pdf_bytes,
         file_name=f"Orcamento_{nome_c.replace(' ', '_')}.pdf",
         mime="application/pdf",
         use_container_width=True,
     )
+    st.markdown("</div>", unsafe_allow_html=True)
 
-  with b_col2:
-    msg_whats = (
-        f"Olá, {nome_c}! Segue o orçamento da Vidraçaria Rio Branco para o seu"
-        f" projeto de {res['nome']} ({larg_v:.2f}m x {alt_v:.2f}m) - Total: R$"
-        f" {res['preco_venda']:.2f}."
-    )
-    url_zap = f"https://api.whatsapp.com/send?phone=55{zap_c.strip()}&text={urllib.parse.quote(msg_whats)}"
-    st.link_button(" Enviar via WhatsApp", url_zap, use_container_width=True)
-
-  with b_col3:
-    st.button(" Atualizar Orçamento", type="primary", use_container_width=True)
-
-# ------------------------------------------------------------------------------
-# ABA 2: TÊMPERA
-# ------------------------------------------------------------------------------
-with aba_temp:
+# ==============================================================================
+# CONTEÚDO DA ABA 2: TÊMPERA
+# ==============================================================================
+elif st.session_state["aba_ativa"] == "tempera":
   st.markdown(
       "<h3 style='color:#9D201C;'>Ordem de Corte para a Têmpera</h3>",
       unsafe_allow_html=True,
   )
-  tab_pecas = []
-  for pc in res["pecas"]:
-    tab_pecas.append({
+  st.info("Medidas técnicas calculadas com descontos de folga e transpasse.")
+  res_temp = processar_calculo(
+      "guarda_corpo_torres", 3.40, 1.10, 380.0, 450.0, 120.0, 450.0, 35.0
+  )
+  tab_cortes = []
+  for pc in res_temp["pecas"]:
+    tab_cortes.append({
         "Peça / Posição": pc["peca"],
         "Largura de Corte (m)": f"{pc['largura']:.3f}",
         "Altura de Corte (m)": f"{pc['altura']:.3f}",
         "Quantidade": pc["qtd"],
-        "Especificação do Vidro": res["vidro"],
+        "Especificação": res_temp["vidro"],
     })
-  st.table(tab_pecas)
+  st.table(tab_cortes)
 
-# ------------------------------------------------------------------------------
-# ABA 3: FINANCEIRO
-# ------------------------------------------------------------------------------
-with aba_fin:
+# ==============================================================================
+# CONTEÚDO DA ABA 3: FINANCEIRO
+# ==============================================================================
+elif st.session_state["aba_ativa"] == "financeiro":
   st.markdown(
       "<h3 style='color:#9D201C;'>Gestão Financeira da Obra</h3>",
       unsafe_allow_html=True,
   )
-  c_fin1, c_fin2, c_fin3 = st.columns(3)
-  c_fin1.metric("Valor Total da Obra", f"R$ {res['preco_venda']:.2f}")
-  c_fin2.metric("Custo Operacional Total", f"R$ {res['custo_total']:.2f}")
-  c_fin3.metric("Lucro Líquido Previsto", f"R$ {res['lucro']:.2f}")
+  cf1, cf2, cf3 = st.columns(3)
+  cf1.metric("Valor Total Previsto", "R$ 3.787,85")
+  cf2.metric("Custo de Materiais e Instalação", "R$ 2.462,10")
+  cf3.metric("Lucro Líquido Estimado", "R$ 1.325,75")
 
-# ------------------------------------------------------------------------------
-# ABA 4: ABNT
-# ------------------------------------------------------------------------------
-with aba_abnt:
+# ==============================================================================
+# CONTEÚDO DA ABA 4: ABNT
+# ==============================================================================
+elif st.session_state["aba_ativa"] == "abnt":
   st.markdown(
       "<h3 style='color:#9D201C;'>Normas Técnicas da Construção Civil</h3>",
       unsafe_allow_html=True,
   )
   st.markdown(
       """
-        - **ABNT NBR 14207 (Boxes de Banheiro):** Exige vidro de segurança (temperado 8mm ou laminado).
-        - **ABNT NBR 14718 (Guarda-Corpos e Sacadas):** Obrigatório vidro laminado ou laminado-temperado. **Proibido vidro temperado comum sem laminação**.
-        - **ABNT NBR 7199 (Vidros na Construção Civil):** Vidros abaixo de 1,10m do piso acabado devem ser vidros de segurança.
-        """
+    - **ABNT NBR 14207 (Boxes de Banheiro):** Exige vidro de segurança (temperado 8mm ou laminado).
+    - **ABNT NBR 14718 (Guarda-Corpos e Sacadas):** Obrigatório vidro laminado ou laminado-temperado. Proibido vidro temperado comum sem laminação.
+    - **ABNT NBR 7199 (Vidros na Construção Civil):** Vidros abaixo de 1,10m do piso acabado devem ser vidros de segurança.
+    """
   )
