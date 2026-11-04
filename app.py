@@ -17,10 +17,9 @@ from reportlab.platypus import (
     TableStyle,
 )
 import streamlit as st
-import streamlit.components.v1 as components
 
 # ==============================================================================
-# CONFIGURAÇÃO DE TELA
+# CONFIGURAÇÃO DE PÁGINA
 # ==============================================================================
 st.set_page_config(
     page_title="HOPINESS PROJECT by Felipe Correa",
@@ -30,60 +29,99 @@ st.set_page_config(
 
 # 1. CARREGAMENTO DA LOGO (vdr.jpeg)
 logo_b64 = ""
-for img_name in ["vdr.jpeg", "vdr.jpg", "logo.png", "logo.jpeg"]:
-  if os.path.exists(img_name):
-    with open(img_name, "rb") as f:
+for nome_arquivo in ["vdr.jpeg", "vdr.jpg", "logo.png", "logo.jpeg"]:
+  if os.path.exists(nome_arquivo):
+    with open(nome_arquivo, "rb") as f:
       logo_b64 = base64.b64encode(f.read()).decode("utf-8")
     break
 
-# Se achou a logo, monta a imagem limpa sem borda branca; senão, monta o selo circular cinza com o prédio vermelho
 if logo_b64:
-  logo_render_html = f'<img src="data:image/jpeg;base64,{logo_b64}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; display: block; border: none; mix-blend-mode: multiply;">'
+  logo_img_tag = (
+      f'<img src="data:image/jpeg;base64,{logo_b64}" style="width: 66px;'
+      " height: 66px; border-radius: 50%; object-fit: cover; display: block;"
+      " border: none; outline: none; box-shadow: none; mix-blend-mode:"
+      ' multiply;">'
+  )
 else:
-  logo_render_html = """
-    <div style="width: 66px; height: 66px; background-color: #5A5A5A; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: none;">
-        <div style="display: flex; gap: 2px; align-items: flex-end; height: 26px; margin-bottom: 2px;">
-            <div style="width: 8px; height: 18px; background-color: #D01B13;"></div>
-            <div style="width: 8px; height: 26px; background-color: #B50915;"></div>
-            <div style="width: 8px; height: 14px; background-color: #9D201C;"></div>
-        </div>
-        <span style="color: #FFFFFF; font-size: 7px; font-weight: 900; letter-spacing: 0.5px;">RIO BRANCO</span>
-    </div>
-    """
+  logo_img_tag = (
+      '<div style="width: 62px; height: 62px; background-color: #5A5A5A;'
+      " border-radius: 50%; display: flex; align-items: center; justify-content:"
+      " center; color: #FFFFFF; font-size: 8.5px; font-weight: 900; text-align:"
+      ' center; border: none;">RIO<br/>BRANCO</div>'
+  )
 
 # ==============================================================================
-# CONTROLE DE ESTADO DA ABA SELECIONADA
-# ==============================================================================
-if "aba_ativa" not in st.session_state:
-  st.session_state["aba_ativa"] = "projetos"
-
-# Query params para permitir troca instantânea via HTML
-query_params = st.query_params
-if "aba" in query_params:
-  st.session_state["aba_ativa"] = query_params["aba"]
-
-aba_atual = st.session_state["aba_ativa"]
-
-# ==============================================================================
-# CSS FORÇADO NO BODY E NO CONTAINER DO STREAMLIT
+# ESTILOS CSS REFORÇADOS (DEGRADÊ TOTAL + ABAS PÍLULA)
 # ==============================================================================
 st.markdown(
     """
 <style>
-    /* 1. FUNDO REAL COM DEGRADÊ EM TODO O SISTEMA */
-    html, body, [data-testid="stAppViewContainer"], .stApp {
-        background: linear-gradient(180deg, #FDE8E7 0%, #FFFFFF 32%, #F8F9FA 100%) !important;
+    /* 1. DEGRADÊ VERMELHO + BRANCO NA PÁGINA INTEIRA */
+    html, body, .stApp, [data-testid="stAppViewContainer"], section.main {
+        background: linear-gradient(180deg, #FCE7E6 0%, #FFFFFF 34%, #F8F9FA 100%) !important;
         background-attachment: fixed !important;
     }
-    
-    /* Remove padding superior desnecessário do Streamlit */
-    .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 2rem !important;
+
+    /* Tipografia Geral */
+    p, span, label, .stMarkdown {
+        color: #5A5A5A !important;
+        font-weight: 600;
     }
-    
-    /* Cartões e Métricas */
-    .metric-box {
+
+    /* FAIXA DO CABEÇALHO TRANSLÚCIDA (O DEGRADÊ PASSA POR TRÁS) */
+    .header-box {
+        position: relative;
+        background: rgba(255, 255, 255, 0.75) !important;
+        backdrop-filter: blur(8px) !important;
+        border: 1px solid rgba(203, 213, 225, 0.8) !important;
+        border-left: 8px solid #D01B13 !important;
+        border-radius: 12px;
+        padding: 14px 24px;
+        margin-top: -15px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 15px rgba(208, 27, 19, 0.08);
+        overflow: hidden;
+        min-height: 98px;
+    }
+
+    /* 2. ABAS EM PÍLULAS VERMELHAS COM TEXTO BRANCO */
+    div[data-testid="stHorizontalBlock"] .nav-tab-container button {
+        border-radius: 25px !important;
+        padding: 10px 14px !important;
+        border: none !important;
+        width: 100% !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+
+    /* Aba Inativa: Vermelho Vivo */
+    div[data-testid="stHorizontalBlock"] .nav-tab-container button[kind="secondary"] {
+        background-color: #D01B13 !important;
+        box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25) !important;
+    }
+
+    /* Aba Ativa: Vermelho Escuro em Destaque */
+    div[data-testid="stHorizontalBlock"] .nav-tab-container button[kind="primary"] {
+        background-color: #9D201C !important;
+        box-shadow: 0 4px 12px rgba(157, 32, 28, 0.45) !important;
+    }
+
+    /* Texto 100% Branco em Todas as Abas */
+    div[data-testid="stHorizontalBlock"] .nav-tab-container button *,
+    div[data-testid="stHorizontalBlock"] .nav-tab-container button p,
+    div[data-testid="stHorizontalBlock"] .nav-tab-container button span {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+        font-weight: 800 !important;
+        font-size: 0.93rem !important;
+    }
+
+    div[data-testid="stHorizontalBlock"] .nav-tab-container button:hover {
+        background-color: #B50915 !important;
+    }
+
+    /* CARDS DE MÉTRICAS */
+    .metric-card {
         background-color: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 12px;
@@ -92,20 +130,20 @@ st.markdown(
         box-shadow: 0 3px 10px rgba(0,0,0,0.04);
         margin-bottom: 15px;
     }
-    .metric-label {
+    .metric-card-label {
         color: #5A5A5A;
         font-size: 0.92rem;
         font-weight: 700;
         margin-bottom: 6px;
     }
-    .metric-val {
+    .metric-card-val {
         color: #9D201C;
         font-size: 1.85rem;
         font-weight: 900;
         margin: 0;
     }
-    
-    /* Formulários */
+
+    /* INPUTS */
     .stTextInput input, .stNumberInput input {
         background-color: #FFFFFF !important;
         color: #9D201C !important;
@@ -123,8 +161,8 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    /* Botões */
-    .btn-red button {
+    /* BOTÕES INFERIORES REDONDOS */
+    .btn-gerar button {
         background-color: #D01B13 !important;
         color: #FFFFFF !important;
         border-radius: 25px !important;
@@ -133,6 +171,10 @@ st.markdown(
         border: none !important;
         box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;
         width: 100% !important;
+    }
+    .btn-gerar button * {
+        color: #FFFFFF !important;
+        font-weight: 800 !important;
     }
     .btn-pdf button {
         background-color: #2D3748 !important;
@@ -143,194 +185,142 @@ st.markdown(
         border: none !important;
         width: 100% !important;
     }
+    .btn-pdf button * {
+        color: #FFFFFF !important;
+        font-weight: 800 !important;
+    }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
 # ==============================================================================
-# COMPONENTE VISUAL BLINDADO (CABEÇALHO COM ESQUADRIAS + TÍTULO VERMELHO + ABAS PÍLULA)
+# CABEÇALHO: ESQUADRIAS EM PERSPECTIVA + BLUR CENTRAL + TÍTULO VERMELHO
 # ==============================================================================
-# Cores exatas das abas baseadas na ativação
-c_proj = "#9D201C" if aba_atual == "projetos" else "#D01B13"
-c_temp = "#9D201C" if aba_atual == "tempera" else "#D01B13"
-c_fin = "#9D201C" if aba_atual == "financeiro" else "#D01B13"
-c_abnt = "#9D201C" if aba_atual == "abnt" else "#D01B13"
+cabecalho_html = f"""<div class="header-box">
+<!-- SVG COM ESQUADRIAS ARQUITETÔNICAS EM PERSPECTIVA E BLUR SUAVE NO CENTRO -->
+<svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1000 100">
+    <defs>
+        <!-- Máscara de Blur/Degradê que clareia o centro atrás do título -->
+        <radialGradient id="blurCenter" cx="50%" cy="50%" r="48%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+            <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.3"/>
+            <stop offset="80%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="1"/>
+        </radialGradient>
+        <mask id="fadeMask">
+            <rect width="1000" height="100" fill="url(#blurCenter)"/>
+        </mask>
+    </defs>
 
-sh_proj = (
-    "box-shadow: 0 4px 12px rgba(157, 32, 28, 0.5);"
-    if aba_atual == "projetos"
-    else "box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25);"
-)
-sh_temp = (
-    "box-shadow: 0 4px 12px rgba(157, 32, 28, 0.5);"
-    if aba_atual == "tempera"
-    else "box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25);"
-)
-sh_fin = (
-    "box-shadow: 0 4px 12px rgba(157, 32, 28, 0.5);"
-    if aba_atual == "financeiro"
-    else "box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25);"
-)
-sh_abnt = (
-    "box-shadow: 0 4px 12px rgba(157, 32, 28, 0.5);"
-    if aba_atual == "abnt"
-    else "box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25);"
-)
+    <!-- Linhas estruturais em perspectiva (Esquerda) -->
+    <g mask="url(#fadeMask)" stroke="#94A3B8" stroke-width="1.2" opacity="0.65">
+        <line x1="0" y1="12" x2="450" y2="44"/>
+        <line x1="0" y1="30" x2="450" y2="47"/>
+        <line x1="0" y1="50" x2="450" y2="50"/>
+        <line x1="0" y1="70" x2="450" y2="53"/>
+        <line x1="0" y1="88" x2="450" y2="56"/>
 
-html_cabecalho_e_abas = f"""
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-    * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-    body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: transparent; }}
-    
-    /* FAIXA BRANCA DO CABEÇALHO COM DESENHO ARQUITETÔNICO DE ESQUADRIAS */
-    .header-box {{
-        position: relative;
-        background: #FFFFFF;
-        border: 1px solid #CBD5E1;
-        border-left: 8px solid #D01B13;
-        border-radius: 12px;
-        padding: 14px 24px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 15px rgba(208, 27, 19, 0.08);
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        min-height: 98px;
-    }}
+        <line x1="45" y1="0" x2="45" y2="100" stroke-width="2"/>
+        <line x1="100" y1="0" x2="100" y2="100" stroke-width="1.8"/>
+        <line x1="165" y1="0" x2="165" y2="100" stroke-width="1.5"/>
+        <line x1="235" y1="0" x2="235" y2="100" stroke-width="1.3"/>
+        <line x1="310" y1="0" x2="310" y2="100" stroke-width="1.1"/>
+        <line x1="380" y1="0" x2="380" y2="100" stroke-width="0.9"/>
 
-    /* SVG DAS ESQUADRIAS EM PERSPECTIVA REAL */
-    .esquadrias-svg {{
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        pointer-events: none;
-        opacity: 0.38;
-    }}
+        <!-- Linhas estruturais em perspectiva (Direita) -->
+        <line x1="1000" y1="12" x2="550" y2="44"/>
+        <line x1="1000" y1="30" x2="550" y2="47"/>
+        <line x1="1000" y1="50" x2="550" y2="50"/>
+        <line x1="1000" y1="70" x2="550" y2="53"/>
+        <line x1="1000" y1="88" x2="550" y2="56"/>
 
-    .header-content {{
-        position: relative;
-        z-index: 3;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-    }}
+        <line x1="955" y1="0" x2="955" y2="100" stroke-width="2"/>
+        <line x1="900" y1="0" x2="900" y2="100" stroke-width="1.8"/>
+        <line x1="835" y1="0" x2="835" y2="100" stroke-width="1.5"/>
+        <line x1="765" y1="0" x2="765" y2="100" stroke-width="1.3"/>
+        <line x1="690" y1="0" x2="690" y2="100" stroke-width="1.1"/>
+        <line x1="620" y1="0" x2="620" y2="100" stroke-width="0.9"/>
+    </g>
+</svg>
 
-    /* TÍTULO EM VERMELHO ESCURO PURO */
-    .header-title {{
-        color: #9D201C !important;
-        font-size: 2.35rem;
-        font-weight: 900;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        text-align: center;
-    }}
-
-    .header-author {{
-        color: #5A5A5A;
-        font-size: 0.95rem;
-        font-weight: 600;
-        font-style: italic;
-        text-align: right;
-    }}
-
-    /* CONTAINER DAS 4 ABAS PÍLULA */
-    .tabs-grid {{
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 14px;
-        margin-bottom: 8px;
-    }}
-
-    /* ESTILO DAS PÍLULAS VERMELHAS COM TEXTO 100% BRANCO */
-    .tab-pill {{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 11px 16px;
-        border-radius: 25px;
-        color: #FFFFFF !important;
-        text-decoration: none;
-        font-weight: 800;
-        font-size: 0.92rem;
-        cursor: pointer;
-        transition: all 0.2s ease-in-out;
-        border: none;
-        text-align: center;
-    }}
-    .tab-pill:hover {{
-        background-color: #B50915 !important;
-    }}
-</style>
-</head>
-<body>
-    <!-- CABEÇALHO -->
-    <div class="header-box">
-        <svg class="esquadrias-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1200 120">
-            <!-- Travessas Horizontais -->
-            <line x1="0" y1="20" x2="1200" y2="20" stroke="#64748B" stroke-width="2"/>
-            <line x1="0" y1="60" x2="1200" y2="60" stroke="#64748B" stroke-width="2.5"/>
-            <line x1="0" y1="100" x2="1200" y2="100" stroke="#64748B" stroke-width="2"/>
-            
-            <!-- Montantes de Esquadrias em Perspectiva (Esquerda) -->
-            <line x1="80" y1="0" x2="220" y2="120" stroke="#64748B" stroke-width="2.2"/>
-            <line x1="160" y1="0" x2="270" y2="120" stroke="#94A3B8" stroke-width="1.8"/>
-            <line x1="240" y1="0" x2="320" y2="120" stroke="#94A3B8" stroke-width="1.8"/>
-            <line x1="320" y1="0" x2="370" y2="120" stroke="#CBD5E1" stroke-width="1.5"/>
-
-            <!-- Montantes de Esquadrias em Perspectiva (Direita) -->
-            <line x1="1120" y1="0" x2="980" y2="120" stroke="#64748B" stroke-width="2.2"/>
-            <line x1="1040" y1="0" x2="930" y2="120" stroke="#94A3B8" stroke-width="1.8"/>
-            <line x1="960" y1="0" x2="880" y2="120" stroke="#94A3B8" stroke-width="1.8"/>
-            <line x1="880" y1="0" x2="830" y2="120" stroke="#CBD5E1" stroke-width="1.5"/>
-            
-            <!-- Reflexos no Vidro -->
-            <line x1="140" y1="100" x2="220" y2="20" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="10,6"/>
-            <line x1="980" y1="100" x2="1060" y2="20" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="10,6"/>
-        </svg>
-
-        <div class="header-content">
-            <div style="flex-shrink: 0;">
-                {logo_render_html}
-            </div>
-            <div style="text-align: center; flex-grow: 1;">
-                <div class="header-title">HOPINESS PROJECT</div>
-            </div>
-            <div style="flex-shrink: 0;">
-                <div class="header-author">by Felipe Correa</div>
-            </div>
-        </div>
+<div style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="flex-shrink: 0;">{logo_img_tag}</div>
+    <div style="text-align: center; flex-grow: 1;">
+        <span style="color: #9D201C !important; -webkit-text-fill-color: #9D201C !important; font-size: 2.35rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: inline-block;">HOPINESS PROJECT</span>
     </div>
-
-    <!-- 4 ABAS PÍLULAS VERMELHAS COM TEXTO BRANCO -->
-    <div class="tabs-grid">
-        <a class="tab-pill" style="background-color: {c_proj}; {sh_proj}" onclick="window.parent.postMessage({{type: 'streamlit:setQueryParams', queryParams: {{aba: 'projetos'}}}}, '*'); window.location.search='?aba=projetos';">
-            📐 Projetos Padrão & Orçamento
-        </a>
-        <a class="tab-pill" style="background-color: {c_temp}; {sh_temp}" onclick="window.parent.postMessage({{type: 'streamlit:setQueryParams', queryParams: {{aba: 'tempera'}}}}, '*'); window.location.search='?aba=tempera';">
-            🏭 Pedido de Têmpera (Corte)
-        </a>
-        <a class="tab-pill" style="background-color: {c_fin}; {sh_fin}" onclick="window.parent.postMessage({{type: 'streamlit:setQueryParams', queryParams: {{aba: 'financeiro'}}}}, '*'); window.location.search='?aba=financeiro';">
-            💵 Financeiro da Obra
-        </a>
-        <a class="tab-pill" style="background-color: {c_abnt}; {sh_abnt}" onclick="window.parent.postMessage({{type: 'streamlit:setQueryParams', queryParams: {{aba: 'abnt'}}}}, '*'); window.location.search='?aba=abnt';">
-            📋 Catálogo Técnico ABNT
-        </a>
+    <div style="flex-shrink: 0;">
+        <span style="color: #5A5A5A; font-size: 0.95rem; font-weight: 600; font-style: italic;">by Felipe Correa</span>
     </div>
-</body>
-</html>
-"""
+</div>
+</div>"""
 
-# Renderiza o topo com altura exata e sem quebras de layout
-components.html(html_cabecalho_e_abas, height=195)
+st.markdown(cabecalho_html, unsafe_allow_html=True)
 
 # ==============================================================================
-# REGRAS TÉCNICAS E MOTOR DE PROJETOS
+# NAVEGAÇÃO ENTRE ABAS COM BOTÕES VERMELHOS (SEM O st.tabs QUE QUEBRAVA O ESTILO)
+# ==============================================================================
+if "aba_ativa" not in st.session_state:
+  st.session_state["aba_ativa"] = "projetos"
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+  st.markdown('<div class="nav-tab-container">', unsafe_allow_html=True)
+  if st.button(
+      "📐 Projetos Padrão & Orçamento",
+      type="primary"
+      if st.session_state["aba_ativa"] == "projetos"
+      else "secondary",
+      use_container_width=True,
+  ):
+    st.session_state["aba_ativa"] = "projetos"
+    st.rerun()
+  st.markdown("</div>", unsafe_allow_html=True)
+
+with col2:
+  st.markdown('<div class="nav-tab-container">', unsafe_allow_html=True)
+  if st.button(
+      "🏭 Pedido de Têmpera (Corte)",
+      type="primary"
+      if st.session_state["aba_ativa"] == "tempera"
+      else "secondary",
+      use_container_width=True,
+  ):
+    st.session_state["aba_ativa"] = "tempera"
+    st.rerun()
+  st.markdown("</div>", unsafe_allow_html=True)
+
+with col3:
+  st.markdown('<div class="nav-tab-container">', unsafe_allow_html=True)
+  if st.button(
+      "💵 Financeiro da Obra",
+      type="primary"
+      if st.session_state["aba_ativa"] == "financeiro"
+      else "secondary",
+      use_container_width=True,
+  ):
+    st.session_state["aba_ativa"] = "financeiro"
+    st.rerun()
+  st.markdown("</div>", unsafe_allow_html=True)
+
+with col4:
+  st.markdown('<div class="nav-tab-container">', unsafe_allow_html=True)
+  if st.button(
+      "📋 Catálogo Técnico ABNT",
+      type="primary"
+      if st.session_state["aba_ativa"] == "abnt"
+      else "secondary",
+      use_container_width=True,
+  ):
+    st.session_state["aba_ativa"] = "abnt"
+    st.rerun()
+  st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
+
+# ==============================================================================
+# PROJETOS PADRÃO E CÁLCULOS
 # ==============================================================================
 PROJETOS_PADRAO = {
     "guarda_corpo_torres": {
@@ -602,9 +592,9 @@ def gerar_pdf(dados):
 
 
 # ==============================================================================
-# CONTEÚDO DA TELA ATIVA
+# CONTEÚDO DA ABA 1: PROJETOS & ORÇAMENTO
 # ==============================================================================
-if aba_atual == "projetos":
+if st.session_state["aba_ativa"] == "projetos":
   col_esq, col_dir = st.columns([1.1, 1.0], gap="large")
 
   with col_esq:
@@ -670,13 +660,13 @@ if aba_atual == "projetos":
     with m_c1:
       st.markdown(
           f"""
-            <div class="metric-box">
-                <div class="metric-label">Área Real (Líquida):</div>
-                <div class="metric-val">{res['area_liq']:.2f} m²</div>
+            <div class="metric-card">
+                <div class="metric-card-label">Área Real (Líquida):</div>
+                <div class="metric-card-val">{res['area_liq']:.2f} m²</div>
             </div>
-            <div class="metric-box">
-                <div class="metric-label">Custo Direto Total:</div>
-                <div class="metric-val">R$ {res['custo_total']:.2f}</div>
+            <div class="metric-card">
+                <div class="metric-card-label">Custo Direto Total:</div>
+                <div class="metric-card-val">R$ {res['custo_total']:.2f}</div>
             </div>
         """,
           unsafe_allow_html=True,
@@ -684,13 +674,13 @@ if aba_atual == "projetos":
     with m_c2:
       st.markdown(
           f"""
-            <div class="metric-box">
-                <div class="metric-label">Área Faturada (+Folga):</div>
-                <div class="metric-val">{res['area_fat']:.2f} m²</div>
+            <div class="metric-card">
+                <div class="metric-card-label">Área Faturada (+Folga):</div>
+                <div class="metric-card-val">{res['area_fat']:.2f} m²</div>
             </div>
-            <div class="metric-box">
-                <div class="metric-label">Preço de Venda Sugerido:</div>
-                <div class="metric-val">R$ {res['preco_venda']:.2f}</div>
+            <div class="metric-card">
+                <div class="metric-card-label">Preço de Venda Sugerido:</div>
+                <div class="metric-card-val">R$ {res['preco_venda']:.2f}</div>
             </div>
         """,
           unsafe_allow_html=True,
@@ -721,7 +711,7 @@ if aba_atual == "projetos":
   }
 
   with b_c1:
-    st.markdown('<div class="btn-red">', unsafe_allow_html=True)
+    st.markdown('<div class="btn-gerar">', unsafe_allow_html=True)
     if st.button("📄 Gerar Orçamento", use_container_width=True):
       st.toast("Orçamento recalculado com sucesso!")
     st.markdown("</div>", unsafe_allow_html=True)
@@ -738,7 +728,7 @@ if aba_atual == "projetos":
     )
     st.markdown("</div>", unsafe_allow_html=True)
 
-elif aba_atual == "tempera":
+elif st.session_state["aba_ativa"] == "tempera":
   st.markdown(
       "<h3 style='color:#9D201C;'>Ordem de Corte para a Têmpera</h3>",
       unsafe_allow_html=True,
@@ -758,7 +748,7 @@ elif aba_atual == "tempera":
     })
   st.table(tab_cortes)
 
-elif aba_atual == "financeiro":
+elif st.session_state["aba_ativa"] == "financeiro":
   st.markdown(
       "<h3 style='color:#9D201C;'>Gestão Financeira da Obra</h3>",
       unsafe_allow_html=True,
@@ -768,7 +758,7 @@ elif aba_atual == "financeiro":
   cf2.metric("Custo de Materiais e Instalação", "R$ 2.462,10")
   cf3.metric("Lucro Líquido Estimado", "R$ 1.325,75")
 
-elif aba_atual == "abnt":
+elif st.session_state["aba_ativa"] == "abnt":
   st.markdown(
       "<h3 style='color:#9D201C;'>Normas Técnicas da Construção Civil</h3>",
       unsafe_allow_html=True,
