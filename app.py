@@ -89,11 +89,11 @@ border: 3px solid #FFFFFF;
 }
 .menu-card-title {
 color: #FFFFFF !important;
-font-size: 1.25rem;
+font-size: 1.15rem;
 font-weight: 800;
 margin: 0;
 text-align: center;
-letter-spacing: 0.5px;
+letter-spacing: 0.3px;
 }
 .card-action-btn button {
 border-radius: 20px !important;
@@ -239,6 +239,37 @@ font-weight: 600;
 margin-top: 4px;
 }
 
+/* CARDS FINANCEIROS */
+.fin-top-card {
+background-color: #FFFFFF;
+border: 1px solid #E2E8F0;
+border-radius: 10px;
+padding: 14px 18px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+margin-bottom: 15px;
+}
+.fin-top-title {
+color: #64748B;
+font-size: 0.82rem;
+font-weight: 700;
+margin-bottom: 4px;
+}
+.fin-top-val {
+color: #1E293B;
+font-size: 1.25rem;
+font-weight: 800;
+margin-bottom: 8px;
+}
+.fin-tag-realizado {
+background-color: #E0E7FF;
+color: #3730A3;
+padding: 2px 8px;
+border-radius: 10px;
+font-size: 0.72rem;
+font-weight: 700;
+display: inline-block;
+}
+
 .stTextInput input, .stNumberInput input {
 background-color: #FFFFFF !important;
 color: #9D201C !important;
@@ -310,15 +341,12 @@ if hasattr(st, "html"):
 else:
     st.markdown(clean_cabecalho, unsafe_allow_html=True)
 
-# 4. Controle de Telas e Memória (com Sincronização Automática Orçamentos <-> Clientes)
+# 4. Controle de Telas e Memória
 if "tela_ativa" not in st.session_state:
     st.session_state["tela_ativa"] = "inicio"
 
 if "orcamento_selecionado" not in st.session_state:
     st.session_state["orcamento_selecionado"] = None
-
-if "cliente_selecionado_idx" not in st.session_state:
-    st.session_state["cliente_selecionado_idx"] = 0
 
 if "historico_orcamentos" not in st.session_state:
     st.session_state["historico_orcamentos"] = [
@@ -335,7 +363,7 @@ if "clientes_cadastrados" not in st.session_state:
         {"nome": "MARCOS EMANUEL JUNIOR DE ALMEIDA NUNES LEITE", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "14/08/2026", "local": "Recife/PE"},
     ]
 
-# Sincronização automática para garantir que cliente de orçamento esteja na aba clientes
+# Sincronização automática
 nomes_cad = {str(c.get("nome", "")).upper() for c in st.session_state["clientes_cadastrados"]}
 for orc in st.session_state["historico_orcamentos"]:
     nm = str(orc.get("cliente", "")).strip().upper()
@@ -500,7 +528,7 @@ def gerar_pdf(dados):
 # 6. RENDERIZAÇÃO DAS TELAS
 # ==============================================================================
 
-# TELA 0: INÍCIO
+# TELA 0: INÍCIO (COM CONTROLE FINANCEIRO)
 if st.session_state["tela_ativa"] == "inicio":
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     c_m1, c_m2, c_m3 = st.columns(3, gap="large")
@@ -559,14 +587,14 @@ if st.session_state["tela_ativa"] == "inicio":
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 
-    # CARD 3: FINANCEIRO
+    # CARD 3: CONTROLE FINANCEIRO
     with c_m3:
         st.markdown(
             """
             <div class="menu-card-container">
                 <div class="menu-card-header">
                     <div class="menu-card-icon-badge">📑$</div>
-                    <div class="menu-card-title">FINANCEIRO</div>
+                    <div class="menu-card-title">CONTROLE FINANCEIRO</div>
                 </div>
             </div>
             """,
@@ -587,7 +615,7 @@ if st.session_state["tela_ativa"] == "inicio":
             st.markdown('</div>', unsafe_allow_html=True)
         with b_f3:
             st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
-            if st.button("📋 LISTA", key="card_btn_list_fin", use_container_width=True):
+            if st.button("📋 PAINEL", key="card_btn_list_fin", use_container_width=True):
                 st.session_state["tela_ativa"] = "financeiro"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
@@ -813,7 +841,7 @@ elif st.session_state["tela_ativa"] == "novo_orcamento":
         )
         st.markdown('</div>', unsafe_allow_html=True)
 
-# TELA 3: GERENCIAR CLIENTES (COM DETALHES 👁, EDIÇÃO ✏️, EXCLUSÃO E ORÇAMENTO)
+# TELA 3: GERENCIAR CLIENTES
 elif st.session_state["tela_ativa"] == "gerenciar_clientes":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
     if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_cli_grid"):
@@ -897,7 +925,6 @@ elif st.session_state["tela_ativa"] == "gerenciar_clientes":
                         unsafe_allow_html=True,
                     )
 
-                    # BOTÕES DE AÇÃO: DETALHES (👁), EDITAR (✏️), EXCLUIR E + ORÇAMENTO
                     b_det, b_ed = st.columns(2)
                     with b_det:
                         if st.button("👁 Detalhes", key=f"det_cli_{idx_real}", use_container_width=True):
@@ -928,7 +955,7 @@ elif st.session_state["tela_ativa"] == "gerenciar_clientes":
                             st.session_state["tela_ativa"] = "novo_orcamento"
                             st.rerun()
 
-# TELA 3.1: DETALHES DO CLIENTE (OLHINHO 👁)
+# TELA 3.1: DETALHES DO CLIENTE
 elif st.session_state["tela_ativa"] == "detalhes_cliente":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
     if st.button("⬅ VOLTAR PARA CLIENTES", key="btn_voltar_det_cli"):
@@ -957,7 +984,7 @@ elif st.session_state["tela_ativa"] == "detalhes_cliente":
     else:
         st.warning("Cliente não encontrado.")
 
-# TELA 3.2: EDITAR CLIENTE (LÁPIS ✏️)
+# TELA 3.2: EDITAR CLIENTE
 elif st.session_state["tela_ativa"] == "editar_cliente":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
     if st.button("⬅ VOLTAR PARA CLIENTES", key="btn_voltar_edit_cli"):
@@ -1022,7 +1049,7 @@ elif st.session_state["tela_ativa"] == "novo_cliente":
             else:
                 st.warning("Preencha o nome do cliente.")
 
-# TELA 4: FINANCEIRO
+# TELA 4: CONTROLE FINANCEIRO (CONFORME O ANEXO)
 elif st.session_state["tela_ativa"] == "financeiro":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
     if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_fin_tela"):
@@ -1030,11 +1057,138 @@ elif st.session_state["tela_ativa"] == "financeiro":
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("<h3 style='color:#9D201C;'>Gestão Financeira da Obra</h3>", unsafe_allow_html=True)
-    cf1, cf2, cf3 = st.columns(3)
-    cf1.metric("Valor Total Previsto", "R$ 3.787,85")
-    cf2.metric("Custo de Materiais e Instalação", "R$ 2.462,10")
-    cf3.metric("Lucro Líquido Estimado", "R$ 1.325,75")
+    fin_b1, fin_b2, fin_b3, fin_b4, fin_b5 = st.columns([1.5, 1.5, 3.0, 1.2, 1.2])
+    with fin_b1:
+        st.markdown('<div class="btn-gerar" style="margin-top: 4px;">', unsafe_allow_html=True)
+        if st.button("➕ Nova Receita", key="btn_nova_receita", use_container_width=True):
+            st.toast("Módulo de Nova Receita acionado.")
+        st.markdown('</div>', unsafe_allow_html=True)
+    with fin_b2:
+        st.markdown('<div class="btn-gerar" style="margin-top: 4px; background-color: #9D201C !important;">', unsafe_allow_html=True)
+        if st.button("➖ Nova Despesa", key="btn_nova_despesa", use_container_width=True):
+            st.toast("Módulo de Nova Despesa acionado.")
+        st.markdown('</div>', unsafe_allow_html=True)
+    with fin_b4:
+        st.markdown('<div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 8px; text-align: center; font-size: 0.82rem; font-weight: 700; color: #5A5A5A; margin-top: 4px; cursor: pointer;">🏷️ Categorias</div>', unsafe_allow_html=True)
+    with fin_b5:
+        st.markdown('<div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 8px; text-align: center; font-size: 0.82rem; font-weight: 700; color: #5A5A5A; margin-top: 4px; cursor: pointer;">👁️ Ocultar valores</div>', unsafe_allow_html=True)
+
+    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+
+    sub_f1, sub_f2 = st.columns([2.0, 3.0])
+    with sub_f1:
+        st.markdown(
+            """
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                <span style="background: #D01B13; color: #FFFFFF; padding: 4px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 700;">Visão Geral</span>
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #64748B;">Gráficos</span>
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #64748B;">Recebíveis</span>
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #64748B;">Contas a pagar</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    fc1, fc2, fc3, fc4 = st.columns(4, gap="medium")
+    with fc1:
+        st.markdown(
+            """
+            <div class="fin-top-card">
+                <div class="fin-top-title">📥 Receitas recebidas</div>
+                <div class="fin-top-val">R$ 3.787,85</div>
+                <span class="fin-tag-realizado">Realizado</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with fc2:
+        st.markdown(
+            """
+            <div class="fin-top-card">
+                <div class="fin-top-title">📤 Despesas pagas</div>
+                <div class="fin-top-val">R$ 2.462,10</div>
+                <span class="fin-tag-realizado" style="background-color: #FEE2E2; color: #B91C1C;">Realizado</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with fc3:
+        st.markdown(
+            """
+            <div class="fin-top-card">
+                <div class="fin-top-title">💼 Resultado realizado</div>
+                <div class="fin-top-val" style="color: #047857;">R$ 1.325,75</div>
+                <span class="fin-tag-realizado" style="background-color: #D1FAE5; color: #047857;">Realizado</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with fc4:
+        st.markdown(
+            """
+            <div class="fin-top-card">
+                <div class="fin-top-title">🏢 Obras totais</div>
+                <div class="fin-top-val">3</div>
+                <span class="fin-tag-realizado">Realizado</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    inf_c1, inf_c2 = st.columns([1.3, 1.0], gap="large")
+    with inf_c1:
+        st.markdown(
+            """
+            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span style="font-weight: 800; color: #1E293B; font-size: 1rem;">📊 Resumo de obras</span>
+                    <span style="background: #D01B13; color: #FFFFFF; padding: 4px 12px; border-radius: 16px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">Ver todas as obras</span>
+                </div>
+                <div style="display: flex; justify-content: space-around; text-align: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #1E293B;">3</div>
+                        <div style="font-size: 0.75rem; color: #64748B; font-weight: 700;">Total de Obras</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #047857;">1</div>
+                        <div style="font-size: 0.75rem; color: #64748B; font-weight: 700;">Concluídas</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #B45309;">2</div>
+                        <div style="font-size: 0.75rem; color: #64748B; font-weight: 700;">Em Andamento</div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-around; text-align: center;">
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #9D201C;">R$ 2.459,28</div>
+                        <div style="font-size: 0.75rem; color: #64748B; font-weight: 700;">Ticket médio por obra</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #047857;">35.0%</div>
+                        <div style="font-size: 0.75rem; color: #64748B; font-weight: 700;">Margem de resultado</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #B91C1C;">0</div>
+                        <div style="font-size: 0.75rem; color: #64748B; font-weight: 700;">Obras sem orçamento</div>
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with inf_c2:
+        st.markdown(
+            """
+            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); min-height: 200px;">
+                <div style="font-weight: 800; color: #1E293B; font-size: 1rem; margin-bottom: 15px;">📑 Transações Recentes</div>
+                <div style="padding: 25px 0; text-align: center; color: #94A3B8; font-size: 0.85rem; font-weight: 600;">
+                    Nenhuma transação neste período.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 # TELA 5: TÊMPERA
 elif st.session_state["tela_ativa"] == "tempera":
