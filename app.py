@@ -28,140 +28,60 @@ st.set_page_config(
 )
 
 # ==============================================================================
-# ESTILOS CSS REFORÇADOS
+# LEITURA DA LOGO LOCAL (vdr.jpeg)
+# ==============================================================================
+logo_src = ""
+for img_name in ["vdr.jpeg", "vdr.jpg", "logo.png", "logo.jpeg"]:
+  if os.path.exists(img_name):
+    with open(img_name, "rb") as f:
+      b64 = base64.b64encode(f.read()).decode("utf-8")
+    ext = "jpeg" if "jp" in img_name else "png"
+    logo_src = f"data:image/{ext};base64,{b64}"
+    break
+
+# ==============================================================================
+# CSS GLOBAL E CONTROLO DE CORES
 # ==============================================================================
 st.markdown(
     """
     <style>
-        /* 1. DEGRADÊ NO FUNDO: Vermelho Suave -> Branco -> Cinza Gelo */
+        /* 1. FUNDO GERAL COM DEGRADÊ SUAVE */
         .stApp, [data-testid="stAppViewContainer"], section.main {
-            background: linear-gradient(180deg, #FCE8E6 0%, #FFFFFF 35%, #F8F9FA 100%) !important;
+            background: linear-gradient(180deg, #FCE8E6 0%, #FFFFFF 30%, #F8F9FA 100%) !important;
             background-attachment: fixed !important;
         }
 
-        p, span, label, .stMarkdown {
-            color: #5A5A5A !important;
-            font-weight: 600;
-        }
-
-        /* 2. FAIXA DO CABEÇALHO */
-        .header-box {
-            background-color: #FFFFFF;
-            border: 1px solid #CBD5E1;
-            border-left: 8px solid #D01B13;
-            border-radius: 12px;
-            padding: 16px 28px;
-            margin-top: -15px;
-            margin-bottom: 22px;
-            box-shadow: 0 4px 15px rgba(208, 27, 19, 0.08);
-            position: relative;
-            overflow: hidden;
-            min-height: 95px;
-        }
-
-        /* DESENHO VETORIAL DAS ESQUADRIAS */
-        .esquadrias-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.7;
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        /* TÍTULO EM VERMELHO ESCURO (SEM OVERRIDE DO STREAMLIT) */
-        .header-title-text {
-            color: #9D201C !important;
-            -webkit-text-fill-color: #9D201C !important;
-            font-size: 2.3rem !important;
-            font-weight: 900 !important;
-            letter-spacing: 2.5px !important;
-            margin: 0 !important;
-            text-transform: uppercase !important;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-            line-height: 1.1 !important;
-        }
-
-        .header-sub-text {
-            color: #5A5A5A !important;
-            font-size: 0.95rem !important;
-            font-weight: 600 !important;
-            font-style: italic !important;
-            margin: 0 !important;
-            text-align: right !important;
-        }
-
-        /* 3. LOGO SEM QUALQUER BORDA BRANCA */
-        .logo-img {
-            width: 62px;
-            height: 62px;
-            border: none !important;
-            outline: none !important;
-            box-shadow: none !important;
-            border-radius: 50%;
-            object-fit: cover;
-            mix-blend-mode: multiply !important; /* Torna o branco do JPEG 100% transparente */
-            display: block;
-        }
-
-        /* 4. ABAS: FUNDO VERMELHO E TEXTO 100% BRANCO */
+        /* 2. FORÇAR TODAS AS ABAS DO STREAMLIT A SEREM VERMELHAS COM TEXTO BRANCO */
         div[data-testid="stTabs"] [role="tablist"] {
             gap: 12px !important;
-            background-color: transparent !important;
-            padding: 4px 0px !important;
-            margin-bottom: 24px !important;
+            background: transparent !important;
             border: none !important;
+            padding: 0 !important;
+            margin-bottom: 25px !important;
         }
-
         div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
             display: none !important;
         }
-
         div[data-testid="stTabs"] button[role="tab"] {
             background-color: #D01B13 !important;
             border-radius: 25px !important;
             border: none !important;
             padding: 10px 24px !important;
             box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25) !important;
-            opacity: 0.92 !important;
         }
-
-        /* Força branco em todos os parágrafos e spans das abas */
-        div[data-testid="stTabs"] button[role="tab"] *,
-        div[data-testid="stTabs"] button[role="tab"] p,
-        div[data-testid="stTabs"] button[role="tab"] span,
-        div[data-testid="stTabs"] button[role="tab"] div {
+        /* Força a cor branca em absolutamente todos os nós de texto das abas */
+        div[data-testid="stTabs"] button[role="tab"] * {
             color: #FFFFFF !important;
-            fill: #FFFFFF !important;
             -webkit-text-fill-color: #FFFFFF !important;
             font-weight: 800 !important;
-            font-size: 0.92rem !important;
+            font-size: 0.95rem !important;
         }
-
-        div[data-testid="stTabs"] button[role="tab"]:hover {
-            background-color: #B50915 !important;
-            opacity: 1.0 !important;
-        }
-
-        /* Aba ativa */
         div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
             background-color: #9D201C !important;
             box-shadow: 0 4px 12px rgba(157, 32, 28, 0.45) !important;
-            opacity: 1.0 !important;
         }
 
-        /* 5. CARDS E MÉTRICAS */
+        /* 3. CARTÕES DE MÉTRICAS */
         .metric-card {
             background-color: #FFFFFF;
             border: 1px solid #E2E8F0;
@@ -184,7 +104,7 @@ st.markdown(
             margin: 0;
         }
 
-        /* 6. INPUTS */
+        /* 4. CAMPOS DE ENTRADA */
         .stTextInput input, .stNumberInput input {
             background-color: #FFFFFF !important;
             color: #9D201C !important;
@@ -192,7 +112,6 @@ st.markdown(
             border-radius: 8px !important;
             border: 1px solid #CBD5E1 !important;
         }
-
         div[data-baseweb="select"] > div {
             background-color: #FFFFFF !important;
             border: 1px solid #CBD5E1 !important;
@@ -203,7 +122,7 @@ st.markdown(
             font-weight: 700 !important;
         }
 
-        /* 7. BOTÕES */
+        /* 5. BOTÕES */
         .stButton > button[kind="primary"] {
             background-color: #D01B13 !important;
             color: #FFFFFF !important;
@@ -224,68 +143,57 @@ st.markdown(
             border: none !important;
             padding: 12px 24px !important;
         }
-        .stDownloadButton > button:hover {
-            background-color: #404040 !important;
-        }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
 # ==============================================================================
-# CARREGAMENTO DINÂMICO DA LOGO (vdr.jpeg)
+# FAIXA DO CABEÇALHO (HTML/SVG INTEGRADO: ESQUADRIAS E TÍTULO VERMELHO GARANTIDOS)
 # ==============================================================================
-def obter_logo_html():
-  caminhos = ["vdr.jpeg", "vdr.jpg", "logo.png", "logo.jpeg"]
-  for caminho in caminhos:
-    if os.path.exists(caminho):
-      with open(caminho, "rb") as f:
-        img_b64 = base64.b64encode(f.read()).decode("utf-8")
-      mime = (
-          "image/jpeg" if caminho.endswith((".jpeg", ".jpg")) else "image/png"
-      )
-      return f'<img src="data:{mime};base64,{img_b64}" class="logo-img">'
+logo_tag = (
+    f'<img src="{logo_src}" style="width: 65px; height: 65px; border-radius:'
+    " 50%; object-fit: cover; display: block; mix-blend-mode: multiply;"
+    ' border: none;">'
+    if logo_src
+    else """
+    <div style="width: 60px; height: 60px; background-color: #5A5A5A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 8px; font-weight: 900; text-align: center;">RIO<br/>BRANCO</div>
+"""
+)
 
-  return """
-    <div style="width: 58px; height: 58px; background-color: #5A5A5A; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: none;">
-        <span style="color: #FFFFFF; font-size: 7.5px; font-weight: 900; letter-spacing: 0.5px;">RIO BRANCO</span>
-    </div>
-    """
-
-
-logo_html = obter_logo_html()
-
-# ==============================================================================
-# CABEÇALHO OFICIAL COM ESQUADRIAS EM SVG VETORIAL
-# ==============================================================================
 st.markdown(
     f"""
-    <div class="header-box">
-        <svg class="esquadrias-bg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <div style="position: relative; background: #FFFFFF; border: 1px solid #CBD5E1; border-left: 8px solid #D01B13; border-radius: 12px; padding: 18px 25px; margin-top: -15px; margin-bottom: 22px; box-shadow: 0 4px 15px rgba(208, 27, 19, 0.08); overflow: hidden; min-height: 100px;">
+        <!-- DESENHO REAL DAS ESQUADRIAS EM VETOR SVG -->
+        <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.65;" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                <pattern id="grid-esquadria" width="100" height="95" patternUnits="userSpaceOnUse">
-                    <!-- Perfis e Montantes de Alumínio -->
-                    <rect x="0" y="0" width="100" height="95" fill="none" stroke="#CBD5E1" stroke-width="2"/>
-                    <!-- Travessa Horizontal Intermediária -->
-                    <line x1="0" y1="47.5" x2="100" y2="47.5" stroke="#CBD5E1" stroke-width="1.5"/>
-                    <!-- Montante Vertical Central -->
-                    <line x1="50" y1="0" x2="50" y2="95" stroke="#CBD5E1" stroke-width="1.5"/>
+                <pattern id="esquadria_pat" width="120" height="100" patternUnits="userSpaceOnUse">
+                    <!-- Perfis Principais de Alumínio -->
+                    <rect x="0" y="0" width="120" height="100" fill="none" stroke="#94A3B8" stroke-width="2.5"/>
+                    <line x1="60" y1="0" x2="60" y2="100" stroke="#94A3B8" stroke-width="2"/>
+                    <line x1="0" y1="50" x2="120" y2="50" stroke="#94A3B8" stroke-width="2"/>
                     <!-- Linhas Diagonais Translúcidas de Reflexo de Vidro -->
-                    <line x1="6" y1="88" x2="44" y2="6" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="8,5"/>
-                    <line x1="56" y1="88" x2="94" y2="6" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="8,5"/>
+                    <line x1="5" y1="95" x2="55" y2="5" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="6,4"/>
+                    <line x1="65" y1="95" x2="115" y2="5" stroke="#CBD5E1" stroke-width="1.2" stroke-dasharray="6,4"/>
                 </pattern>
             </defs>
-            <rect width="100%" height="100%" fill="url(#grid-esquadria)"/>
+            <rect width="100%" height="100%" fill="url(#esquadria_pat)"/>
         </svg>
-        <div class="header-content">
+
+        <!-- CONTEÚDO DO CABEÇALHO (LOGO, TÍTULO VERMELHO ESCURO E ASSINATURA) -->
+        <div style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; width: 100%;">
             <div style="flex-shrink: 0;">
-                {logo_html}
+                {logo_tag}
             </div>
             <div style="text-align: center; flex-grow: 1;">
-                <div class="header-title-text">HOPINESS PROJECT</div>
+                <div style="color: #9D201C !important; -webkit-text-fill-color: #9D201C !important; font-size: 2.35rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-family: 'Segoe UI', sans-serif;">
+                    HOPINESS PROJECT
+                </div>
             </div>
             <div style="flex-shrink: 0;">
-                <div class="header-sub-text">by Felipe Correa</div>
+                <div style="color: #5A5A5A; font-size: 0.95rem; font-weight: 600; font-style: italic;">
+                    by Felipe Correa
+                </div>
             </div>
         </div>
     </div>
@@ -294,14 +202,12 @@ st.markdown(
 )
 
 # ==============================================================================
-# PROJETOS PADRÃO E CÁLCULOS
+# PROJETOS TÉCNICOS E CÁLCULO VIDREIRO
 # ==============================================================================
 PROJETOS_PADRAO = {
     "guarda_corpo_torres": {
         "nome": "Guarda-Corpo / Sacada (NBR 14718)",
-        "categoria": "Segurança & Sacadas",
         "vidro_padrao": "Laminado 10mm (5+5) ou Laminado-Temperado",
-        "norma": "ABNT NBR 14718 (Proibido Temperado Monolítico)",
         "kit_base": 450.0,
         "insumos_base": 120.0,
         "calc": lambda l, a: [{
@@ -313,9 +219,7 @@ PROJETOS_PADRAO = {
     },
     "box_padrao_2f": {
         "nome": "Box Frontal Padrão (1 Fixo + 1 Móvel)",
-        "categoria": "Box de Banheiro",
         "vidro_padrao": "Temperado 8mm Incolor",
-        "norma": "ABNT NBR 14207",
         "kit_base": 180.0,
         "insumos_base": 45.0,
         "calc": lambda l, a: [
@@ -335,9 +239,7 @@ PROJETOS_PADRAO = {
     },
     "janela_4f": {
         "nome": "Janela 4 Folhas (2 Fixos + 2 Móveis)",
-        "categoria": "Janelas & Portas",
         "vidro_padrao": "Temperado 8mm Incolor",
-        "norma": "ABNT NBR 7199",
         "kit_base": 280.0,
         "insumos_base": 60.0,
         "calc": lambda l, a: [
@@ -357,9 +259,7 @@ PROJETOS_PADRAO = {
     },
     "porta_pivotante": {
         "nome": "Porta Pivotante de Abrir (1 Folha)",
-        "categoria": "Janelas & Portas",
         "vidro_padrao": "Temperado 10mm Incolor",
-        "norma": "ABNT NBR 7199",
         "kit_base": 340.0,
         "insumos_base": 50.0,
         "calc": lambda l, a: [{
@@ -410,7 +310,7 @@ def processar_calculo(
 
 
 # ==============================================================================
-# MOTOR DO PDF
+# MOTOR DO PDF (REPORTLAB COM A PALETA DA VIDRAÇARIA RIO BRANCO)
 # ==============================================================================
 def gerar_pdf(dados):
   buf = io.BytesIO()
@@ -577,7 +477,7 @@ def gerar_pdf(dados):
 
 
 # ==============================================================================
-# ABAS DE NAVEGAÇÃO
+# NAVEGAÇÃO E ABAS (PÍLULAS VERMELHAS COM FONTE BRANCA)
 # ==============================================================================
 aba_proj, aba_temp, aba_fin, aba_abnt = st.tabs([
     "📐 Projetos Padrão & Orçamento",
@@ -587,7 +487,7 @@ aba_proj, aba_temp, aba_fin, aba_abnt = st.tabs([
 ])
 
 # ------------------------------------------------------------------------------
-# ABA 1: PROJETOS & ORÇAMENTO
+# ABA 1: PROJETOS E ORÇAMENTO
 # ------------------------------------------------------------------------------
 with aba_proj:
   col_esquerda, col_direita = st.columns([1.15, 1.0], gap="large")
