@@ -1,6 +1,5 @@
 import io
 import math
-import sys
 from datetime import datetime
 import streamlit as st
 from reportlab.lib import colors
@@ -9,13 +8,24 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.platypus import (
     HRFlowable,
-    KeepTogether,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
     Table,
     TableStyle,
 )
+
+# ==============================================================================
+# CONFIGURAÇÃO DE TEMA E IDENTIDADE VISUAL
+# ==============================================================================
+# Paleta de Cores:
+# Azul Marinho Principal: #0D253A
+# Azul Marinho Médio: #1E3A5F
+# Cinza Claro Fundo: #F8FAFC
+# Cinza Borda / Detalhe: #E2E8F0
+# Texto Neutro: #64748B
+# Branco: #FFFFFF
+
 
 # ==============================================================================
 # 1. MOTOR DE RECOMENDAÇÃO TÉCNICA (ABNT NBR 7199 / 14207 / 14718)
@@ -40,8 +50,7 @@ class RecomendadorTecnico:
             "norma_tecnica": "ABNT NBR 14207",
             "explicacao": (
                 "Pela NBR 14207, exige-se vidro de segurança. O vidro temperado"
-                " de 8mm é o padrão de mercado, podendo utilizar película de"
-                " proteção ou vidro laminado."
+                " de 8mm é o padrão normativo de mercado."
             ),
         },
         "2": {
@@ -50,8 +59,8 @@ class RecomendadorTecnico:
             "norma_tecnica": "ABNT NBR 14718 / ABNT NBR 7199",
             "explicacao": (
                 "É expressamente proibido o uso de vidro temperado monolítico."
-                " Exige-se vidro laminado para garantir a retenção do usuário"
-                " em caso de quebra."
+                " Exige-se vidro laminado para reter fragmentos e impedir queda"
+                " em altura."
             ),
         },
         "3": {
@@ -62,8 +71,8 @@ class RecomendadorTecnico:
             ],
             "norma_tecnica": "ABNT NBR 7199",
             "explicacao": (
-                "Para evitar a queda de fragmentos em caso de quebra, a lâmina"
-                " inferior deve ser obrigatoriamente laminada."
+                "Para evitar queda de estilhaços sobre pessoas em caso de"
+                " quebra, a face inferior deve ser obrigatoriamente laminada."
             ),
         },
         "4": {
@@ -71,8 +80,8 @@ class RecomendadorTecnico:
             "vidros_permitidos": ["Temperado 8mm/10mm", "Laminado 8mm"],
             "norma_tecnica": "ABNT NBR 7199",
             "explicacao": (
-                "Vidros instalados abaixo de 1,10m do piso devem utilizar"
-                " vidros de segurança contra impactos acidentais."
+                "Instalações abaixo de 1,10m em relação ao piso exigem vidro de"
+                " segurança contra impactos acidentais."
             ),
         },
         "5": {
@@ -80,17 +89,17 @@ class RecomendadorTecnico:
             "vidros_permitidos": ["Temperado 8mm/10mm", "Laminado"],
             "norma_tecnica": "ABNT NBR 7199",
             "explicacao": (
-                "Exige-se vidro de segurança. Vidros temperados de 8mm ou 10mm"
-                " estruturam grandes vãos com excelência mecânica."
+                "Exige-se vidro de segurança com ancoragem adequada para grandes"
+                " vãos estruturais."
             ),
         },
         "6": {
             "aplicacao": "Espelho Decorativo",
-            "vidros_permitidos": ["Espelho Prata (Monolítico com proteção)"],
+            "vidros_permitidos": ["Espelho Prata (com proteção química)"],
             "norma_tecnica": "ABNT NBR 15198",
             "explicacao": (
-                "Espelhos devem ter proteção posterior contra oxidação e"
-                " fixação com silicone neutro específico para espelho."
+                "Fixação com adesivo neutro/silicone para espelhos para evitar a"
+                " oxidação da prata."
             ),
         },
         "7": {
@@ -98,8 +107,8 @@ class RecomendadorTecnico:
             "vidros_permitidos": ["Temperado", "Monolítico Lapidado"],
             "norma_tecnica": "Boas Práticas da Indústria",
             "explicacao": (
-                "A espessura deve ser dimensionada conforme os apoios e a carga"
-                " distribuída prevista."
+                "Dimensionamento proporcional aos pontos de apoio e à carga"
+                " distribuída."
             ),
         },
     }
@@ -107,10 +116,10 @@ class RecomendadorTecnico:
 
 
 # ==============================================================================
-# 2. CALCULADORA DE ORÇAMENTOS E PRECIFICAÇÃO
+# 2. CALCULADORA COMERCIAL (FOLGA DE 50MM E MARGEM)
 # ==============================================================================
 class CalculadoraOrcamento:
-  STEP_COMERCIAL_M = 0.05  # Passo de arredondamento de 50mm
+  STEP_COMERCIAL_M = 0.05  # Arredondamento comercial de 50mm
 
   @classmethod
   def arredondar_comercial(cls, medida_m: float) -> float:
@@ -170,7 +179,7 @@ class CalculadoraOrcamento:
 
 
 # ==============================================================================
-# 3. GERADOR DE PDF PROFISSIONAL (REPORTLAB)
+# 3. GERADOR DE PDF PROFISSIONAL COM NOVA PALETA
 # ==============================================================================
 def gerar_pdf_bytes(dados: dict) -> bytes:
   buffer = io.BytesIO()
@@ -183,11 +192,12 @@ def gerar_pdf_bytes(dados: dict) -> bytes:
       bottomMargin=1.5 * cm,
   )
 
-  AZUL_PRIMARIO = colors.HexColor("#0D3B66")
-  AZUL_SECUNDARIO = colors.HexColor("#0077B6")
-  CINZA_FUNDO = colors.HexColor("#F8F9FA")
-  CINZA_TEXTO = colors.HexColor("#333333")
-  CINZA_CLARO = colors.HexColor("#E5E9EC")
+  AZUL_NAVY = colors.HexColor("#0D253A")
+  AZUL_MEDIO = colors.HexColor("#1E3A5F")
+  CINZA_FUNDO = colors.HexColor("#F8FAFC")
+  CINZA_TEXTO = colors.HexColor("#334155")
+  CINZA_SUAVE = colors.HexColor("#64748B")
+  CINZA_BORDA = colors.HexColor("#CBD5E1")
   BRANCO = colors.white
 
   styles = getSampleStyleSheet()
@@ -198,7 +208,17 @@ def gerar_pdf_bytes(dados: dict) -> bytes:
       fontName="Helvetica-Bold",
       fontSize=18,
       leading=22,
-      textColor=AZUL_PRIMARIO,
+      textColor=AZUL_NAVY,
+      alignment=1,  # Centralizado
+  )
+  style_sub_author = ParagraphStyle(
+      "SubAuthor",
+      parent=styles["Normal"],
+      fontName="Helvetica-Oblique",
+      fontSize=9.5,
+      leading=13,
+      textColor=CINZA_SUAVE,
+      alignment=2,  # Direcionado à direita
   )
   style_meta = ParagraphStyle(
       "Meta",
@@ -209,86 +229,53 @@ def gerar_pdf_bytes(dados: dict) -> bytes:
       alignment=2,
       textColor=CINZA_TEXTO,
   )
-  style_sub = ParagraphStyle(
-      "Sub",
-      parent=styles["Normal"],
-      fontName="Helvetica",
-      fontSize=8.5,
-      leading=12,
-      textColor=AZUL_SECUNDARIO,
-  )
   style_card = ParagraphStyle(
       "Card",
       parent=styles["Normal"],
       fontName="Helvetica",
-      fontSize=8,
-      leading=11,
+      fontSize=8.5,
+      leading=12,
       textColor=CINZA_TEXTO,
   )
   style_th = ParagraphStyle(
       "TH",
       parent=styles["Normal"],
       fontName="Helvetica-Bold",
-      fontSize=8,
-      leading=10,
+      fontSize=8.5,
+      leading=11,
       textColor=BRANCO,
   )
   style_td = ParagraphStyle(
       "TD",
       parent=styles["Normal"],
       fontName="Helvetica",
-      fontSize=8,
-      leading=10,
+      fontSize=8.5,
+      leading=11,
       textColor=CINZA_TEXTO,
   )
   style_td_r = ParagraphStyle(
       "TDR",
       parent=styles["Normal"],
       fontName="Helvetica",
-      fontSize=8,
-      leading=10,
+      fontSize=8.5,
+      leading=11,
       alignment=2,
       textColor=CINZA_TEXTO,
   )
 
   story = []
 
-  # Cabeçalho
-  header_data = [
-      [
-          Paragraph("<b>Hopeness Vidros & Soluções</b>", style_title),
-          Paragraph(
-              f"<b>PROPOSTA COMERCIAL</b><br/><b>Data:</b>"
-              f" {datetime.now().strftime('%d/%m/%Y')}<br/><b>Validade:</b> 10"
-              " dias",
-              style_meta,
-          ),
-      ],
-      [
-          Paragraph(
-              "Vidraçaria e Engenharia de Vidros Planos | WhatsApp: (81)"
-              " 98888-7777",
-              style_sub,
-          ),
-          "",
-      ],
-  ]
-  t_header = Table(header_data, colWidths=[11.0 * cm, 7.0 * cm])
-  t_header.setStyle(
-      TableStyle([
-          ("VALIGN", (0, 0), (-1, -1), "TOP"),
-          ("SPAN", (1, 0), (1, 1)),
-      ])
-  )
-  story.append(t_header)
-  story.append(Spacer(1, 0.2 * cm))
+  # Topo do Documento: Título Centralizado + Autor à Direita
+  story.append(Paragraph("<b>HOPINESS PROJECT</b>", style_title))
+  story.append(Spacer(1, 0.1 * cm))
+  story.append(Paragraph("<i>by Felipe Correa</i>", style_sub_author))
   story.append(
       HRFlowable(
           width="100%",
           thickness=1.5,
-          color=AZUL_PRIMARIO,
-          spaceBefore=1,
-          spaceAfter=6,
+          color=AZUL_NAVY,
+          spaceBefore=4,
+          spaceAfter=8,
       )
   )
 
@@ -310,101 +297,168 @@ def gerar_pdf_bytes(dados: dict) -> bytes:
   t_info.setStyle(
       TableStyle([
           ("BACKGROUND", (0, 0), (-1, -1), CINZA_FUNDO),
-          ("BOX", (0, 0), (-1, -1), 0.5, CINZA_CLARO),
-          ("TOPPADDING", (0, 0), (-1, -1), 5),
-          ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+          ("BOX", (0, 0), (-1, -1), 0.8, CINZA_BORDA),
+          ("TOPPADDING", (0, 0), (-1, -1), 6),
+          ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+          ("LEFTPADDING", (0, 0), (-1, -1), 8),
+          ("RIGHTPADDING", (0, 0), (-1, -1), 8),
       ])
   )
   story.append(t_info)
-  story.append(Spacer(1, 0.3 * cm))
+  story.append(Spacer(1, 0.35 * cm))
 
-  # Tabela de Valores
+  # Tabela de Composição
   table_rows = [
       [
-          Paragraph("Item / Descrição", style_th),
-          Paragraph("Total", ParagraphStyle("THR", parent=style_th, alignment=2)),
+          Paragraph("Item / Discriminação do Serviço", style_th),
+          Paragraph("Subtotal", ParagraphStyle("THR", parent=style_th, alignment=2)),
       ],
       [
-          Paragraph("Vidros Especificados (c/ folgas de lapidação)", style_td),
+          Paragraph("Vidros Planos Lapidados (com folga industrial)", style_td),
           Paragraph(f"R$ {dados['custo_vidro']:.2f}", style_td_r),
       ],
       [
-          Paragraph("Kits, Perfis e Ferragens de Fixação", style_td),
+          Paragraph("Kits de Instalação, Perfis e Ferragens", style_td),
           Paragraph(f"R$ {dados['custo_ferragens']:.2f}", style_td_r),
       ],
       [
-          Paragraph("Insumos Técnicos e Fixadores", style_td),
+          Paragraph("Insumos de Vedação e Fixadores Químicos", style_td),
           Paragraph(f"R$ {dados['custo_insumos']:.2f}", style_td_r),
       ],
       [
-          Paragraph("Mão de Obra de Instalação Especializada", style_td),
+          Paragraph(
+              "Mão de Obra Técnica Especializada e Nivelamento", style_td
+          ),
           Paragraph(f"R$ {dados['custo_mo']:.2f}", style_td_r),
       ],
   ]
   t_itens = Table(table_rows, colWidths=[13.5 * cm, 4.5 * cm])
   t_itens.setStyle(
       TableStyle([
-          ("BACKGROUND", (0, 0), (-1, 0), AZUL_PRIMARIO),
-          ("GRID", (0, 0), (-1, -1), 0.5, CINZA_CLARO),
+          ("BACKGROUND", (0, 0), (-1, 0), AZUL_NAVY),
+          ("GRID", (0, 0), (-1, -1), 0.5, CINZA_BORDA),
           ("ROWBACKGROUNDS", (0, 1), (-1, -1), [BRANCO, CINZA_FUNDO]),
-          ("TOPPADDING", (0, 0), (-1, -1), 4),
-          ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+          ("TOPPADDING", (0, 0), (-1, -1), 5),
+          ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+          ("LEFTPADDING", (0, 0), (-1, -1), 8),
+          ("RIGHTPADDING", (0, 0), (-1, -1), 8),
       ])
   )
   story.append(t_itens)
-  story.append(Spacer(1, 0.3 * cm))
+  story.append(Spacer(1, 0.4 * cm))
 
-  # Bloco Final de Preço
+  # Fechamento Financeiro
   fechamento_data = [[
       Paragraph(
-          "<b>Condições:</b> 50% entrada + saldo em até 3x no cartão.<br/>À"
-          " vista com 5% de desconto via Pix.<br/>Instalação em 10 a 15 dias"
-          " úteis.",
+          "<b>CONDIÇÕES COMERCIAIS:</b><br/>• 50% entrada + saldo em até 3x no"
+          " cartão.<br/>• Desconto de 5% para pagamento via Pix.<br/>• Prazo:"
+          " 10 a 15 dias úteis após medição fina.",
           style_card,
       ),
       Paragraph(
-          "<font size='8' color='#555555'>TOTAL DA PROPOSTA</font><br/><font"
-          f" size='14' color='#0D3B66'><b>R$"
-          f" {dados['preco_final']:.2f}</b></font>",
+          "<font size='8' color='#64748B'>VALOR TOTAL DA PROPOSTA</font><br/>"
+          f"<font size='15' color='#0D253A'><b>R$"
+          f" {dados['preco_final']:.2f}</b></font><br/>"
+          "<font size='8' color='#1E3A5F'><b>Instalação inclusa</b></font>",
           style_meta,
       ),
   ]]
-  t_fech = Table(fechamento_data, colWidths=[12.0 * cm, 6.0 * cm])
+  t_fech = Table(fechamento_data, colWidths=[11.5 * cm, 6.5 * cm])
   t_fech.setStyle(
       TableStyle([
           ("BACKGROUND", (0, 0), (-1, -1), CINZA_FUNDO),
-          ("BOX", (0, 0), (-1, -1), 0.8, AZUL_PRIMARIO),
+          ("BOX", (0, 0), (-1, -1), 1.0, AZUL_NAVY),
           ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
           ("TOPPADDING", (0, 0), (-1, -1), 6),
           ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+          ("LEFTPADDING", (0, 0), (-1, -1), 10),
+          ("RIGHTPADDING", (0, 0), (-1, -1), 10),
       ])
   )
   story.append(t_fech)
 
   doc.build(story)
-  pdf_value = buffer.getvalue()
+  pdf_bytes = buffer.getvalue()
   buffer.close()
-  return pdf_value
+  return pdf_bytes
 
 
 # ==============================================================================
-# 4. APLICAÇÃO PRINCIPAL STREAMLIT
+# 4. APLICAÇÃO WEB STREAMLIT
 # ==============================================================================
 def main():
   st.set_page_config(
-      page_title="Hopeness - Vidraçaria & Consultoria",
+      page_title="HOPINESS PROJECT by Felipe Correa",
       page_icon="🪟",
       layout="wide",
   )
-  st.title("🪟 Hopeness - Gestão & Consultoria de Vidros")
-  st.caption("Plataforma de validação técnica ABNT e orçamentos comerciais")
+
+  # Custom CSS para aplicar a paleta: Azul Marinho, Cinza Claro e Branco
+  st.markdown(
+      """
+        <style>
+            /* Cores de fundo e botões */
+            .stApp {
+                background-color: #FFFFFF;
+            }
+            .stTabs [data-baseweb="tab-list"] {
+                gap: 8px;
+            }
+            .stTabs [data-baseweb="tab"] {
+                color: #0D253A;
+                font-weight: 600;
+            }
+            div[data-testid="stMetricValue"] {
+                color: #0D253A;
+                font-weight: 700;
+            }
+            /* Botões primários em Azul Marinho */
+            .stButton > button[kind="primary"] {
+                background-color: #0D253A !important;
+                color: #FFFFFF !important;
+                border-radius: 6px;
+                border: none;
+                font-weight: 600;
+            }
+            .stButton > button[kind="primary"]:hover {
+                background-color: #1E3A5F !important;
+            }
+            /* Download button */
+            .stDownloadButton > button {
+                background-color: #1E3A5F !important;
+                color: #FFFFFF !important;
+                border-radius: 6px;
+                font-weight: 600;
+            }
+        </style>
+    """,
+      unsafe_allow_html=True,
+  )
+
+  # Cabeçalho Principal: HOPINESS PROJECT centralizado em destaque + by Felipe Correa à direita
+  st.markdown(
+      """
+        <div style="margin-top: -15px; margin-bottom: 25px; border-bottom: 2px solid #E2E8F0; padding-bottom: 12px;">
+            <h1 style="text-align: center; color: #0D253A; font-size: 2.4rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 0px; text-transform: uppercase;">
+                HOPINESS PROJECT
+            </h1>
+            <p style="text-align: right; color: #64748B; font-size: 0.95rem; font-weight: 400; font-style: italic; margin-top: 2px; margin-bottom: 0px; padding-right: 10px;">
+                by Felipe Correa
+            </p>
+        </div>
+    """,
+      unsafe_allow_html=True,
+  )
 
   aba1, aba2 = st.tabs(
-      ["📋 Consultoria Técnica (ABNT)", "💰 Calculadora & Orçamento"]
+      ["📋 Consultoria Técnica (ABNT)", "💰 Calculadora de Orçamentos"]
   )
 
   with aba1:
-    st.header("Especificação Normativa (ABNT NBR 7199 / 14718 / 14207)")
+    st.markdown(
+        "<h3 style='color:#0D253A;'>Especificações e Normas Técnicas</h3>",
+        unsafe_allow_html=True,
+    )
     opcao = st.selectbox(
         "Selecione o local de aplicação do vidro:",
         options=list(RecomendadorTecnico.APLICACOES.keys()),
@@ -415,10 +469,14 @@ def main():
       c1, c2 = st.columns(2)
       c1.metric("Norma Regulamentadora", rec["norma_tecnica"])
       c2.metric("Vidros Indicados", ", ".join(rec["vidros_permitidos"]))
-      st.info(f"💡 **Diretriz de Segurança:** {rec['explicacao']}")
+      st.info(f"🛡️ **Diretriz Técnica de Segurança:** {rec['explicacao']}")
 
   with aba2:
-    st.header("Gerador de Orçamento Comercial")
+    st.markdown(
+        "<h3 style='color:#0D253A;'>Composição Comercial da Proposta</h3>",
+        unsafe_allow_html=True,
+    )
+
     col_cli1, col_cli2 = st.columns(2)
     cliente_nome = col_cli1.text_input("Nome do Cliente", "Mariana Albuquerque")
     cliente_local = col_cli2.text_input(
@@ -427,7 +485,7 @@ def main():
 
     c1, c2 = st.columns(2)
     with c1:
-      st.subheader("1. Dimensões do Vão")
+      st.markdown("##### 1. Dimensões do Vão")
       largura = st.number_input(
           "Largura (m)",
           min_value=0.1,
@@ -446,11 +504,11 @@ def main():
           "Quantidade de Peças/Folhas", min_value=1, max_value=20, value=3
       )
       preco_m2 = st.number_input(
-          "Custo do Vidro por m² (R$)", min_value=0.0, value=380.0, step=10.0
+          "Custo do Vidro/m² (R$)", min_value=0.0, value=380.0, step=10.0
       )
 
     with c2:
-      st.subheader("2. Ferragens, Insumos e Margem")
+      st.markdown("##### 2. Ferragens, Insumos e Margem")
       custo_kits = st.number_input(
           "Kits / Ferragens (R$)", min_value=0.0, value=570.0, step=10.0
       )
@@ -489,14 +547,13 @@ def main():
           "Área Faturada (+Folga)", f"{res['area_faturada_total']:.2f} m²"
       )
       m3.metric("Custo Direto", f"R$ {res['custo_direto_total']:.2f}")
-      m4.metric("Preço Final de Venda", f"R$ {res['preco_venda_final']:.2f}")
+      m4.metric("Preço Sugerido", f"R$ {res['preco_venda_final']:.2f}")
 
       st.success(
-          f"**Lucro Bruto Estimado:** R$ {res['lucro_bruto']:.2f} (Margem:"
-          f" {res['margem_aplicada_pct']}%)"
+          f"**Margem de Lucro Bruta:** R$ {res['lucro_bruto']:.2f} ("
+          f"{res['margem_aplicada_pct']}%)"
       )
 
-      # Geração do PDF
       dados_pdf = {
           "cliente": cliente_nome,
           "local": cliente_local,
@@ -515,7 +572,9 @@ def main():
       st.download_button(
           label="📥 Baixar Orçamento em PDF (Formato WhatsApp)",
           data=pdf_bytes,
-          file_name=f"Orcamento_Hopeness_{cliente_nome.replace(' ', '_')}.pdf",
+          file_name=(
+              f"Orcamento_Hopiness_{cliente_nome.replace(' ', '_')}.pdf"
+          ),
           mime="application/pdf",
       )
 
