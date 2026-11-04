@@ -17,7 +17,7 @@ from reportlab.platypus import (
 )
 
 # ==============================================================================
-# CONFIGURAÇÃO GERAL E CSS COM NOVO TEMA VISUAL
+# CONFIGURAÇÃO GERAL E CSS REFINADO
 # ==============================================================================
 st.set_page_config(
     page_title="HOPINESS PROJECT by Felipe Correa",
@@ -28,68 +28,121 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-        /* 1. Fundo geral da aplicação em tom cinza moderno */
+        /* 1. Fundo geral da aplicação */
         .stApp {
             background-color: #ECEFF1;
         }
 
-        /* 2. Todos os textos gerais, rótulos e parágrafos em azul-marinho */
-        p, span, label, div, .stMarkdown, .stCaption {
+        /* 2. Textos padrão da aplicação */
+        p, span, label, .stMarkdown, .stCaption {
             color: #0D253A;
         }
 
-        /* Subtítulos e títulos de seção em azul marinho escuro */
         h1, h2, h3, h4, h5, h6 {
             color: #0D253A !important;
             font-weight: 800 !important;
         }
         
-        /* 3. BARRA DE GUIAS / ABAS */
+        /* 3. CORREÇÃO DAS ABAS (FOTO 2: SEM NENHUMA BORDA RETANGULAR) */
         .stTabs [data-baseweb="tab-list"] {
-            gap: 12px;
+            gap: 8px;
             background-color: transparent;
             padding: 4px 0px;
-            border-bottom: 2px solid #CBD5E1;
-            margin-bottom: 24px;
+            border: none !important;
+            margin-bottom: 22px;
         }
         
-        /* Guias Inativas: Fundo Azul Marinho + Fonte Branca */
-        .stTabs [data-baseweb="tab"] {
-            color: #FFFFFF !important;
+        /* Barra de destaque inferior padrão do Streamlit removida */
+        .stTabs [data-baseweb="tab-highlight"] {
             background-color: #0D253A !important;
+            height: 3px !important;
+            border-radius: 2px !important;
+        }
+        
+        /* Guias Inativas: Sem borda, cor sutil e legível */
+        .stTabs [data-baseweb="tab"] {
+            color: #1E3A5F !important;
+            background-color: transparent !important;
             font-weight: 700 !important;
-            font-size: 0.92rem !important;
-            padding: 10px 22px !important;
-            border-radius: 8px 8px 0px 0px !important;
-            border: 1px solid #0D253A !important;
-            opacity: 0.88;
+            font-size: 0.95rem !important;
+            padding: 10px 18px !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
             transition: all 0.2s ease-in-out;
         }
         
         .stTabs [data-baseweb="tab"]:hover {
-            opacity: 1.0;
-            background-color: #1E3A5F !important;
+            color: #0D253A !important;
+            background-color: rgba(13, 37, 58, 0.05) !important;
+            border-radius: 6px !important;
         }
         
-        /* Guia Ativa: Fundo Branco + Fonte Azul Marinho em Destaque */
+        /* Guia Ativa: Texto forte em Azul Marinho, 100% SEM BORDA */
         .stTabs [aria-selected="true"] {
             color: #0D253A !important;
-            background-color: #FFFFFF !important;
-            border: 2px solid #0D253A !important;
-            border-bottom: 2px solid #FFFFFF !important;
-            margin-bottom: -2px !important;
-            box-shadow: 0 -2px 8px rgba(13, 37, 58, 0.15) !important;
-            opacity: 1.0 !important;
+            background-color: transparent !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
         }
         
-        /* Cards Informativos (fundo branco para contraste perfeito com a página cinza) */
+        /* 4. CORREÇÃO DO SELECTBOX / DROPDOWN (FOTO 1: FONTE BRANCA E NÍTIDA) */
+        div[data-baseweb="select"] > div {
+            background-color: #1A202C !important;
+            border: 1px solid #4A5568 !important;
+            border-radius: 8px !important;
+            color: #FFFFFF !important;
+        }
+        
+        /* Texto selecionado dentro da caixa */
+        div[data-baseweb="select"] * {
+            color: #FFFFFF !important;
+            font-size: 0.95rem !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Menu que abre (lista suspensa de opções) */
+        ul[data-baseweb="menu"] {
+            background-color: #1A202C !important;
+            border: 1px solid #4A5568 !important;
+            border-radius: 8px !important;
+            padding: 6px !important;
+        }
+        
+        /* Cada item da lista */
+        ul[data-baseweb="menu"] li {
+            color: #FFFFFF !important;
+            background-color: transparent !important;
+            font-weight: 500 !important;
+            border-radius: 6px !important;
+            padding: 10px 14px !important;
+        }
+        
+        /* Item com mouse em cima ou selecionado na lista */
+        ul[data-baseweb="menu"] li:hover,
+        ul[data-baseweb="menu"] li[aria-selected="true"] {
+            background-color: #2D3748 !important;
+            color: #63B3ED !important;
+        }
+
+        /* 5. Inputs de texto e números */
+        .stTextInput input, .stNumberInput input {
+            background-color: #FFFFFF !important;
+            color: #0D253A !important;
+            font-weight: 600 !important;
+            border-radius: 6px !important;
+            border: 1px solid #CBD5E1 !important;
+        }
+        
+        /* Cards Informativos */
         .custom-card {
             background-color: #FFFFFF;
             border: 1px solid #CBD5E1;
             border-radius: 10px;
             padding: 18px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 6px rgba(13, 37, 58, 0.06);
+            box-shadow: 0 2px 5px rgba(13, 37, 58, 0.05);
         }
         .custom-card-title {
             color: #0D253A;
@@ -103,7 +156,7 @@ st.markdown(
             line-height: 1.5;
         }
         
-        /* Botões Primários */
+        /* Botões */
         .stButton > button[kind="primary"] {
             background-color: #0D253A !important;
             color: #FFFFFF !important;
@@ -115,8 +168,6 @@ st.markdown(
         .stButton > button[kind="primary"]:hover {
             background-color: #1E3A5F !important;
         }
-
-        /* Botão de Download */
         .stDownloadButton > button {
             background-color: #1E3A5F !important;
             color: #FFFFFF !important;
@@ -179,8 +230,8 @@ class RecomendadorTecnico:
             "vidros_permitidos": ["Temperado 8mm", "Laminado 8mm"],
             "norma_tecnica": "ABNT NBR 14207",
             "explicacao": (
-                "Exige-se vidro de segurança. O vidro temperado de 8mm oferece"
-                " resistência térmica e mecânica ideal para área molhada."
+                "Exige-se vidro de segurança[cite: 1]. O vidro temperado de 8mm oferece"
+                " resistência mecânica e térmica adequada para área molhada."
             ),
         },
         "2": {
@@ -188,9 +239,9 @@ class RecomendadorTecnico:
             "vidros_permitidos": ["Laminado 10mm+", "Laminado-Temperado"],
             "norma_tecnica": "ABNT NBR 14718 / NBR 7199",
             "explicacao": (
-                "Proibido vidro temperado monolítico. Exige-se laminação com"
-                " PVB para garantir retenção mecânica e impedir queda em"
-                " altura."
+                "Proibido vidro temperado monolítico[cite: 1]. Exige-se laminação com"
+                " película de PVB para garantir retenção e impedir queda em"
+                " altura[cite: 1]."
             ),
         },
         "3": {
@@ -202,7 +253,7 @@ class RecomendadorTecnico:
             "norma_tecnica": "ABNT NBR 7199",
             "explicacao": (
                 "Obrigatório vidro laminado na face inferior para retenção de"
-                " estilhaços suspensos em caso de quebra."
+                " estilhaços suspensos em caso de quebra[cite: 1]."
             ),
         },
         "4": {
@@ -210,8 +261,8 @@ class RecomendadorTecnico:
             "vidros_permitidos": ["Temperado 8mm/10mm", "Laminado 8mm"],
             "norma_tecnica": "ABNT NBR 7199",
             "explicacao": (
-                "Zona de impacto humano acidental. Exige vidro de segurança"
-                " conforme a cota de piso acabado."
+                "Zona de impacto humano acidental[cite: 1]. Exige vidro de segurança"
+                " conforme a cota de piso acabado[cite: 1]."
             ),
         },
         "5": {
@@ -219,8 +270,8 @@ class RecomendadorTecnico:
             "vidros_permitidos": ["Temperado 8mm/10mm", "Laminado"],
             "norma_tecnica": "ABNT NBR 7199",
             "explicacao": (
-                "Vidro temperado confere grande rigidez e segurança estrutural"
-                " com ferragens de pressão."
+                "Vidro temperado confere alta rigidez estrutural para vãos"
+                " amplos[cite: 1]."
             ),
         },
         "6": {
@@ -228,8 +279,8 @@ class RecomendadorTecnico:
             "vidros_permitidos": ["Espelho Prata (com proteção química)"],
             "norma_tecnica": "ABNT NBR 15198",
             "explicacao": (
-                "Fixação química obrigatória com silicone neutro específico"
-                " para preservar a película espelhada de prata."
+                "Fixação com adesivo neutro/silicone próprio para preservar a"
+                " película de prata[cite: 1]."
             ),
         },
         "7": {
@@ -237,8 +288,7 @@ class RecomendadorTecnico:
             "vidros_permitidos": ["Temperado", "Monolítico Lapidado"],
             "norma_tecnica": "Boas Práticas da Indústria",
             "explicacao": (
-                "Dimensionamento proporcional à carga e aos pontos de suporte"
-                " mecânico."
+                "Dimensionamento proporcional aos apoios e carga de uso[cite: 1]."
             ),
         },
     }
@@ -733,7 +783,7 @@ with aba_orcamento:
           f"📐 Dimensões: {res['dimensoes_reais']} ({folhas} folhas)\n"
           f"💰 Valor Total: R$ {res['preco_venda_final']:.2f} (com instalação"
           " inclusa)\n"
-          "🛡️ Especificação 100% em conformidade com as normas ABNT.\n\n"
+          "🛡️ Especificação 100% em conformidade com as normas ABNT[cite: 1].\n\n"
           "Estou anexando o PDF detalhado da proposta para sua aprovação!"
       )
       link_whats = f"https://api.whatsapp.com/send?phone=55{cliente_whats.strip()}&text={urllib.parse.quote(msg_whats)}"
