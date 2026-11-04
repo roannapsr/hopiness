@@ -2,6 +2,7 @@ import io
 import math
 import urllib.parse
 from datetime import datetime
+import streamlit as st
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -15,10 +16,9 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
-import streamlit as st
 
 # ==============================================================================
-# CONFIGURAÇÃO DE TELA E IDENTIDADE VISUAL VIDRAÇARIA RIO BRANCO
+# CONFIGURAÇÃO DE PÁGINA E CSS FIEL À MAQUETE
 # ==============================================================================
 st.set_page_config(
     page_title="HOPINESS PROJECT by Felipe Correa",
@@ -29,35 +29,34 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-        /* 1. FUNDO COM DEGRADÊ SUAVE (Vermelho claro / Branco gelo) */
+        /* Fundo com degradê suave */
         .stApp {
-            background: linear-gradient(180deg, #FDF2F2 0%, #FFFFFF 35%, #F8F9FA 100%);
-            background-attachment: fixed;
+            background: linear-gradient(180deg, #FDF3F3 0%, #FFFFFF 40%, #F8F9FA 100%) !important;
         }
 
-        /* 2. TIPOGRAFIA GERAL */
-        p, span, label, .stMarkdown, .stCaption {
-            color: #5A5A5A; /* Cinzento chumbo para textos normais */
+        /* Tipografia */
+        p, span, label, .stMarkdown {
+            color: #5A5A5A !important;
+            font-weight: 500;
         }
         
         h1, h2, h3, h4, h5, h6 {
-            color: #9D201C !important; /* Vermelho escuro nos títulos */
+            color: #9D201C !important;
             font-weight: 800 !important;
         }
 
-        /* 3. FAIXA DO CABEÇALHO COM DETALHES DE ESQUADRIAS */
-        .header-container {
+        /* FAIXA DO CABEÇALHO COM DETALHES DE ESQUADRIAS */
+        .header-box {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
-            border-left: 6px solid #D01B13;
-            border-radius: 10px;
-            padding: 16px 24px;
-            margin-top: -15px;
+            border-left: 8px solid #D01B13;
+            border-radius: 12px;
+            padding: 16px 28px;
+            margin-top: -10px;
             margin-bottom: 22px;
-            box-shadow: 0 4px 12px rgba(208, 27, 19, 0.08);
-            position: relative;
-            background-image: linear-gradient(90deg, rgba(226,232,240,0.4) 1px, transparent 1px),
-                              linear-gradient(rgba(226,232,240,0.4) 1px, transparent 1px);
+            box-shadow: 0 4px 14px rgba(208, 27, 19, 0.08);
+            background-image: linear-gradient(90deg, rgba(226,232,240,0.45) 1px, transparent 1px),
+                              linear-gradient(rgba(226,232,240,0.45) 1px, transparent 1px);
             background-size: 24px 24px;
         }
 
@@ -71,7 +70,7 @@ st.markdown(
             text-transform: uppercase;
         }
 
-        .header-author {
+        .header-sub {
             text-align: right;
             color: #5A5A5A;
             font-size: 0.95rem;
@@ -79,131 +78,114 @@ st.markdown(
             font-style: italic;
             margin-top: 4px;
             margin-bottom: 0;
-            padding-right: 5px;
         }
 
-        /* 4. ABAS (Fundo Vermelho + Fonte Branco Gelo) */
+        /* ABAS EM VERMELHO VIVO ARREDONDADAS (PILLS) */
         .stTabs [data-baseweb="tab-list"] {
-            gap: 10px;
+            gap: 12px;
             background-color: transparent;
-            padding: 4px 0px;
+            padding: 2px 0px;
+            margin-bottom: 24px;
             border: none !important;
-            margin-bottom: 20px;
         }
         .stTabs [data-baseweb="tab-highlight"] {
             display: none !important;
         }
-        
         .stTabs [data-baseweb="tab"] {
             background-color: #D01B13 !important;
-            color: #EAEAEA !important;
+            color: #FFFFFF !important;
             font-weight: 700 !important;
             font-size: 0.92rem !important;
-            padding: 9px 20px !important;
-            border-radius: 8px !important;
+            padding: 10px 22px !important;
+            border-radius: 25px !important; /* Formato pílula da maquete */
             border: none !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-            transition: all 0.2s ease-in-out;
-            opacity: 0.9;
+            box-shadow: 0 2px 5px rgba(208,27,19,0.2) !important;
         }
         .stTabs [data-baseweb="tab"]:hover {
-            opacity: 1.0;
             background-color: #B50915 !important;
         }
-
         .stTabs [aria-selected="true"] {
             background-color: #9D201C !important;
-            color: #FFFFFF !important;
-            box-shadow: 0 4px 8px rgba(157, 32, 28, 0.3) !important;
-            opacity: 1.0 !important;
+            box-shadow: 0 4px 10px rgba(157,32,28,0.35) !important;
         }
 
-        /* 5. SELECTBOX (Contraste Nítido) */
-        div[data-baseweb="select"] > div {
-            background-color: #1A202C !important;
-            border: 1px solid #4A5568 !important;
-            border-radius: 8px !important;
-        }
-        div[data-baseweb="select"] * {
-            color: #FFFFFF !important;
-            font-size: 0.95rem !important;
-            font-weight: 600 !important;
-        }
-        ul[data-baseweb="menu"] {
-            background-color: #1A202C !important;
-            border: 1px solid #4A5568 !important;
-        }
-        ul[data-baseweb="menu"] li {
-            color: #FFFFFF !important;
-        }
-        ul[data-baseweb="menu"] li:hover {
-            background-color: #2D3748 !important;
-            color: #E53E3E !important;
+        /* CARTÃO BRANCO DO FORMULÁRIO (ESQUERDA) */
+        .card-form {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
         }
 
-        /* 6. INPUTS DE FORMULÁRIO */
+        /* CARTÕES DAS MÉTRICAS (DIREITA) */
+        .metric-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+            margin-bottom: 18px;
+        }
+        .metric-card-label {
+            color: #5A5A5A;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .metric-card-val {
+            color: #9D201C;
+            font-size: 1.85rem;
+            font-weight: 900;
+            margin: 0;
+        }
+
+        /* CAMPOS DE ENTRADA */
         .stTextInput input, .stNumberInput input {
             background-color: #FFFFFF !important;
             color: #9D201C !important;
             font-weight: 700 !important;
-            border-radius: 6px !important;
+            border-radius: 8px !important;
             border: 1px solid #CBD5E1 !important;
         }
 
-        /* 7. CARDS COM DETALHES DE VIDRO / ALUMÍNIO */
-        .custom-card {
-            background-color: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-left: 4px solid #D01B13;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 14px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        /* SELECTBOX */
+        div[data-baseweb="select"] > div {
+            background-color: #FFFFFF !important;
+            border: 1px solid #CBD5E1 !important;
+            border-radius: 8px !important;
         }
-        .custom-card-title {
-            color: #9D201C;
-            font-size: 1.1rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-        .custom-card-desc {
-            color: #5A5A5A;
-            font-size: 0.9rem;
-            line-height: 1.45;
+        div[data-baseweb="select"] * {
+            color: #0D253A !important;
+            font-weight: 700 !important;
         }
 
-        /* 8. BOTÕES DE AÇÃO */
+        /* BOTÕES PRINCIPAIS */
         .stButton > button[kind="primary"] {
             background-color: #D01B13 !important;
             color: #FFFFFF !important;
-            border-radius: 8px;
-            font-weight: 700;
-            border: none;
-            padding: 10px 24px;
-            box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25);
+            border-radius: 25px !important;
+            font-weight: 800 !important;
+            padding: 12px 28px !important;
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;
         }
         .stButton > button[kind="primary"]:hover {
             background-color: #B50915 !important;
         }
+
         .stDownloadButton > button {
             background-color: #5A5A5A !important;
             color: #FFFFFF !important;
-            border-radius: 8px;
-            font-weight: 700;
-            border: none;
+            border-radius: 25px !important;
+            font-weight: 700 !important;
+            border: none !important;
+            padding: 12px 24px !important;
         }
         .stDownloadButton > button:hover {
             background-color: #404040 !important;
-        }
-
-        /* 9. MÉTRICAS */
-        div[data-testid="stMetricValue"] {
-            color: #9D201C !important;
-            font-weight: 900 !important;
-        }
-        div[data-testid="stMetricLabel"] {
-            color: #5A5A5A !important;
-            font-weight: 700 !important;
         }
     </style>
 """,
@@ -211,279 +193,330 @@ st.markdown(
 )
 
 # ==============================================================================
-# CABEÇALHO DO PROJETO COM MALHA E TRAÇOS ESTRUTURAIS
+# CABEÇALHO ESTRUTURADO
 # ==============================================================================
 st.markdown(
     """
-    <div class="header-container">
+    <div class="header-box">
         <h1 class="header-title">HOPINESS PROJECT</h1>
-        <p class="header-author">by Felipe Correa</p>
+        <p class="header-sub">by Felipe Correa</p>
     </div>
 """,
     unsafe_allow_html=True,
 )
 
 # ==============================================================================
-# FUNÇÕES DE CÁLCULO DE PEÇAS (ISOLADAS PARA EVITAR ERROS DE SINTAXE)
-# ==============================================================================
-def calc_box_2f(l, a):
-    return [
-        {
-            "peca": "Vidro Fixo",
-            "largura_corte": round((l / 2) + 0.02, 3),
-            "altura_corte": round(a - 0.05, 3),
-            "qtd": 1,
-        },
-        {
-            "peca": "Vidro Móvel (Porta)",
-            "largura_corte": round((l / 2) + 0.05, 3),
-            "altura_corte": round(a - 0.05, 3),
-            "qtd": 1,
-        },
-    ]
-
-def calc_janela_4f(l, a):
-    return [
-        {
-            "peca": "Vidros Fixos Laterais",
-            "largura_corte": round((l / 4) + 0.02, 3),
-            "altura_corte": round(a - 0.04, 3),
-            "qtd": 2,
-        },
-        {
-            "peca": "Vidros Móveis Centrais",
-            "largura_corte": round((l / 4) + 0.05, 3),
-            "altura_corte": round(a - 0.04, 3),
-            "qtd": 2,
-        },
-    ]
-
-def calc_guarda_corpo(l, a):
-    return [
-        {
-            "peca": "Painéis de Guarda-Corpo",
-            "largura_corte": round((l / 3) - 0.02, 3),
-            "altura_corte": round(a, 3),
-            "qtd": 3,
-        }
-    ]
-
-def calc_porta_piv(l, a):
-    return [
-        {
-            "peca": "Folha Pivotante",
-            "largura_corte": round(l - 0.015, 3),
-            "altura_corte": round(a - 0.02, 3),
-            "qtd": 1,
-        }
-    ]
-
-def calc_espelho(l, a):
-    return [
-        {
-            "peca": "Painel de Espelho Lapidado/Bisotado",
-            "largura_corte": round(l, 3),
-            "altura_corte": round(a, 3),
-            "qtd": 1,
-        }
-    ]
-
-# ==============================================================================
-# BANCO DE PROJETOS PADRÃO (TIPOLOGIAS TÉCNICAS DO SETOR)
+# BASE DE DADOS DE PROJETOS E REGRAS TÉCNICAS
 # ==============================================================================
 PROJETOS_PADRAO = {
+    "guarda_corpo_torres": {
+        "nome": "Guarda-Corpo / Sacada (NBR 14718)",
+        "categoria": "Segurança & Sacadas",
+        "vidro_padrao": "Laminado 10mm (5+5) ou Laminado-Temperado",
+        "norma": "ABNT NBR 14718 (Proibido Temperado Monolítico)",
+        "kit_base": 450.0,
+        "insumos_base": 120.0,
+        "calc": lambda l, a: [{
+            "peca": "Painéis de Guarda-Corpo",
+            "largura": round((l / 3) - 0.02, 3),
+            "altura": round(a, 3),
+            "qtd": 3,
+        }],
+    },
     "box_padrao_2f": {
         "nome": "Box Frontal Padrão (1 Fixo + 1 Móvel)",
         "categoria": "Box de Banheiro",
         "vidro_padrao": "Temperado 8mm Incolor",
         "norma": "ABNT NBR 14207",
-        "kit_padrao": "Kit Box Alumínio Tradicional (Trilho, Guia e Puxador)",
-        "custo_kit_base": 180.0,
-        "custo_insumos_base": 45.0,
-        "funcao_calculo": calc_box_2f,
+        "kit_base": 180.0,
+        "insumos_base": 45.0,
+        "calc": lambda l, a: [
+            {"peca": "Vidro Fixo", "largura": round((l / 2) + 0.02, 3), "altura": round(a - 0.05, 3), "qtd": 1},
+            {"peca": "Vidro Móvel (Porta)", "largura": round((l / 2) + 0.05, 3), "altura": round(a - 0.05, 3), "qtd": 1},
+        ],
     },
     "janela_4f": {
         "nome": "Janela 4 Folhas (2 Fixos + 2 Móveis)",
         "categoria": "Janelas & Portas",
         "vidro_padrao": "Temperado 8mm Incolor",
         "norma": "ABNT NBR 7199",
-        "kit_padrao": "Kit Janela 4 Folhas (Perfis Superior, Inferior, Laterais e Fechos)",
-        "custo_kit_base": 280.0,
-        "custo_insumos_base": 60.0,
-        "funcao_calculo": calc_janela_4f,
-    },
-    "guarda_corpo_torres": {
-        "nome": "Guarda-Corpo com Torres em Inox",
-        "categoria": "Segurança & Sacadas",
-        "vidro_padrao": "Laminado 10mm (5+5) ou Laminado-Temperado",
-        "norma": "ABNT NBR 14718 (Proibido Temperado Monolítico)",
-        "kit_padrao": "Torres de Fixação Aço Inox 316 + Parafusos Parabolt e Borrachas",
-        "custo_kit_base": 450.0,
-        "custo_insumos_base": 120.0,
-        "funcao_calculo": calc_guarda_corpo,
+        "kit_base": 280.0,
+        "insumos_base": 60.0,
+        "calc": lambda l, a: [
+            {"peca": "Fixos Laterais", "largura": round((l / 4) + 0.02, 3), "altura": round(a - 0.04, 3), "qtd": 2},
+            {"peca": "Móveis Centrais", "largura": round((l / 4) + 0.05, 3), "altura": round(a - 0.04, 3), "qtd": 2},
+        ],
     },
     "porta_pivotante": {
-        "nome": "Porta Pivotante de Abrir 1 Folha",
+        "nome": "Porta Pivotante de Abrir (1 Folha)",
         "categoria": "Janelas & Portas",
         "vidro_padrao": "Temperado 10mm Incolor",
         "norma": "ABNT NBR 7199",
-        "kit_padrao": "Kit Ferragens Inox/Latão (Dobradiça Superior, Inferior, Fechadura e Puxador Tubo)",
-        "custo_kit_base": 340.0,
-        "custo_insumos_base": 50.0,
-        "funcao_calculo": calc_porta_piv,
-    },
-    "espelho_bisotado": {
-        "nome": "Espelho Prata Bisotado com Fixação Química",
-        "categoria": "Espelhos & Decoração",
-        "vidro_padrao": "Espelho Prata 4mm com Proteção Contra Oxidação",
-        "norma": "ABNT NBR 15198",
-        "kit_padrao": "Silicone Neutro Fixa-Espelho + Fita Dupla Face Estrutural",
-        "custo_kit_base": 65.0,
-        "custo_insumos_base": 30.0,
-        "funcao_calculo": calc_espelho,
+        "kit_base": 340.0,
+        "insumos_base": 50.0,
+        "calc": lambda l, a: [{
+            "peca": "Folha Pivotante",
+            "largura": round(l - 0.015, 3),
+            "altura": round(a - 0.02, 3),
+            "qtd": 1,
+        }],
     },
 }
 
-def arredondar_m2_industrial(medida_m):
-    return math.ceil(medida_m / 0.05) * 0.05
+def arredondar_m2(dim):
+    return math.ceil(dim / 0.05) * 0.05
 
-def calcular_projeto_completo(
-    projeto_key,
-    largura_vao,
-    altura_vao,
-    preco_m2_vidro,
-    custo_kit,
-    custo_insumos,
-    custo_mo,
-    margem_lucro,
-):
-    proj = PROJETOS_PADRAO[projeto_key]
-    pecas_corte = proj["funcao_calculo"](largura_vao, altura_vao)
+def processar_calculo(chave_proj, largura, altura, preco_m2, kit, insumos, mao_obra, margem):
+    p = PROJETOS_PADRAO[chave_proj]
+    pecas = p["calc"](largura, altura)
+    area_liq = 0.0
+    area_fat = 0.0
 
-    area_liquida_total = 0.0
-    area_faturada_total = 0.0
+    for item in pecas:
+        w, h, q = item["largura"], item["altura"], item["qtd"]
+        area_liq += (w * h) * q
+        area_fat += (arredondar_m2(w) * arredondar_m2(h)) * q
 
-    for p in pecas_corte:
-        w = p["largura_corte"]
-        h = p["altura_corte"]
-        qtd = p["qtd"]
-        area_liquida_total += (w * h) * qtd
-
-        w_fat = arredondar_m2_industrial(w)
-        h_fat = arredondar_m2_industrial(h)
-        area_faturada_total += (w_fat * h_fat) * qtd
-
-    custo_vidro = area_faturada_total * preco_m2_vidro
-    custo_direto_total = custo_vidro + custo_kit + custo_insumos + custo_mo
-
-    margem_decimal = margem_lucro / 100.0 if margem_lucro < 100 else 0.99
-    preco_venda_final = custo_direto_total / (1.0 - margem_decimal)
-    lucro_bruto = preco_venda_final - custo_direto_total
+    custo_v = area_fat * preco_m2
+    custo_total = custo_v + kit + insumos + mao_obra
+    fator = 1.0 - (margem / 100.0 if margem < 100 else 0.99)
+    preco_venda = custo_total / fator
+    lucro = preco_venda - custo_total
 
     return {
-        "projeto_nome": proj["nome"],
-        "norma": proj["norma"],
-        "vidro_padrao": proj["vidro_padrao"],
-        "pecas_corte": pecas_corte,
-        "area_liquida_total": area_liquida_total,
-        "area_faturada_total": area_faturada_total,
-        "custo_vidro": custo_vidro,
-        "custo_kit": custo_kit,
-        "custo_insumos": custo_insumos,
-        "custo_mo": custo_mo,
-        "custo_direto_total": custo_direto_total,
-        "preco_venda_final": preco_venda_final,
-        "lucro_bruto": lucro_bruto,
-        "margem_lucro": margem_lucro,
+        "nome": p["nome"],
+        "vidro": p["vidro_padrao"],
+        "pecas": pecas,
+        "area_liq": area_liq,
+        "area_fat": area_fat,
+        "custo_v": custo_v,
+        "custo_total": custo_total,
+        "preco_venda": preco_venda,
+        "lucro": lucro,
+        "margem": margem,
     }
 
 # ==============================================================================
-# GERADOR DE PDF PROFISSIONAL COM A NOVA PALETA
+# MOTOR DO PDF COM A PALETA DA RIO BRANCO
 # ==============================================================================
-def gerar_pdf_documento(tipo_doc, dados):
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(
-        buffer,
-        pagesize=A4,
-        leftMargin=1.5 * cm,
-        rightMargin=1.5 * cm,
-        topMargin=1.5 * cm,
-        bottomMargin=1.5 * cm,
-    )
-
-    VERMELHO_VIVO = colors.HexColor("#D01B13")
-    VERMELHO_ESCURO = colors.HexColor("#9D201C")
-    CINZA_CHUMBO = colors.HexColor("#5A5A5A")
-    CINZA_FUNDO = colors.HexColor("#F8FAFC")
-    CINZA_BORDA = colors.HexColor("#E2E8F0")
+def gerar_pdf(dados):
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4, leftMargin=1.5*cm, rightMargin=1.5*cm, topMargin=1.5*cm, bottomMargin=1.5*cm)
+    styles = getSampleStyleSheet()
+    
+    AZUL_ESCURO = colors.HexColor("#9D201C")
+    VERM = colors.HexColor("#D01B13")
+    CINZA = colors.HexColor("#5A5A5A")
+    FUNDO = colors.HexColor("#F8FAFC")
+    BORDA = colors.HexColor("#CBD5E1")
     BRANCO = colors.white
 
-    styles = getSampleStyleSheet()
+    st_t = ParagraphStyle("T", fontName="Helvetica-Bold", fontSize=18, textColor=AZUL_ESCURO, alignment=1)
+    st_sub = ParagraphStyle("Sub", fontName="Helvetica", fontSize=9, textColor=CINZA, alignment=1)
+    st_c = ParagraphStyle("C", fontName="Helvetica", fontSize=8.5, textColor=CINZA)
+    st_th = ParagraphStyle("TH", fontName="Helvetica-Bold", fontSize=8.5, textColor=BRANCO)
+    st_td = ParagraphStyle("TD", fontName="Helvetica", fontSize=8.5, textColor=CINZA)
+    st_tdr = ParagraphStyle("TDR", fontName="Helvetica-Bold", fontSize=8.5, textColor=AZUL_ESCURO, alignment=2)
 
-    style_title = ParagraphStyle(
-        "Title",
-        parent=styles["Normal"],
-        fontName="Helvetica-Bold",
-        fontSize=18,
-        leading=22,
-        textColor=VERMELHO_ESCURO,
-        alignment=1,
-    )
-    style_sub = ParagraphStyle(
-        "Sub",
-        parent=styles["Normal"],
-        fontName="Helvetica",
-        fontSize=9,
-        leading=12,
-        textColor=CINZA_CHUMBO,
-        alignment=1,
-    )
-    style_doc_type = ParagraphStyle(
-        "DocType",
-        parent=styles["Normal"],
-        fontName="Helvetica-Bold",
-        fontSize=12,
-        leading=15,
-        textColor=VERMELHO_VIVO,
-        alignment=1,
-    )
-    style_card = ParagraphStyle(
-        "Card",
-        parent=styles["Normal"],
-        fontName="Helvetica",
-        fontSize=8.5,
-        leading=12,
-        textColor=CINZA_CHUMBO,
-    )
-    style_th = ParagraphStyle(
-        "TH",
-        parent=styles["Normal"],
-        fontName="Helvetica-Bold",
-        fontSize=8.5,
-        leading=11,
-        textColor=BRANCO,
-    )
-    style_td = ParagraphStyle(
-        "TD",
-        parent=styles["Normal"],
-        fontName="Helvetica",
-        fontSize=8.5,
-        leading=11,
-        textColor=CINZA_CHUMBO,
-    )
-    style_td_r = ParagraphStyle(
-        "TDR",
-        parent=style_td,
-        alignment=2,
-        fontName="Helvetica-Bold",
-        textColor=VERMELHO_ESCURO,
-    )
+    elems = [
+        Paragraph("<b>HOPINESS PROJECT</b>", st_t),
+        Paragraph("Vidraçaria Rio Branco | Soluções em Vidros e Esquadrias", st_sub),
+        Spacer(1, 0.2*cm),
+        Paragraph("<b>PROPOSTA COMERCIAL & ORÇAMENTO</b>", ParagraphStyle("P", fontName="Helvetica-Bold", fontSize=12, textColor=VERM, alignment=1)),
+        HRFlowable(width="100%", thickness=1.5, color=VERM, spaceBefore=4, spaceAfter=8),
+        Table([[
+            Paragraph(f"<b>CLIENTE:</b> {dados['cli']}<br/><b>LOCAL:</b> {dados['loc']}", st_c),
+            Paragraph(f"<b>PROJETO:</b> {dados['proj']}<br/><b>VÃO:</b> {dados['l']:.2f}m x {dados['a']:.2f}m", st_c),
+        ]], colWidths=[9*cm, 9*cm], style=[
+            ("BACKGROUND", (0,0), (-1,-1), FUNDO),
+            ("BOX", (0,0), (-1,-1), 0.8, BORDA),
+            ("TOPPADDING", (0,0), (-1,-1), 6),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ]),
+        Spacer(1, 0.4*cm),
+        Table([
+            [Paragraph("Discriminação dos Serviços / Materiais", st_th), Paragraph("Subtotal", ParagraphStyle("R", parent=st_th, alignment=2))],
+            [Paragraph(f"Vidros Lapidados ({dados['vidro']}) - Área: {dados['fat']:.2f} m²", st_td), Paragraph(f"R$ {dados['cv']:.2f}", st_tdr)],
+            [Paragraph("Kits de Instalação e Ferragens Estruturais", st_td), Paragraph(f"R$ {dados['ck']:.2f}", st_tdr)],
+            [Paragraph("Insumos de Vedação e Fixadores Químicos", st_td), Paragraph(f"R$ {dados['ci']:.2f}", st_tdr)],
+            [Paragraph("Mão de Obra Especializada e Logística", st_td), Paragraph(f"R$ {dados['cmo']:.2f}", st_tdr)],
+        ], colWidths=[13.5*cm, 4.5*cm], style=[
+            ("BACKGROUND", (0,0), (-1,0), AZUL_ESCURO),
+            ("GRID", (0,0), (-1,-1), 0.5, BORDA),
+            ("ROWBACKGROUNDS", (0,1), (-1,-1), [BRANCO, FUNDO]),
+            ("TOPPADDING", (0,0), (-1,-1), 5),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 5),
+        ]),
+        Spacer(1, 0.4*cm),
+        Table([[
+            Paragraph("<b>Condições:</b> 50% de sinal e saldo na conclusão.<br/>Desconto de 5% no Pix.<br/>Garantia: 1 ano para instalação.", st_c),
+            Paragraph(f"<font size='8' color='#5A5A5A'>VALOR TOTAL</font><br/><font size='16' color='#9D201C'><b>R$ {dados['total']:.2f}</b></font>", st_tdr)
+        ]], colWidths=[11.5*cm, 6.5*cm], style=[
+            ("BACKGROUND", (0,0), (-1,-1), FUNDO),
+            ("BOX", (0,0), (-1,-1), 1, VERM),
+            ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+            ("TOPPADDING", (0,0), (-1,-1), 6),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ])
+    ]
+    doc.build(elems)
+    val = buf.getvalue()
+    buf.close()
+    return val
 
-    story = []
-    story.append(Paragraph("<b>HOPINESS PROJECT</b>", style_title))
-    story.append(
-        Paragraph(
-            "Vidraçaria Rio Branco | Soluções em Vidros Planos & Esquadrias",
-            style_
+# ==============================================================================
+# NAVEGAÇÃO E ABAS
+# ==============================================================================
+aba_proj, aba_temp, aba_fin, aba_abnt = st.tabs([
+    "📐 Projetos Padrão & Orçamento",
+    "🏭 Pedido de Têmpera (Corte)",
+    "💵 Financeiro da Obra",
+    "📋 Catálogo Técnico ABNT",
+])
+
+# ------------------------------------------------------------------------------
+# ABA 1: PROJETOS E ORÇAMENTO (EXATAMENTE COMO NO MOCKUP)
+# ------------------------------------------------------------------------------
+with aba_proj:
+    col_esquerda, col_direita = st.columns([1.15, 1.0], gap="large")
+
+    with col_esquerda:
+        st.markdown("<h4 style='color:#9D201C; margin-top:0;'>Configurações do Vão</h4>", unsafe_allow_html=True)
+        
+        sel_proj = st.selectbox(
+            "Selecione o Projeto Padrão da Obra",
+            options=list(PROJETOS_PADRAO.keys()),
+            format_func=lambda x: PROJETOS_PADRAO[x]["nome"],
         )
+
+        c_cli, c_zap, c_loc = st.columns(3)
+        nome_c = c_cli.text_input("Nome do Cliente", "Mariana Albuquerque")
+        zap_c = c_zap.text_input("WhatsApp", "81991234567")
+        loc_c = c_loc.text_input("Local da Instalação", "Boa Viagem - Recife/PE")
+
+        c_l, c_a = st.columns(2)
+        larg_v = c_l.number_input("Largura do Vão (m)", min_value=0.2, max_value=12.0, value=3.40, step=0.05)
+        alt_v = c_a.number_input("Altura do Vão (m)", min_value=0.2, max_value=6.0, value=1.10, step=0.05)
+
+        c_pm2, c_k, c_ins = st.columns(3)
+        pm2 = c_pm2.number_input("Vidro R$/m²", value=380.0, step=10.0)
+        kit_v = c_k.number_input("Kit/Ferragens (R$)", value=PROJETOS_PADRAO[sel_proj]["kit_base"], step=10.0)
+        ins_v = c_ins.number_input("Insumos (R$)", value=PROJETOS_PADRAO[sel_proj]["insumos_base"], step=5.0)
+
+        c_mo, c_mg = st.columns(2)
+        mo_v = c_mo.number_input("Mão de Obra (R$)", value=450.0, step=10.0)
+        mg_v = c_mg.slider("Margem de Lucro (%)", min_value=10.0, max_value=70.0, value=35.0)
+
+    # Executa os cálculos em tempo real
+    res = processar_calculo(sel_proj, larg_v, alt_v, pm2, kit_v, ins_v, mo_v, mg_v)
+
+    with col_direita:
+        st.markdown("<h4 style='color:#9D201C; margin-top:0;'>Resumo Comercial do Projeto</h4>", unsafe_allow_html=True)
+
+        m_c1, m_c2 = st.columns(2)
+        with m_c1:
+            st.markdown(
+                f"""
+                <div class="metric-card">
+                    <div class="metric-card-label">Área Real (Líquida):</div>
+                    <div class="metric-card-val">{res['area_liq']:.2f} m²</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">Custo Direto Total:</div>
+                    <div class="metric-card-val">R$ {res['custo_total']:.2f}</div>
+                </div>
+            """,
+                unsafe_allow_html=True,
+            )
+        with m_c2:
+            st.markdown(
+                f"""
+                <div class="metric-card">
+                    <div class="metric-card-label">Área Faturada (+Folga):</div>
+                    <div class="metric-card-val">{res['area_fat']:.2f} m²</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">Preço de Venda Sugerido:</div>
+                    <div class="metric-card-val">R$ {res['preco_venda']:.2f}</div>
+                </div>
+            """,
+                unsafe_allow_html=True,
+            )
+
+        st.success(f" Lucro Bruto Estimado: **R$ {res['lucro']:.2f}** (Margem: {res['margem']}%)")
+
+    # BOTÕES PRINCIPAIS DE AÇÃO (CENTRALIZADOS)
+    st.markdown("<br/>", unsafe_allow_html=True)
+    b_col1, b_col2, b_col3 = st.columns([1, 1, 1])
+
+    dados_proposta = {
+        "cli": nome_c, "loc": loc_c, "proj": res["nome"],
+        "vidro": res["vidro"], "l": larg_v, "a": alt_v,
+        "fat": res["area_fat"], "cv": res["custo_v"],
+        "ck": kit_v, "ci": ins_v, "cmo": mo_v, "total": res["preco_venda"]
+    }
+
+    with b_col1:
+        pdf_bytes = gerar_pdf(dados_proposta)
+        st.download_button(
+            " Exportar PDF Profissional",
+            data=pdf_bytes,
+            file_name=f"Orcamento_{nome_c.replace(' ', '_')}.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+        )
+
+    with b_col2:
+        msg_whats = (
+            f"Olá, {nome_c}! Segue o orçamento da Vidraçaria Rio Branco para o seu projeto de {res['nome']}:\n\n"
+            f" Dimensões: {larg_v:.2f}m x {alt_v:.2f}m\n"
+            f" Vidro Especificado: {res['vidro']}\n"
+            f" Valor Total: R$ {res['preco_venda']:.2f} (com instalação inclusa)\n\n"
+            "Posso enviar o PDF oficial com as condições detalhadas?"
+        )
+        url_zap = f"https://api.whatsapp.com/send?phone=55{zap_c.strip()}&text={urllib.parse.quote(msg_whats)}"
+        st.link_button(" Enviar via WhatsApp", url_zap, use_container_width=True)
+
+    with b_col3:
+        st.button(" Atualizar Orçamento", type="primary", use_container_width=True)
+
+# ------------------------------------------------------------------------------
+# ABA 2: PEDIDO DE TÊMPERA
+# ------------------------------------------------------------------------------
+with aba_temp:
+    st.markdown("<h3 style='color:#9D201C;'>Ordem de Corte para a Têmpera</h3>", unsafe_allow_html=True)
+    st.write("Medidas nominais calculadas com descontos de folga e transpasse:")
+    
+    tab_pecas = []
+    for pc in res["pecas"]:
+        tab_pecas.append({
+            "Peça / Posição": pc["peca"],
+            "Largura de Corte (m)": f"{pc['largura']:.3f}",
+            "Altura de Corte (m)": f"{pc['altura']:.3f}",
+            "Quantidade": pc["qtd"],
+            "Especificação do Vidro": res["vidro"],
+        })
+    st.table(tab_pecas)
+
+# ------------------------------------------------------------------------------
+# ABA 3: FINANCEIRO
+# ------------------------------------------------------------------------------
+with aba_fin:
+    st.markdown("<h3 style='color:#9D201C;'>Gestão Financeira da Obra</h3>", unsafe_allow_html=True)
+    c_fin1, c_fin2, c_fin3 = st.columns(3)
+    c_fin1.metric("Valor Total da Obra", f"R$ {res['preco_venda']:.2f}")
+    c_fin2.metric("Custo Operacional Total", f"R$ {res['custo_total']:.2f}")
+    c_fin3.metric("Lucro Líquido Previsto", f"R$ {res['lucro']:.2f}")
+
+# ------------------------------------------------------------------------------
+# ABA 4: NORMAS ABNT
+# ------------------------------------------------------------------------------
+with aba_abnt:
+    st.markdown("<h3 style='color:#9D201C;'>Normas Técnicas da Construção Civil</h3>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        - **ABNT NBR 14207 (Boxes de Banheiro):** Exige vidro de segurança (temperado 8mm ou laminado).
+        - **ABNT NBR 14718 (Guarda-Corpos e Sacadas):** Obrigatório vidro laminado ou laminado-temperado. **Proibido vidro temperado comum sem laminação**.
+        - **ABNT NBR 7199 (Vidros na Construção Civil):** Vidros abaixo de 1,10m do piso acabado devem ser vidros de segurança.
+        """
     )
