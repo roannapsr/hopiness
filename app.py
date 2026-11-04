@@ -37,208 +37,215 @@ if logo_b64:
 else:
     logo_html = '<div style="width:64px;height:64px;background-color:#5A5A5A;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:8.5px;font-weight:900;text-align:center;">RIO<br/>BRANCO</div>'
 
-# 2. CSS Global com degradê e estilização dos módulos
-css_rules = [
-    "<style>",
-    "/* DEGRADÊ NA PÁGINA INTEIRA */",
-    "html, body, [data-testid='stAppViewContainer'], .stApp, section.main {",
-    "background: linear-gradient(160deg, #FADBD8 0%, #FFFFFF 35%, #FDE8E7 70%, #FFFFFF 100%) !important;",
-    "background-attachment: fixed !important;",
-    "}",
-    "p, span, label, .stMarkdown {",
-    "color: #5A5A5A !important;",
-    "font-weight: 600;",
-    "}",
-    "/* CARDS DO MENU PRINCIPAL */",
-    ".menu-card-container {",
-    "background-color: #FFFFFF;",
-    "border-radius: 12px;",
-    "border: 1px solid #CBD5E1;",
-    "box-shadow: 0 4px 15px rgba(0,0,0,0.06);",
-    "margin-bottom: 20px;",
-    "overflow: visible;",
-    "position: relative;",
-    "margin-top: 25px;",
-    "}",
-    ".menu-card-header {",
-    "background-color: #D01B13;",
-    "color: #FFFFFF !important;",
-    "padding: 16px 20px;",
-    "border-top-left-radius: 11px;",
-    "border-top-right-radius: 11px;",
-    "display: flex;",
-    "align-items: center;",
-    "justify-content: center;",
-    "position: relative;",
-    "min-height: 54px;",
-    "}",
-    ".menu-card-icon-badge {",
-    "position: absolute;",
-    "top: -24px;",
-    "left: 20px;",
-    "width: 48px;",
-    "height: 48px;",
-    "border-radius: 50%;",
-    "background-color: #9D201C;",
-    "color: #FFFFFF;",
-    "display: flex;",
-    "align-items: center;",
-    "justify-content: center;",
-    "font-size: 1.3rem;",
-    "box-shadow: 0 4px 8px rgba(0,0,0,0.18);",
-    "border: 3px solid #FFFFFF;",
-    "}",
-    ".menu-card-title {",
-    "color: #FFFFFF !important;",
-    "font-size: 1.25rem;",
-    "font-weight: 800;",
-    "margin: 0;",
-    "text-align: center;",
-    "letter-spacing: 0.5px;",
-    "}",
-    ".card-action-btn button {",
-    "border-radius: 20px !important;",
-    "padding: 6px 14px !important;",
-    "font-weight: 800 !important;",
-    "border: 2px solid #D01B13 !important;",
-    "background-color: #FFFFFF !important;",
-    "color: #D01B13 !important;",
-    "box-shadow: 0 2px 5px rgba(208, 27, 19, 0.1) !important;",
-    "width: 100% !important;",
-    "}",
-    ".card-action-btn button * {",
-    "color: #D01B13 !important;",
-    "font-weight: 800 !important;",
-    "font-size: 0.9rem !important;",
-    "}",
-    ".card-action-btn button:hover {",
-    "background-color: #D01B13 !important;",
-    "color: #FFFFFF !important;",
-    "}",
-    ".card-action-btn button:hover * {",
-    "color: #FFFFFF !important;",
-    "}",
-    "/* CARDS DA LISTA DE ORÇAMENTOS (ESTILO DO ANEXO) */",
-    ".orc-card {",
-    "background-color: #FFFFFF;",
-    "border-radius: 10px;",
-    "border: 1px solid #E2E8F0;",
-    "box-shadow: 0 3px 12px rgba(0,0,0,0.05);",
-    "padding: 16px 16px 12px 16px;",
-    "margin-bottom: 20px;",
-    "position: relative;",
-    "}",
-    ".status-badge {",
-    "display: inline-flex;",
-    "align-items: center;",
-    "gap: 5px;",
-    "padding: 4px 10px;",
-    "border-radius: 14px;",
-    "font-size: 0.78rem;",
-    "font-weight: 700;",
-    "}",
-    ".status-badge-analise { background-color: #FEF3C7; color: #B45309; }",
-    ".status-badge-aprovado { background-color: #D1FAE5; color: #047857; }",
-    ".status-badge-reprovado { background-color: #FEE2E2; color: #B91C1C; }",
-    ".status-badge-concluido { background-color: #E0E7FF; color: #3730A3; }",
-    ".orc-card-title {",
-    "color: #1E293B !important;",
-    "font-size: 1.05rem;",
-    "font-weight: 800;",
-    "margin-top: 10px;",
-    "margin-bottom: 3px;",
-    "}",
-    ".orc-card-sub {",
-    "color: #64748B;",
-    "font-size: 0.78rem;",
-    "font-weight: 600;",
-    "margin-bottom: 12px;",
-    "}",
-    "/* BOTÃO VOLTAR */",
-    ".btn-voltar button {",
-    "background-color: #5A5A5A !important;",
-    "color: #FFFFFF !important;",
-    "border-radius: 20px !important;",
-    "font-weight: 800 !important;",
-    "border: none !important;",
-    "padding: 8px 22px !important;",
-    "margin-bottom: 15px !important;",
-    "}",
-    ".btn-voltar button * {",
-    "color: #FFFFFF !important;",
-    "font-weight: 800 !important;",
-    "}",
-    "/* CARDS DE MÉTRICAS */",
-    ".metric-card {",
-    "background-color: #FFFFFF;",
-    "border: 1px solid #E2E8F0;",
-    "border-radius: 12px;",
-    "padding: 18px 15px;",
-    "text-align: center;",
-    "box-shadow: 0 3px 10px rgba(0,0,0,0.04);",
-    "margin-bottom: 15px;",
-    "}",
-    ".metric-card-label {",
-    "color: #5A5A5A;",
-    "font-size: 0.92rem;",
-    "font-weight: 700;",
-    "margin-bottom: 6px;",
-    "}",
-    ".metric-card-val {",
-    "color: #9D201C;",
-    "font-size: 1.85rem;",
-    "font-weight: 900;",
-    "margin: 0;",
-    "}",
-    "/* INPUTS */",
-    ".stTextInput input, .stNumberInput input {",
-    "background-color: #FFFFFF !important;",
-    "color: #9D201C !important;",
-    "font-weight: 800 !important;",
-    "border-radius: 8px !important;",
-    "border: 1px solid #CBD5E1 !important;",
-    "}",
-    "div[data-baseweb='select'] > div {",
-    "background-color: #FFFFFF !important;",
-    "border: 1px solid #CBD5E1 !important;",
-    "border-radius: 8px !important;",
-    "}",
-    "div[data-baseweb='select'] * {",
-    "color: #0D253A !important;",
-    "font-weight: 700 !important;",
-    "}",
-    "/* BOTÕES DE AÇÃO INFERIORES */",
-    ".btn-gerar button {",
-    "background-color: #D01B13 !important;",
-    "color: #FFFFFF !important;",
-    "border-radius: 25px !important;",
-    "font-weight: 800 !important;",
-    "padding: 12px 28px !important;",
-    "border: none !important;",
-    "box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;",
-    "width: 100% !important;",
-    "}",
-    ".btn-gerar button * {",
-    "color: #FFFFFF !important;",
-    "font-weight: 800 !important;",
-    "}",
-    ".btn-pdf button {",
-    "background-color: #2D3748 !important;",
-    "color: #FFFFFF !important;",
-    "border-radius: 25px !important;",
-    "font-weight: 800 !important;",
-    "padding: 12px 28px !important;",
-    "border: none !important;",
-    "width: 100% !important;",
-    "}",
-    ".btn-pdf button * {",
-    "color: #FFFFFF !important;",
-    "font-weight: 800 !important;",
-    "}",
-    "</style>",
-]
+# 2. CSS Global com degradê real cobrindo toda a tela e abas 100% vermelhas
+css_code = """<style>
+/* DEGRADÊ VERMELHO + BRANCO NA PÁGINA INTEIRA */
+html, body, [data-testid="stAppViewContainer"], .stApp, section.main {
+background: linear-gradient(160deg, #FADBD8 0%, #FFFFFF 35%, #FDE8E7 70%, #FFFFFF 100%) !important;
+background-attachment: fixed !important;
+}
 
-st.markdown("\n".join(css_rules), unsafe_allow_html=True)
+p, span, label, .stMarkdown {
+color: #5A5A5A !important;
+font-weight: 600;
+}
+
+/* CARDS DO MENU PRINCIPAL */
+.menu-card-container {
+background-color: #FFFFFF;
+border-radius: 12px;
+border: 1px solid #CBD5E1;
+box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+margin-bottom: 20px;
+overflow: visible;
+position: relative;
+margin-top: 25px;
+}
+.menu-card-header {
+background-color: #D01B13;
+color: #FFFFFF !important;
+padding: 16px 20px;
+border-top-left-radius: 11px;
+border-top-right-radius: 11px;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+min-height: 54px;
+}
+.menu-card-icon-badge {
+position: absolute;
+top: -24px;
+left: 20px;
+width: 48px;
+height: 48px;
+border-radius: 50%;
+background-color: #9D201C;
+color: #FFFFFF;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.3rem;
+box-shadow: 0 4px 8px rgba(0,0,0,0.18);
+border: 3px solid #FFFFFF;
+}
+.menu-card-title {
+color: #FFFFFF !important;
+font-size: 1.25rem;
+font-weight: 800;
+margin: 0;
+text-align: center;
+letter-spacing: 0.5px;
+}
+.card-action-btn button {
+border-radius: 20px !important;
+padding: 6px 14px !important;
+font-weight: 800 !important;
+border: 2px solid #D01B13 !important;
+background-color: #FFFFFF !important;
+color: #D01B13 !important;
+box-shadow: 0 2px 5px rgba(208, 27, 19, 0.1) !important;
+width: 100% !important;
+}
+.card-action-btn button * {
+color: #D01B13 !important;
+font-weight: 800 !important;
+font-size: 0.9rem !important;
+}
+.card-action-btn button:hover {
+background-color: #D01B13 !important;
+color: #FFFFFF !important;
+}
+.card-action-btn button:hover * {
+color: #FFFFFF !important;
+}
+.btn-voltar button {
+background-color: #5A5A5A !important;
+color: #FFFFFF !important;
+border-radius: 20px !important;
+font-weight: 800 !important;
+border: none !important;
+padding: 8px 22px !important;
+margin-bottom: 15px !important;
+}
+.btn-voltar button * {
+color: #FFFFFF !important;
+font-weight: 800 !important;
+}
+
+/* CARDS DE MÉTRICAS */
+.metric-card {
+background-color: #FFFFFF;
+border: 1px solid #E2E8F0;
+border-radius: 12px;
+padding: 18px 15px;
+text-align: center;
+box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+margin-bottom: 15px;
+}
+.metric-card-label {
+color: #5A5A5A;
+font-size: 0.92rem;
+font-weight: 700;
+margin-bottom: 6px;
+}
+.metric-card-val {
+color: #9D201C;
+font-size: 1.85rem;
+font-weight: 900;
+margin: 0;
+}
+
+/* CARDS DA LISTA DE ORÇAMENTOS */
+.orc-card {
+background-color: #FFFFFF;
+border-radius: 10px;
+border: 1px solid #E2E8F0;
+box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+padding: 16px 16px 12px 16px;
+margin-bottom: 20px;
+position: relative;
+}
+.status-badge {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+padding: 4px 10px;
+border-radius: 14px;
+font-size: 0.78rem;
+font-weight: 700;
+}
+.status-badge-analise { background-color: #FEF3C7; color: #B45309; }
+.status-badge-aprovado { background-color: #D1FAE5; color: #047857; }
+.status-badge-reprovado { background-color: #FEE2E2; color: #B91C1C; }
+.status-badge-concluido { background-color: #E0E7FF; color: #3730A3; }
+.orc-card-title {
+color: #1E293B !important;
+font-size: 1.05rem;
+font-weight: 800;
+margin-top: 10px;
+margin-bottom: 3px;
+}
+.orc-card-sub {
+color: #64748B;
+font-size: 0.78rem;
+font-weight: 600;
+margin-bottom: 12px;
+}
+
+/* INPUTS */
+.stTextInput input, .stNumberInput input {
+background-color: #FFFFFF !important;
+color: #9D201C !important;
+font-weight: 800 !important;
+border-radius: 8px !important;
+border: 1px solid #CBD5E1 !important;
+}
+div[data-baseweb="select"] > div {
+background-color: #FFFFFF !important;
+border: 1px solid #CBD5E1 !important;
+border-radius: 8px !important;
+}
+div[data-baseweb="select"] * {
+color: #0D253A !important;
+font-weight: 700 !important;
+}
+
+/* BOTÕES INFERIORES */
+.btn-gerar button {
+background-color: #D01B13 !important;
+color: #FFFFFF !important;
+border-radius: 25px !important;
+font-weight: 800 !important;
+padding: 12px 28px !important;
+border: none !important;
+box-shadow: 0 4px 10px rgba(208,27,19,0.3) !important;
+width: 100% !important;
+}
+.btn-gerar button * {
+color: #FFFFFF !important;
+font-weight: 800 !important;
+}
+.btn-pdf button {
+background-color: #2D3748 !important;
+color: #FFFFFF !important;
+border-radius: 25px !important;
+font-weight: 800 !important;
+padding: 12px 28px !important;
+border: none !important;
+width: 100% !important;
+}
+.btn-pdf button * {
+color: #FFFFFF !important;
+font-weight: 800 !important;
+}
+</style>"""
+
+clean_css = "\n".join([l.strip() for l in css_code.splitlines() if l.strip()])
+if hasattr(st, "html"):
+    st.html(clean_css)
+else:
+    st.markdown(clean_css, unsafe_allow_html=True)
 
 # 3. Cabeçalho IDÊNTICO ao seu código (com título #9D201C vermelho escuro)
 cabecalho_raw = f"""<div style="position:relative;background:rgba(255,255,255,0.45);backdrop-filter:blur(6px);border:1px solid rgba(226,232,240,0.9);border-left:8px solid #D01B13;border-radius:12px;padding:14px 24px;margin-top:-15px;margin-bottom:22px;box-shadow:0 4px 15px rgba(208,27,19,0.08);overflow:hidden;min-height:98px;">
@@ -259,7 +266,7 @@ if hasattr(st, "html"):
 else:
     st.markdown(clean_cabecalho, unsafe_allow_html=True)
 
-# 4. Controle de Telas e Base de Dados
+# 4. Controle de Telas e Memória
 if "tela_ativa" not in st.session_state:
     st.session_state["tela_ativa"] = "inicio"
 
@@ -430,10 +437,10 @@ def gerar_pdf(dados):
     return val
 
 # ==============================================================================
-# RENDERIZAÇÃO DAS TELAS
+# 6. RENDERIZAÇÃO DAS TELAS
 # ==============================================================================
 
-# TELA 0: INÍCIO (CARDS EM ESTILO ERP VIDRAÇARIA)
+# TELA INICIAL (MENU DE CARDS CONFORME A IMAGEM ANEXADA)
 if st.session_state["tela_ativa"] == "inicio":
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     c_m1, c_m2, c_m3 = st.columns(3, gap="large")
@@ -525,7 +532,7 @@ if st.session_state["tela_ativa"] == "inicio":
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 
-# TELA 1: GERENCIAR ORÇAMENTOS (EXATAMENTE COMO NO SEU ANEXO)
+# TELA 1: GERENCIAR ORÇAMENTOS (GRID COMPLETA DO ANEXO COM .get() ANTI-KEYERROR)
 elif st.session_state["tela_ativa"] == "gerenciar_orcamentos":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
     if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_orc_grid"):
@@ -533,7 +540,7 @@ elif st.session_state["tela_ativa"] == "gerenciar_orcamentos":
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # BARRA SUPERIOR DE BUSCA E AÇÃO (ANEXO)
+    # BARRA SUPERIOR DE BUSCA E AÇÃO
     top_col1, top_col2, top_col3 = st.columns([1.3, 3.2, 1.2])
     with top_col1:
         st.markdown('<div class="btn-gerar" style="margin-top: 4px;">', unsafe_allow_html=True)
@@ -549,7 +556,7 @@ elif st.session_state["tela_ativa"] == "gerenciar_orcamentos":
     with top_col3:
         st.date_input("Período", datetime.now(), label_visibility="collapsed")
 
-    # FILTROS E STATUS (ANEXO)
+    # FILTROS E STATUS
     sub_col1, sub_col2 = st.columns([2.5, 1.0])
     with sub_col1:
         st.markdown(
@@ -576,15 +583,15 @@ elif st.session_state["tela_ativa"] == "gerenciar_orcamentos":
             unsafe_allow_html=True,
         )
 
-    # FILTRAGEM DA LISTA
+    # FILTRAGEM SEGURA DA LISTA
     lista_exibir = st.session_state["historico_orcamentos"]
     if termo_busca:
         lista_exibir = [
             o for o in lista_exibir
-            if termo_busca.lower() in o["cliente"].lower() or termo_busca in str(o["id"]) or termo_busca in o.get("whatsapp", "")
+            if termo_busca.lower() in o.get("cliente", "").lower() or termo_busca in str(o.get("id", "")) or termo_busca in o.get("whatsapp", "")
         ]
 
-    # GRADE DE 3 COLUNAS DE CARDS (IGUAL AO ANEXO)
+    # GRADE DE 3 COLUNAS DE CARDS
     num_cols = 3
     for i in range(0, len(lista_exibir), num_cols):
         cols = st.columns(num_cols, gap="medium")
@@ -592,9 +599,10 @@ elif st.session_state["tela_ativa"] == "gerenciar_orcamentos":
             if i + j < len(lista_exibir):
                 item = lista_exibir[i + j]
                 with cols[j]:
-                    cor_barra = "#F59E0B" if item["status"] == "Em Analise" else "#10B981"
-                    badge_class = "status-badge-analise" if item["status"] == "Em Analise" else "status-badge-aprovado"
-                    status_label = "Em Análise ▾" if item["status"] == "Em Analise" else "Aprovado ▾"
+                    st_val = item.get("status", "Em Analise")
+                    cor_barra = "#F59E0B" if st_val == "Em Analise" else "#10B981"
+                    badge_class = "status-badge-analise" if st_val == "Em Analise" else "status-badge-aprovado"
+                    status_label = "Em Análise ▾" if st_val == "Em Analise" else "Aprovado ▾"
 
                     st.markdown(
                         f"""
@@ -603,20 +611,20 @@ elif st.session_state["tela_ativa"] == "gerenciar_orcamentos":
                                 <span class="status-badge {badge_class}">{status_label}</span>
                                 <span style="color: #94A3B8; font-size: 1.1rem; cursor: pointer;">★</span>
                             </div>
-                            <div class="orc-card-title">{item['cliente']}</div>
-                            <div class="orc-card-sub">Orçamento {item['id']} · {item['data']} · {item['autor']}</div>
+                            <div class="orc-card-title">{item.get('cliente', 'Cliente')}</div>
+                            <div class="orc-card-sub">Orçamento {item.get('id', '---')} · {item.get('data', '')} · {item.get('autor', 'Eu')}</div>
                         </div>
                         """,
                         unsafe_allow_html=True,
                     )
 
-                    # BOTÃO DETALHES QUE ABRE O FORMULÁRIO TÉCNICO DESTE ORÇAMENTO
-                    if st.button(f"👁 Detalhes", key=f"det_{item['id']}", use_container_width=True):
+                    # BOTÃO DETALHES
+                    if st.button(f"👁 Detalhes", key=f"det_{item.get('id', i+j)}", use_container_width=True):
                         st.session_state["orcamento_selecionado"] = item
                         st.session_state["tela_ativa"] = "novo_orcamento"
                         st.rerun()
 
-                    # LINKS INFORMATIVOS E AÇÕES DA BASE (ANEXO)
+                    # LINKS INFORMATIVOS
                     st.markdown(
                         """
                         <div style="display: flex; justify-content: space-around; margin-top: 6px; margin-bottom: 10px; font-size: 0.76rem; color: #64748B; font-weight: 700;">
@@ -631,16 +639,20 @@ elif st.session_state["tela_ativa"] == "gerenciar_orcamentos":
                     # BOTÕES DE RODAPÉ DO CARD
                     b_zap, b_map, b_cot = st.columns(3)
                     with b_zap:
-                        link_wpp = f"https://api.whatsapp.com/send?phone=55{item['whatsapp']}&text=Ola%20{urllib.parse.quote(item['cliente'])}"
+                        link_wpp = f"https://api.whatsapp.com/send?phone=55{item.get('whatsapp', '')}&text=Ola%20{urllib.parse.quote(item.get('cliente', ''))}"
                         st.link_button("🟢 WhatsApp", link_wpp, use_container_width=True)
                     with b_map:
-                        link_mapa = f"https://www.google.com/maps/search/{urllib.parse.quote(item['local'])}"
+                        link_mapa = f"https://www.google.com/maps/search/{urllib.parse.quote(item.get('local', 'Recife PE'))}"
                         st.link_button("📍 Mapa", link_mapa, use_container_width=True)
                     with b_cot:
-                        if st.button("💲 Cotação", key=f"cot_{item['id']}", use_container_width=True):
-                            st.toast(f"Valor Total: R$ {item['valor']:.2f}")
+                        if st.button("💲 Cotação", key=f"cot_{item.get('id', i+j)}", use_container_width=True):
+                            val_c = item.get("valor", 0.0)
+                            if isinstance(val_c, (int, float)):
+                                st.toast(f"Valor Total: R$ {val_c:.2f}")
+                            else:
+                                st.toast(f"Valor: {val_c}")
 
-# TELA 2: FORMULÁRIO DE ORÇAMENTO / CÁLCULO DE VÃO (AO CLICAR EM DETALHES OU NOVO ORÇAMENTO)
+# TELA 2: FORMULÁRIO DE ORÇAMENTO / CÁLCULO DE VÃO
 elif st.session_state["tela_ativa"] == "novo_orcamento":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
     if st.button("⬅ VOLTAR PARA ORÇAMENTOS", key="btn_voltar_orc"):
@@ -648,7 +660,7 @@ elif st.session_state["tela_ativa"] == "novo_orcamento":
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Carrega dados se for visualização de orçamento existente
+    # Carrega dados caso seja visualização de orçamento existente
     sel_dados = st.session_state.get("orcamento_selecionado") or {}
     val_nome = sel_dados.get("cliente", "Mariana Albuquerque")
     val_zap = sel_dados.get("whatsapp", "81991234567")
