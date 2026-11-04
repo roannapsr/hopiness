@@ -1,5 +1,7 @@
 import io
 import math
+import os
+import base64
 import urllib.parse
 from datetime import datetime
 import streamlit as st
@@ -18,7 +20,7 @@ from reportlab.platypus import (
 )
 
 # ==============================================================================
-# CONFIGURAÇÃO DE PÁGINA E CSS FIEL À MAQUETE
+# CONFIGURAÇÃO DE PÁGINA
 # ==============================================================================
 st.set_page_config(
     page_title="HOPINESS PROJECT by Felipe Correa",
@@ -26,100 +28,128 @@ st.set_page_config(
     layout="wide",
 )
 
+# ==============================================================================
+# ESTILO CSS FORÇADO (OVERRIDE TOTAL DO STREAMLIT)
+# ==============================================================================
 st.markdown(
     """
     <style>
-        /* Fundo com degradê suave */
-        .stApp {
-            background: linear-gradient(180deg, #FDF3F3 0%, #FFFFFF 40%, #F8F9FA 100%) !important;
+        /* 1. DEGRADÊ ELEGANTE NO FUNDO: Vermelho Suave -> Branco -> Cinza Gelo */
+        .stApp, [data-testid="stAppViewContainer"], section.main {
+            background: linear-gradient(180deg, #FCE8E6 0%, #FFFFFF 35%, #F8F9FA 100%) !important;
+            background-attachment: fixed !important;
         }
 
-        /* Tipografia */
+        /* 2. TIPOGRAFIA GERAL */
         p, span, label, .stMarkdown {
             color: #5A5A5A !important;
-            font-weight: 500;
+            font-weight: 600;
         }
         
         h1, h2, h3, h4, h5, h6 {
             color: #9D201C !important;
-            font-weight: 800 !important;
+            font-weight: 900 !important;
         }
 
-        /* FAIXA DO CABEÇALHO COM DETALHES DE ESQUADRIAS */
+        /* 3. FAIXA DO CABEÇALHO COM DETALHES DE ESQUADRIAS */
         .header-box {
-            background: #FFFFFF;
+            background-color: #FFFFFF;
             border: 1px solid #E2E8F0;
             border-left: 8px solid #D01B13;
             border-radius: 12px;
-            padding: 16px 28px;
-            margin-top: -10px;
+            padding: 14px 24px;
+            margin-top: -15px;
             margin-bottom: 22px;
-            box-shadow: 0 4px 14px rgba(208, 27, 19, 0.08);
-            background-image: linear-gradient(90deg, rgba(226,232,240,0.45) 1px, transparent 1px),
-                              linear-gradient(rgba(226,232,240,0.45) 1px, transparent 1px);
-            background-size: 24px 24px;
+            box-shadow: 0 4px 15px rgba(208, 27, 19, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-image: 
+                linear-gradient(90deg, rgba(203, 213, 225, 0.45) 1px, transparent 1px),
+                linear-gradient(rgba(203, 213, 225, 0.45) 1px, transparent 1px);
+            background-size: 26px 26px; /* Malha estrutural de esquadria/vidro */
         }
 
-        .header-title {
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-center {
             text-align: center;
-            color: #9D201C;
-            font-size: 2.3rem;
-            font-weight: 900;
-            letter-spacing: 2px;
-            margin: 0;
-            text-transform: uppercase;
+            flex-grow: 1;
         }
 
-        .header-sub {
-            text-align: right;
-            color: #5A5A5A;
-            font-size: 0.95rem;
-            font-weight: 600;
-            font-style: italic;
-            margin-top: 4px;
-            margin-bottom: 0;
+        .header-title-text {
+            color: #9D201C !important;
+            font-size: 2.3rem !important;
+            font-weight: 900 !important;
+            letter-spacing: 2px !important;
+            margin: 0 !important;
+            text-transform: uppercase !important;
+            font-family: sans-serif !important;
         }
 
-        /* ABAS EM VERMELHO VIVO ARREDONDADAS (PILLS) */
+        .header-sub-text {
+            color: #5A5A5A !important;
+            font-size: 0.95rem !important;
+            font-weight: 600 !important;
+            font-style: italic !important;
+            margin-top: 4px !important;
+            margin-bottom: 0 !important;
+            text-align: right !important;
+        }
+
+        /* 4. ABAS: TODAS COM FUNDO VERMELHO E FONTE BRANCO GELO */
         .stTabs [data-baseweb="tab-list"] {
-            gap: 12px;
-            background-color: transparent;
-            padding: 2px 0px;
-            margin-bottom: 24px;
+            gap: 12px !important;
+            background-color: transparent !important;
+            padding: 4px 0px !important;
+            margin-bottom: 24px !important;
             border: none !important;
         }
+        
         .stTabs [data-baseweb="tab-highlight"] {
             display: none !important;
         }
-        .stTabs [data-baseweb="tab"] {
+
+        /* Força botões de abas */
+        .stTabs button, .stTabs [data-baseweb="tab"], button[role="tab"] {
             background-color: #D01B13 !important;
             color: #FFFFFF !important;
-            font-weight: 700 !important;
-            font-size: 0.92rem !important;
-            padding: 10px 22px !important;
+            font-weight: 800 !important;
+            font-size: 0.95rem !important;
+            padding: 10px 24px !important;
             border-radius: 25px !important; /* Formato pílula da maquete */
             border: none !important;
-            box-shadow: 0 2px 5px rgba(208,27,19,0.2) !important;
+            box-shadow: 0 3px 6px rgba(208, 27, 19, 0.25) !important;
+            opacity: 0.92 !important;
+            transition: all 0.2s ease-in-out !important;
         }
-        .stTabs [data-baseweb="tab"]:hover {
+
+        /* Aba com mouse em cima */
+        .stTabs button:hover, .stTabs [data-baseweb="tab"]:hover, button[role="tab"]:hover {
             background-color: #B50915 !important;
+            color: #FFFFFF !important;
+            opacity: 1.0 !important;
         }
+
+        /* Aba Ativa Selecionada */
         .stTabs [aria-selected="true"] {
             background-color: #9D201C !important;
-            box-shadow: 0 4px 10px rgba(157,32,28,0.35) !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 12px rgba(157, 32, 28, 0.45) !important;
+            opacity: 1.0 !important;
         }
 
-        /* CARTÃO BRANCO DO FORMULÁRIO (ESQUERDA) */
-        .card-form {
-            background-color: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            padding: 22px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
-            margin-bottom: 20px;
+        /* Garante que o texto dentro da aba não fique azul ou preto */
+        .stTabs [data-baseweb="tab"] *, button[role="tab"] * {
+            color: #FFFFFF !important;
+            font-weight: 800 !important;
         }
 
-        /* CARTÕES DAS MÉTRICAS (DIREITA) */
+        /* 5. CARDS BRANCOS E MÉTRICAS */
         .metric-card {
             background-color: #FFFFFF;
             border: 1px solid #E2E8F0;
@@ -142,16 +172,14 @@ st.markdown(
             margin: 0;
         }
 
-        /* CAMPOS DE ENTRADA */
+        /* INPUTS E SELECTBOX */
         .stTextInput input, .stNumberInput input {
             background-color: #FFFFFF !important;
             color: #9D201C !important;
-            font-weight: 700 !important;
+            font-weight: 800 !important;
             border-radius: 8px !important;
             border: 1px solid #CBD5E1 !important;
         }
-
-        /* SELECTBOX */
         div[data-baseweb="select"] > div {
             background-color: #FFFFFF !important;
             border: 1px solid #CBD5E1 !important;
@@ -175,7 +203,6 @@ st.markdown(
         .stButton > button[kind="primary"]:hover {
             background-color: #B50915 !important;
         }
-
         .stDownloadButton > button {
             background-color: #5A5A5A !important;
             color: #FFFFFF !important;
@@ -193,20 +220,38 @@ st.markdown(
 )
 
 # ==============================================================================
-# CABEÇALHO ESTRUTURADO
+# CARREGAMENTO DA LOGO (ARQUIVO LOCAL OU EMBUTIDO)
+# ==============================================================================
+logo_html = ""
+if os.path.exists("logo.png"):
+    with open("logo.png", "rb") as f:
+        img_b64 = base64.b64encode(f.read()).decode("utf-8")
+    logo_html = f'<img src="data:image/png;base64,{img_b64}" style="width: 58px; height: 58px; border-radius: 50%; object-fit: contain; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">'
+else:
+    logo_html = '<div style="width: 56px; height: 56px; background-color: #5A5A5A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-weight: 900; font-size: 11px; text-align: center; line-height: 1.1; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">RIO<br/>BRANCO</div>'
+
+# ==============================================================================
+# CABEÇALHO OFICIAL COM LOGO NO CANTO ESQUERDO E ESQUADRIAS
 # ==============================================================================
 st.markdown(
-    """
+    f"""
     <div class="header-box">
-        <h1 class="header-title">HOPINESS PROJECT</h1>
-        <p class="header-sub">by Felipe Correa</p>
+        <div class="header-left">
+            {logo_html}
+        </div>
+        <div class="header-center">
+            <h1 class="header-title-text">HOPINESS PROJECT</h1>
+        </div>
+        <div>
+            <p class="header-sub-text">by Felipe Correa</p>
+        </div>
     </div>
 """,
     unsafe_allow_html=True,
 )
 
 # ==============================================================================
-# BASE DE DADOS DE PROJETOS E REGRAS TÉCNICAS
+# PROJETOS PADRÃO E REGRAS TÉCNICAS
 # ==============================================================================
 PROJETOS_PADRAO = {
     "guarda_corpo_torres": {
@@ -297,7 +342,7 @@ def processar_calculo(chave_proj, largura, altura, preco_m2, kit, insumos, mao_o
     }
 
 # ==============================================================================
-# MOTOR DO PDF COM A PALETA DA RIO BRANCO
+# MOTOR DO PDF COM PALETA VIDRAÇARIA RIO BRANCO
 # ==============================================================================
 def gerar_pdf(dados):
     buf = io.BytesIO()
@@ -365,7 +410,7 @@ def gerar_pdf(dados):
     return val
 
 # ==============================================================================
-# NAVEGAÇÃO E ABAS
+# NAVEGAÇÃO E ABAS (ESTILO PÍLULA VERMELHA)
 # ==============================================================================
 aba_proj, aba_temp, aba_fin, aba_abnt = st.tabs([
     "📐 Projetos Padrão & Orçamento",
@@ -375,7 +420,7 @@ aba_proj, aba_temp, aba_fin, aba_abnt = st.tabs([
 ])
 
 # ------------------------------------------------------------------------------
-# ABA 1: PROJETOS E ORÇAMENTO (EXATAMENTE COMO NO MOCKUP)
+# ABA 1: PROJETOS E ORÇAMENTO (EXATAMENTE COMO NA IMAGEM)
 # ------------------------------------------------------------------------------
 with aba_proj:
     col_esquerda, col_direita = st.columns([1.15, 1.0], gap="large")
@@ -411,7 +456,7 @@ with aba_proj:
     res = processar_calculo(sel_proj, larg_v, alt_v, pm2, kit_v, ins_v, mo_v, mg_v)
 
     with col_direita:
-        st.markdown("<h4 style='color:#9D201C; margin-top:0;'>Resumo Comercial do Projeto</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color:#9D201C; margin-top:0;'>Resumo Comercial</h4>", unsafe_allow_html=True)
 
         m_c1, m_c2 = st.columns(2)
         with m_c1:
@@ -467,13 +512,7 @@ with aba_proj:
         )
 
     with b_col2:
-        msg_whats = (
-            f"Olá, {nome_c}! Segue o orçamento da Vidraçaria Rio Branco para o seu projeto de {res['nome']}:\n\n"
-            f" Dimensões: {larg_v:.2f}m x {alt_v:.2f}m\n"
-            f" Vidro Especificado: {res['vidro']}\n"
-            f" Valor Total: R$ {res['preco_venda']:.2f} (com instalação inclusa)\n\n"
-            "Posso enviar o PDF oficial com as condições detalhadas?"
-        )
+        msg_whats = f"Olá, {nome_c}! Segue o orçamento da Vidraçaria Rio Branco para o seu projeto de {res['nome']} ({larg_v:.2f}m x {alt_v:.2f}m) - Total: R$ {res['preco_venda']:.2f}. Podemos agendar?"
         url_zap = f"https://api.whatsapp.com/send?phone=55{zap_c.strip()}&text={urllib.parse.quote(msg_whats)}"
         st.link_button(" Enviar via WhatsApp", url_zap, use_container_width=True)
 
