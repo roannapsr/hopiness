@@ -486,3 +486,4 @@ def gerar_pdf_documento(tipo_doc, dados):
             "Vidraçaria Rio Branco | Soluções em Vidros Planos & Esquadrias",
             style_
         )
+    )
