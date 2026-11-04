@@ -89,7 +89,7 @@ border: 3px solid #FFFFFF;
 }
 .menu-card-title {
 color: #FFFFFF !important;
-font-size: 1.15rem;
+font-size: 1.05rem;
 font-weight: 800;
 margin: 0;
 text-align: center;
@@ -239,7 +239,6 @@ font-weight: 600;
 margin-top: 4px;
 }
 
-/* CARDS FINANCEIROS */
 .fin-top-card {
 background-color: #FFFFFF;
 border: 1px solid #E2E8F0;
@@ -268,6 +267,19 @@ border-radius: 10px;
 font-size: 0.72rem;
 font-weight: 700;
 display: inline-block;
+}
+
+/* CARD CLIENTES DO DIA */
+.dia-card {
+background-color: #FFFFFF;
+border-left: 5px solid #D01B13;
+border-radius: 8px;
+padding: 12px 16px;
+box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+margin-bottom: 10px;
+display: flex;
+justify-content: space-between;
+align-items: center;
 }
 
 .stTextInput input, .stNumberInput input {
@@ -341,7 +353,7 @@ if hasattr(st, "html"):
 else:
     st.markdown(clean_cabecalho, unsafe_allow_html=True)
 
-# 4. Controle de Telas e Memória
+# 4. Controle de Telas e Memória (com Agenda e Clientes do Dia)
 if "tela_ativa" not in st.session_state:
     st.session_state["tela_ativa"] = "inicio"
 
@@ -361,6 +373,13 @@ if "clientes_cadastrados" not in st.session_state:
         {"nome": "HEMOSAN MT", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "25/08/2026", "local": "Boa Viagem - Recife/PE"},
         {"nome": "IVONE", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "24/08/2026", "local": "Janga - Paulista/PE"},
         {"nome": "MARCOS EMANUEL JUNIOR DE ALMEIDA NUNES LEITE", "responsavel": "Eu", "telefone": "", "email": "", "cadastro": "14/08/2026", "local": "Recife/PE"},
+    ]
+
+if "agenda_compromissos" not in st.session_state:
+    st.session_state["agenda_compromissos"] = [
+        {"cliente": "MARIANA ALBUQUERQUE", "horario": "09:00", "servico": "Instalação de Guarda-Corpo", "data": datetime.now().strftime("%d/%m/%Y")},
+        {"cliente": "IVONE", "horario": "14:30", "servico": "Medição de Box Frontal", "data": datetime.now().strftime("%d/%m/%Y")},
+        {"cliente": "HEMOSAN MT", "horario": "16:00", "servico": "Orçamento Técnico", "data": datetime.now().strftime("%d/%m/%Y")},
     ]
 
 # Sincronização automática
@@ -525,13 +544,12 @@ def gerar_pdf(dados):
     return val
 
 # ==============================================================================
-# 6. RENDERIZAÇÃO DAS TELAS
+# RENDERIZAÇÃO DAS TELAS (4 CARDS NA PÁGINA INICIAL + CLIENTES DO DIA)
 # ==============================================================================
 
-# TELA 0: INÍCIO (COM CONTROLE FINANCEIRO)
 if st.session_state["tela_ativa"] == "inicio":
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-    c_m1, c_m2, c_m3 = st.columns(3, gap="large")
+    c_m1, c_m2, c_m3, c_m4 = st.columns(4, gap="medium")
 
     # CARD 1: ORÇAMENTOS
     with c_m1:
@@ -549,13 +567,13 @@ if st.session_state["tela_ativa"] == "inicio":
         b_c1, b_c2 = st.columns(2)
         with b_c1:
             st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
-            if st.button("➕ ADICIONAR", key="card_btn_add_orc", use_container_width=True):
+            if st.button("➕", key="btn_add_orc_mini", use_container_width=True):
                 st.session_state["tela_ativa"] = "gerenciar_orcamentos"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
         with b_c2:
             st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
-            if st.button("📋 LISTAR", key="card_btn_list_orc", use_container_width=True):
+            if st.button("📋", key="btn_list_orc_mini", use_container_width=True):
                 st.session_state["tela_ativa"] = "gerenciar_orcamentos"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
@@ -576,25 +594,25 @@ if st.session_state["tela_ativa"] == "inicio":
         b_cl1, b_cl2 = st.columns(2)
         with b_cl1:
             st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
-            if st.button("➕ ADICIONAR", key="card_btn_add_cli", use_container_width=True):
+            if st.button("➕", key="btn_add_cli_mini", use_container_width=True):
                 st.session_state["tela_ativa"] = "gerenciar_clientes"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
         with b_cl2:
             st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
-            if st.button("📋 LISTAR", key="card_btn_list_cli", use_container_width=True):
+            if st.button("📋", key="btn_list_cli_mini", use_container_width=True):
                 st.session_state["tela_ativa"] = "gerenciar_clientes"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 
-    # CARD 3: CONTROLE FINANCEIRO
+    # CARD 3: FINANCEIRO
     with c_m3:
         st.markdown(
             """
             <div class="menu-card-container">
                 <div class="menu-card-header">
                     <div class="menu-card-icon-badge">📑$</div>
-                    <div class="menu-card-title">CONTROLE FINANCEIRO</div>
+                    <div class="menu-card-title">FINANCEIRO</div>
                 </div>
             </div>
             """,
@@ -603,22 +621,178 @@ if st.session_state["tela_ativa"] == "inicio":
         b_f1, b_f2, b_f3 = st.columns(3)
         with b_f1:
             st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
-            if st.button("➕ CAIXA", key="card_btn_add_fin", use_container_width=True):
+            if st.button("💲", key="btn_fin_mini", use_container_width=True):
                 st.session_state["tela_ativa"] = "financeiro"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
         with b_f2:
             st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
-            if st.button("🏭 CORTE", key="card_btn_temp", use_container_width=True):
+            if st.button("🏭", key="btn_temp_mini", use_container_width=True):
                 st.session_state["tela_ativa"] = "tempera"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
         with b_f3:
             st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
-            if st.button("📋 PAINEL", key="card_btn_list_fin", use_container_width=True):
+            if st.button("📊", key="btn_fin_list_mini", use_container_width=True):
                 st.session_state["tela_ativa"] = "financeiro"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
+
+    # CARD 4: AGENDA
+    with c_m4:
+        st.markdown(
+            """
+            <div class="menu-card-container">
+                <div class="menu-card-header" style="background-color: #9D201C;">
+                    <div class="menu-card-icon-badge" style="background-color: #D01B13;">📅</div>
+                    <div class="menu-card-title">AGENDA</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        b_ag1, b_ag2 = st.columns(2)
+        with b_ag1:
+            st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
+            if st.button("➕", key="btn_add_agenda_mini", use_container_width=True):
+                st.session_state["tela_ativa"] = "agenda"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        with b_ag2:
+            st.markdown('<div class="card-action-btn">', unsafe_allow_html=True)
+            if st.button("📅", key="btn_ver_agenda_mini", use_container_width=True):
+                st.session_state["tela_ativa"] = "agenda"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    # SEÇÃO: CLIENTES DO DIA NA PÁGINA INICIAL
+    st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color:#9D201C; font-weight:800; margin-bottom: 15px;'>📌 CLIENTES DO DIA (Agendamentos)</h4>", unsafe_allow_html=True)
+
+    compromissos_hoje = [c for c in st.session_state["agenda_compromissos"] if c.get("data") == datetime.now().strftime("%d/%m/%Y")]
+    if not compromissos_hoje:
+        compromissos_hoje = st.session_state["agenda_compromissos"] # exibe todos se for demonstração
+
+    for comp in compromissos_hoje:
+        st.markdown(
+            f"""
+            <div class="dia-card">
+                <div>
+                    <span style="font-weight: 800; color: #1E293B; font-size: 1rem; text-transform: uppercase;">{comp.get('cliente')}</span>
+                    <div style="color: #64748B; font-size: 0.82rem; font-weight: 600; margin-top: 2px;">Serviço: {comp.get('servico')}</div>
+                </div>
+                <div style="background: #FEE2E2; color: #9D201C; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.88rem;">
+                    ⏰ {comp.get('horario')}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+# TELA DE AGENDA (CALENDÁRIO COMPLETO CONFORME ANEXO)
+elif st.session_state["tela_ativa"] == "agenda":
+    st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
+    if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_agenda"):
+        st.session_state["tela_ativa"] = "inicio"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # BARRA SUPERIOR DA AGENDA (EXATAMENTE COMO NO ANEXO)
+    ag_top1, ag_top2, ag_top3 = st.columns([1.5, 3.0, 2.0])
+    with ag_top1:
+        st.markdown('<div class="btn-gerar" style="margin-top: 4px;">', unsafe_allow_html=True)
+        if st.button("➕ Novo Agendamento", key="btn_novo_agendamento", use_container_width=True):
+            st.session_state["modal_novo_agendamento"] = True
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with ag_top2:
+        st.markdown(
+            """
+            <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #5A5A5A;">Hoje</span>
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #5A5A5A;">7 dias</span>
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #5A5A5A;">15 dias</span>
+                <span style="background: #D01B13; color: #FFFFFF; padding: 4px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 700;">Novembro de 2026 ▾</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with ag_top3:
+        st.markdown(
+            """
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px;">
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #94A3B8;">Status: Todos ▾</span>
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #94A3B8;">Prioridade: Todas ▾</span>
+                <span style="background: #D01B13; color: #FFFFFF; padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700;">Calendário</span>
+                <span style="background: #FFFFFF; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #5A5A5A;">Lista</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+
+    # CADASTRO RÁPIDO DE NOVO AGENDAMENTO
+    if st.session_state.get("modal_novo_agendamento", False):
+        with st.form("form_novo_agendamento"):
+            st.markdown("<h4 style='color:#9D201C;'>Novo Agendamento na Agenda</h4>", unsafe_allow_html=True)
+            cli_agenda = st.selectbox("Cliente", options=[c["nome"] for c in st.session_state["clientes_cadastrados"]])
+            hora_agenda = st.text_input("Horário (Ex: 10:30)", "10:30")
+            serv_agenda = st.text_input("Serviço / Obra", "Instalação de Box")
+            data_agenda = st.text_input("Data (DD/MM/AAAA)", datetime.now().strftime("%d/%m/%Y"))
+            
+            col_s1, col_s2 = st.columns(2)
+            with col_s1:
+                if st.form_submit_button("Salvar Agendamento", type="primary"):
+                    st.session_state["agenda_compromissos"].append({
+                        "cliente": cli_agenda,
+                        "horario": hora_agenda,
+                        "servico": serv_agenda,
+                        "data": data_agenda
+                    })
+                    st.success("Agendamento salvo com sucesso!")
+                    st.session_state["modal_novo_agendamento"] = False
+                    st.rerun()
+            with col_s2:
+                if st.form_submit_button("Cancelar"):
+                    st.session_state["modal_novo_agendamento"] = False
+                    st.rerun()
+
+    # GRADE DO CALENDÁRIO MENSAL (EXATAMENTE COMO NO ANEXO)
+    dias_semana = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+    cols_dias = st.columns(7)
+    for idx, d_nome in enumerate(dias_semana):
+        with cols_dias[idx]:
+            st.markdown(f"<div style='text-align: center; font-weight: 800; color: #9D201C; padding: 8px; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; margin-bottom: 5px;'>{d_nome}</div>", unsafe_allow_html=True)
+
+    matriz_dias = [
+        [26, 27, 28, 29, 30, 31, 1],
+        [2, 3, 4, 5, 6, 7, 8],
+        [9, 10, 11, 12, 13, 14, 15],
+        [16, 17, 18, 19, 20, 21, 22],
+        [23, 24, 25, 26, 27, 28, 29],
+        [30, 1, 2, 3, 4, 5, 6]
+    ]
+
+    for semana in matriz_dias:
+        cols_sem = st.columns(7)
+        for idx, dia_num in enumerate(semana):
+            with cols_sem[idx]:
+                destaque_hoje = "background-color: #FEE2E2; border: 2px solid #D01B13;" if dia_num == 4 else "background-color: #FFFFFF;"
+                
+                conteudo_dia = f"<div style='font-weight: 800; font-size: 0.85rem; color: #1E293B;'>{dia_num}</div>"
+                if dia_num in [4, 24, 25]:
+                    conteudo_dia += "<div style='background: #D01B13; color: #FFFFFF; font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; margin-top: 4px; font-weight: 700;'>📌 Compromisso</div>"
+
+                st.markdown(
+                    f"""
+                    <div style="{destaque_hoje} border: 1px solid #E2E8F0; border-radius: 6px; padding: 8px; min-height: 75px; margin-bottom: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                        {conteudo_dia}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
 # TELA 1: GERENCIAR ORÇAMENTOS
 elif st.session_state["tela_ativa"] == "gerenciar_orcamentos":
@@ -1049,7 +1223,7 @@ elif st.session_state["tela_ativa"] == "novo_cliente":
             else:
                 st.warning("Preencha o nome do cliente.")
 
-# TELA 4: CONTROLE FINANCEIRO (CONFORME O ANEXO)
+# TELA 4: CONTROLE FINANCEIRO
 elif st.session_state["tela_ativa"] == "financeiro":
     st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
     if st.button("⬅ VOLTAR AO INÍCIO", key="btn_voltar_fin_tela"):
